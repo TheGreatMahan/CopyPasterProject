@@ -1,0 +1,25 @@
+{
+  "name": "nodeexercises",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mahan",
+  "license": "ISC",
+  "dependencies": {
+    "consola": "^2.15.3",
+    "dotenv": "^10.0.0",
+    "fastify": "^3.27.1",
+    "fastify-cors": "^6.0.3",
+    "got": "^11.8.2",
+    "graphql": "^15.8.0",
+    "mercurius": "^8.12.0",
+    "mongodb": "^4.3.1",
+    "yargs": "^17.3.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  }
+}
