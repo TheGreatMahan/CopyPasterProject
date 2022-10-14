@@ -24,6 +24,7 @@ const AddAdvisory = (props) => {
 
 
     // const GRAPHURL = "http://localhost:5000/graphql";
+    // test commit 
     const GRAPHURL = "/graphql";
     
     const sendSnackToApp = (msg) => {
