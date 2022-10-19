@@ -1,6 +1,6 @@
 const { loadAlerts } = require("./setupalerts");
 const dbRtns = require("./utilities");
-const { alerts, advisories } = require("./config");
+const { alerts, advisories, tasks } = require("./config");
 const resolvers = {
     setupalerts: async () => {
         return await loadAlerts();
@@ -16,6 +16,10 @@ const resolvers = {
     alertsforsubregion: async (args) => {
         db = await dbRtns.getDBInstance();
         return await dbRtns.findAll(db, alerts, { subregion: args.subregion });
+    },
+    tasksforuser: async (args) => {
+        db = await dbRtns.getDBInstance();
+        return await dbRtns.findAll(db, tasks, { username: args.username });
     },
     regions: async () => {
         db = await dbRtns.getDBInstance();
@@ -35,6 +39,20 @@ const resolvers = {
         };
         let results = await dbRtns.addOne(db, advisories, advisory);
         return results.acknowledged ? advisory : null;
+    },
+    addtask: async (args) => {
+        db = await dbRtns.getDBInstance();
+        let task = {
+            username: args.username,
+            name: args.name,
+            priority: args.priority,
+            duedate: args.duedate,
+            duetime: args.duetime,
+            difficulty: args.difficulty,
+            description: args.description
+        };
+        let results = await dbRtns.addOne(db, tasks, task);
+        return results.acknowledged ? task : null;
     },
     advisories: async () => {
         db = await dbRtns.getDBInstance();

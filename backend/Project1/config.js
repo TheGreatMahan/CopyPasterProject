@@ -8,5 +8,6 @@ module.exports = {
     alerts: process.env.ALERTCOLLECTION,
     port: process.env.PORT,
     graphql: process.env.GRAPHQLURL,
-    advisories: process.env.ADVISORIES
+    advisories: process.env.ADVISORIES,
+    tasks: process.env.TASKS
 };
