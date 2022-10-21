@@ -1,6 +1,5 @@
 import React, { useState, useReducer } from "react";
 import { ThemeProvider } from "@mui/material/styles";
-import { InputAdornment } from '@mui/material';
 // import Logo from "./worldimage.png"
 import {
     AppBar,
@@ -17,54 +16,75 @@ import theme from "../theme";
 import "../App.css";
 
 
+
 const Register = () => {
 
     const initialState = {
         handleUsername: "",
         handlePassword: "",
-        holdPasswordData: "",
-        isClicked: false,
+        contactServer: false,
     };
+
+    const GRAPHURL = "http://localhost:5000/graphql";
 
     const reducer = (state, newState) => ({ ...state, ...newState });
     const [state, setState] = useReducer(reducer, initialState);
 
     const handleUsernameFunction = (event) => { setState(state.handleUsername = event.target.value); }
-    const handlePasswordFunction = (event) => { setState(state.handlePassword = event.target.value, state.holdPasswordData = event.target.value); }
+    const handlePasswordFunction = (event) => { setState(state.handlePassword = event.target.value); }
 
-    const handleToggleShowPassword = (event) => {
-        if (state.isClicked === false) setState(state.isClicked = true)
-        else setState(state.isClicked = false)
-    }
 
 
     // TODO for backend developer : link up register button to backend
 
     const handleRegisterButton = async () => {
-        // try {
-        //     let query = JSON.stringify({
-        //         query: `mutation {addproject(teamName: "${state.teamName}", projectName: "${state.projectName}", projectStartDate: "${state.projectStartDate}", hoursEquivanlentToStoryPoint: ${state.numHoursForStoryPoint}, totalEstNumberOfStoryPoints: ${state.numEstimatedStoryPoints}, totalEstCostForDevelopment: ${state.estimatedCostForDevelopment}, sprintNumber: ${state.sprintNumber})
-        //                 { teamName, projectName, projectStartDate, hoursEquivanlentToStoryPoint, totalEstNumberOfStoryPoints, totalEstCostForDevelopment, sprintNumber }}`,
-        //     });
 
-        //     await fetch('http://localhost:5000/graphql', {
-        //         method: "POST",
-        //         headers: {
-        //             "Content-Type": "application/json; charset=utf-8",
-        //         },
-        //         body: query,
-        //     });
-        //     console.log(`save all textfield data mutation complete`);
+        //Send new user to server
+        let user = {
+            username: state.handleUsername,
+            password: state.handlePassword,
+        }
 
-        // } catch (error) {
-        //     console.log(`error adding all textfield data mutation: ${error}`);
-        // }
+        let myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        setState({
+            contactServer: true,
+        })
+
+        try {
+            let query = JSON.stringify({
+                query: `mutation {adduser(username: "${user.username}",password: "${user.password}") 
+                {username, password}}`,
+            });
+            let response = await fetch(GRAPHURL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json; charset=utf-8",
+                },
+                body: query,
+            });
+            let json = await response.json();
+            if (json != null) {
+                alert("Register successful!");
+            }
+            else {
+                alert("Register failed");
+            }
+
+            setState({
+                contactServer: true,
+            })
+        } catch (error) {
+            setState({
+                contactServer: true,
+            });
+        }
+
     }
 
     const emptyorundefined =
         state.handleUsername === "" || state.handleUsername == undefined ||
         state.handlePassword === "" || state.handlePassword == undefined
-
 
     return (
         <ThemeProvider theme={theme}>
@@ -86,41 +106,18 @@ const Register = () => {
 
                 <Card style={{ boxShadow: "none" }} >
                     <TextField
-                        style={{ marginTop: 20, width: '15%' }}
+                        style={{ marginTop: 20 }}
                         label="Enter username"
                         onChange={handleUsernameFunction}
                     />
                 </Card>
-
-
                 <Card style={{ boxShadow: "none" }} >
-                    {state.isClicked &&
-                        <TextField
-                            value={state.holdPasswordData}
-                            style={{ marginTop: 20, width: '15%' }}
-                            label="Enter password"
-                            onChange={handlePasswordFunction}
-                        />
-                    }
-                    {!state.isClicked &&
-                        <TextField
-                            value={state.holdPasswordData}
-                            type="password"
-                            style={{ marginTop: 20, width: '15%' }}
-                            label="Enter password"
-                            onChange={handlePasswordFunction}
-                        />
-                    }
-                    <Card>
-                    <Button
-                        style={{ fontSize: 10 }}
-                        color="primary" onClick={handleToggleShowPassword}>
-                        Show Password
-                    </Button>
-                    </Card>
-                    
+                    <TextField
+                        style={{ marginTop: 20 }}
+                        label="Enter password"
+                        onChange={handlePasswordFunction}
+                    />
                 </Card>
-
 
 
                 <Button
