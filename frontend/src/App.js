@@ -3,10 +3,11 @@ import { Route, Link, Routes } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "./theme";
-import HomePage from "./Project1/Home";
-import ResetAlerts from "./Project1/ResetAlerts";
-import AddAdvisory from "./Project1/AddAdvisory";
-import ListAdvisory from "./Project1/ListAdvisories";
+import Home from "./Components/Home";
+import Register from "./Components/Register";
+// import ResetAlerts from "./Project1/ResetAlerts";
+// import AddAdvisory from "./Project1/AddAdvisory";
+// import ListAdvisory from "./Project1/ListAdvisories";
 import {
     Toolbar,
     AppBar,
@@ -44,12 +45,13 @@ const App = () => {
     const msgFromChild = (msg) => {
         setState({ snackBarMsg: msg, gotData: true });
     };
+
     return (
         <ThemeProvider theme={theme}>
             <AppBar position="static" color="error">
                 <Toolbar>
                     <Typography variant="h6" color="inherit">
-                        INFO3139 - Case Study #1
+                        Team: Copypasters
                     </Typography>
                     <IconButton
                         onClick={handleClick}
@@ -74,6 +76,13 @@ const App = () => {
                         <MenuItem
                             onClick={handleClose}
                             component={Link}
+                            to="/register"
+                        >
+                            Register
+                        </MenuItem>
+                        {/* <MenuItem
+                            onClick={handleClose}
+                            component={Link}
                             to="/resetalerts"
                         >
                             Reset Alerts
@@ -91,18 +100,19 @@ const App = () => {
                             to="/listadvisory"
                         >
                             List Advisory
-                        </MenuItem>
+                        </MenuItem> */}
                     </Menu>
                 </Toolbar>
             </AppBar>
             <div>
                 <Routes>
-                    <Route path="/" element={<HomePage />} />
-                    <Route path="/home" element={<HomePage />} />
-                    <Route path="/resetalerts" element={<ResetAlerts dataFromChild={msgFromChild}/>} />
-                    <Route path="/addadvisory" element={<AddAdvisory dataFromChild={msgFromChild}/>} />
-                    <Route path="/listadvisory" element={<ListAdvisory dataFromChild={msgFromChild}/>} />
-                    
+                    <Route path="/" element={<Home />} />
+                    <Route path="/home" element={<Home />} />
+                    <Route path="/register" element={<Register />} />
+                    {/* <Route path="/resetalerts" element={<ResetAlerts dataFromChild={msgFromChild} />} />
+                    <Route path="/addadvisory" element={<AddAdvisory dataFromChild={msgFromChild} />} />
+                    <Route path="/listadvisory" element={<ListAdvisory dataFromChild={msgFromChild} />} /> */}
+
                 </Routes>
             </div>
 
