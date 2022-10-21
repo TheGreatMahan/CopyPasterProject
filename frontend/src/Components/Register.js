@@ -22,7 +22,10 @@ const Register = () => {
     const initialState = {
         handleUsername: "",
         handlePassword: "",
+        contactServer: false,
     };
+
+    const GRAPHURL = "http://localhost:5000/graphql";
 
     const reducer = (state, newState) => ({ ...state, ...newState });
     const [state, setState] = useReducer(reducer, initialState);
@@ -35,24 +38,48 @@ const Register = () => {
     // TODO for backend developer : link up register button to backend
 
     const handleRegisterButton = async () => {
-        // try {
-        //     let query = JSON.stringify({
-        //         query: `mutation {addproject(teamName: "${state.teamName}", projectName: "${state.projectName}", projectStartDate: "${state.projectStartDate}", hoursEquivanlentToStoryPoint: ${state.numHoursForStoryPoint}, totalEstNumberOfStoryPoints: ${state.numEstimatedStoryPoints}, totalEstCostForDevelopment: ${state.estimatedCostForDevelopment}, sprintNumber: ${state.sprintNumber})
-        //                 { teamName, projectName, projectStartDate, hoursEquivanlentToStoryPoint, totalEstNumberOfStoryPoints, totalEstCostForDevelopment, sprintNumber }}`,
-        //     });
 
-        //     await fetch('http://localhost:5000/graphql', {
-        //         method: "POST",
-        //         headers: {
-        //             "Content-Type": "application/json; charset=utf-8",
-        //         },
-        //         body: query,
-        //     });
-        //     console.log(`save all textfield data mutation complete`);
+        //Send new user to server
+        let user = {
+            username: state.handleUsername,
+            password: state.handlePassword,
+        }
 
-        // } catch (error) {
-        //     console.log(`error adding all textfield data mutation: ${error}`);
-        // }
+        let myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        setState({
+            contactServer: true,
+        })
+
+        try {
+            let query = JSON.stringify({
+                query: `mutation {adduser(username: "${user.username}",password: "${user.password}") 
+                {username, password}}`,
+            });
+            let response = await fetch(GRAPHURL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json; charset=utf-8",
+                },
+                body: query,
+            });
+            let json = await response.json();
+            if (json != null) {
+                alert("Register successful!");
+            }
+            else {
+                alert("Register failed");
+            }
+
+            setState({
+                contactServer: true,
+            })
+        } catch (error) {
+            setState({
+                contactServer: true,
+            });
+        }
+
     }
 
     const emptyorundefined =

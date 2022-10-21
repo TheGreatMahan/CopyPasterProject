@@ -9,5 +9,7 @@ module.exports = {
     port: process.env.PORT,
     graphql: process.env.GRAPHQLURL,
     advisories: process.env.ADVISORIES,
-    tasks: process.env.TASKS
+    tasks: process.env.TASKS,
+    testdb: process.env.DBTEST,
+    users: process.env.USERCOLLECTION
 };

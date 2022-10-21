@@ -1,6 +1,8 @@
 const { loadAlerts } = require("./setupalerts");
 const dbRtns = require("./utilities");
-const { alerts, advisories, tasks } = require("./config");
+const { alerts, advisories, tasks, users } = require("./config");
+const bcrypt = require('bcrypt');
+
 const resolvers = {
     setupalerts: async () => {
         return await loadAlerts();
@@ -58,5 +60,44 @@ const resolvers = {
         db = await dbRtns.getDBInstance();
         return await dbRtns.findAll(db, advisories, {}, {});
     },
+    adduser: async (args) => {
+        db = await dbRtns.getDBInstance();
+        const salt = bcrypt.genSalt(10) //10 rounds
+        const hashedPassword = await bcrypt.hash(args.password, parseInt(salt));
+
+        let userdetail = {
+            username: args.username,
+            password: hashedPassword,
+        };
+        let results = await dbRtns.addOne(db, users, userdetail);
+        return results.acknowledged ? userdetail : null;
+    },
+    userlogin: async (args) => {
+        db = await dbRtns.getDBInstance();
+        let json = await dbRtns.findOne(db, users, {username: args.username});
+
+        let result = await new Promise((resolve, reject) => {
+            bcrypt.compare(args.password, json.password, function (err, res) {
+            if (err) {
+                reject(err);
+            }
+            if (res) {
+                console.log("***********Successful!***********");
+                console.log(res);
+
+                resolve(true);
+
+            }
+            else {
+                console.log("***********Credentials Failed***********")
+                console.log(res);
+
+                resolve(false);
+
+            }
+        })});
+
+        return {msg: result};
+    }
 };
 module.exports = { resolvers };

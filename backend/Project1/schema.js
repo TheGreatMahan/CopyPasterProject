@@ -9,6 +9,7 @@ type Query {
     regions: [String]
     subregions: [String]
     advisories: [Advisory]
+    userlogin(username: String, password: String): Message
 }
 
 type Results {
@@ -22,6 +23,15 @@ type Alert {
     date: String
     region: String
     subregion: String
+}
+
+type Message {
+    msg: Boolean
+}
+
+type UserDetail {
+    username: String
+    password: String
 }
 
 type Advisory{
@@ -44,6 +54,7 @@ type Task {
 type Mutation{
     addadvisory(name: String, country: String, text:String, date:String): Advisory
     addtask(username: String, name: String, priority: Int, duedate: String, duetime: String, difficulty: Int, description: String) : Task
+    adduser(username: String, password: String): UserDetail
 }
 `);
 
