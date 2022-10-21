@@ -1,5 +1,5 @@
 const MongoClient = require("mongodb").MongoClient;
-const { atlas, appdb } = require("./config");
+const { atlas, testdb } = require("./config");
 
 let db;
 const getDBInstance = async () => {
@@ -13,7 +13,7 @@ const getDBInstance = async () => {
             useNewUrlParser: true,
             useUnifiedTopology: true,
         });
-        db = conn.db(appdb);
+        db = conn.db(testdb);
     } catch (err) {
         console.log(err);
     }
