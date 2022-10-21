@@ -26,7 +26,8 @@ const Home = () => {
     const initialState = {
         handleUsername: "",
         handlePassword: "",
-        contactServer: false,
+        holdPasswordData: "",
+        isClicked: false,
     };
 
     const GRAPHURL = "http://localhost:5000/graphql";
@@ -35,7 +36,12 @@ const Home = () => {
     const [state, setState] = useReducer(reducer, initialState);
 
     const handleUsernameFunction = (event) => { setState(state.handleUsername = event.target.value); }
-    const handlePasswordFunction = (event) => { setState(state.handlePassword = event.target.value); }
+    const handlePasswordFunction = (event) => { setState(state.handlePassword = event.target.value, state.holdPasswordData = event.target.value); }
+
+    const handleToggleShowPassword = (event) => {
+        if (state.isClicked === false) setState(state.isClicked = true)
+        else setState(state.isClicked = false)
+    }
 
     const navigate = useNavigate();
 
@@ -107,12 +113,33 @@ const Home = () => {
                         onChange={handleUsernameFunction}
                     />
                 </Card>
+
                 <Card style={{ boxShadow: "none" }} >
-                    <TextField
-                        style={{ marginTop: 20, marginBottom: 20 }}
-                        label="Enter password"
-                        onChange={handlePasswordFunction}
-                    />
+                    {state.isClicked &&
+                        <TextField
+                            value={state.holdPasswordData}
+                            style={{ marginTop: 20, width: '15%' }}
+                            label="Enter password"
+                            onChange={handlePasswordFunction}
+                        />
+                    }
+                    {!state.isClicked &&
+                        <TextField
+                            value={state.holdPasswordData}
+                            type="password"
+                            style={{ marginTop: 20, width: '15%' }}
+                            label="Enter password"
+                            onChange={handlePasswordFunction}
+                        />
+                    }
+                    <Card>
+                        <Button
+                            style={{ fontSize: 10 }}
+                            color="primary" onClick={handleToggleShowPassword}>
+                            Show Password
+                        </Button>
+                    </Card>
+
                 </Card>
 
 
