@@ -1,5 +1,6 @@
 import React, { useState, useReducer } from "react";
 import { ThemeProvider } from "@mui/material/styles";
+import { InputAdornment } from '@mui/material';
 // import Logo from "./worldimage.png"
 import {
     AppBar,
@@ -16,20 +17,25 @@ import theme from "../theme";
 import "../App.css";
 
 
-
 const Register = () => {
 
     const initialState = {
         handleUsername: "",
         handlePassword: "",
+        holdPasswordData: "",
+        isClicked: false,
     };
 
     const reducer = (state, newState) => ({ ...state, ...newState });
     const [state, setState] = useReducer(reducer, initialState);
 
     const handleUsernameFunction = (event) => { setState(state.handleUsername = event.target.value); }
-    const handlePasswordFunction = (event) => { setState(state.handlePassword = event.target.value); }
+    const handlePasswordFunction = (event) => { setState(state.handlePassword = event.target.value, state.holdPasswordData = event.target.value); }
 
+    const handleToggleShowPassword = (event) => {
+        if (state.isClicked === false) setState(state.isClicked = true)
+        else setState(state.isClicked = false)
+    }
 
 
     // TODO for backend developer : link up register button to backend
@@ -59,6 +65,7 @@ const Register = () => {
         state.handleUsername === "" || state.handleUsername == undefined ||
         state.handlePassword === "" || state.handlePassword == undefined
 
+
     return (
         <ThemeProvider theme={theme}>
 
@@ -79,18 +86,41 @@ const Register = () => {
 
                 <Card style={{ boxShadow: "none" }} >
                     <TextField
-                        style={{ marginTop: 20 }}
+                        style={{ marginTop: 20, width: '15%' }}
                         label="Enter username"
                         onChange={handleUsernameFunction}
                     />
                 </Card>
+
+
                 <Card style={{ boxShadow: "none" }} >
-                    <TextField
-                        style={{ marginTop: 20 }}
-                        label="Enter password"
-                        onChange={handlePasswordFunction}
-                    />
+                    {state.isClicked &&
+                        <TextField
+                            value={state.holdPasswordData}
+                            style={{ marginTop: 20, width: '15%' }}
+                            label="Enter password"
+                            onChange={handlePasswordFunction}
+                        />
+                    }
+                    {!state.isClicked &&
+                        <TextField
+                            value={state.holdPasswordData}
+                            type="password"
+                            style={{ marginTop: 20, width: '15%' }}
+                            label="Enter password"
+                            onChange={handlePasswordFunction}
+                        />
+                    }
+                    <Card>
+                    <Button
+                        style={{ fontSize: 10 }}
+                        color="primary" onClick={handleToggleShowPassword}>
+                        Show Password
+                    </Button>
+                    </Card>
+                    
                 </Card>
+
 
 
                 <Button

@@ -23,16 +23,22 @@ const Home = () => {
     const initialState = {
         handleUsername: "",
         handlePassword: "",
+        holdPasswordData: "",
+        isClicked: false,
     };
 
     const reducer = (state, newState) => ({ ...state, ...newState });
     const [state, setState] = useReducer(reducer, initialState);
 
     const handleUsernameFunction = (event) => { setState(state.handleUsername = event.target.value); }
-    const handlePasswordFunction = (event) => { setState(state.handlePassword = event.target.value); }
+    const handlePasswordFunction = (event) => { setState(state.handlePassword = event.target.value, state.holdPasswordData = event.target.value); }
+
+    const handleToggleShowPassword = (event) => {
+        if (state.isClicked === false) setState(state.isClicked = true)
+        else setState(state.isClicked = false)
+    }
 
     const navigate = useNavigate();
-
     const registerPage = () => {
         navigate("/register")
     }
@@ -85,21 +91,43 @@ const Home = () => {
 
                 <Card style={{ boxShadow: "none" }} >
                     <TextField
-                        style={{ marginTop: 20 }}
+                        style={{ marginTop: 20, width: '15%' }}
                         label="Enter username"
                         onChange={handleUsernameFunction}
                     />
                 </Card>
+
                 <Card style={{ boxShadow: "none" }} >
-                    <TextField
-                        style={{ marginTop: 20, marginBottom: 20 }}
-                        label="Enter password"
-                        onChange={handlePasswordFunction}
-                    />
+                    {state.isClicked &&
+                        <TextField
+                            value={state.holdPasswordData}
+                            style={{ marginTop: 20, width: '15%' }}
+                            label="Enter password"
+                            onChange={handlePasswordFunction}
+                        />
+                    }
+                    {!state.isClicked &&
+                        <TextField
+                            value={state.holdPasswordData}
+                            type="password"
+                            style={{ marginTop: 20, width: '15%' }}
+                            label="Enter password"
+                            onChange={handlePasswordFunction}
+                        />
+                    }
+                    <Card>
+                        <Button
+                            style={{ fontSize: 10 }}
+                            color="primary" onClick={handleToggleShowPassword}>
+                            Show Password
+                        </Button>
+                    </Card>
+
                 </Card>
 
 
                 <Button
+                    style={{ marginTop: 30 }}
                     disabled={emptyorundefined}
                     color="secondary" variant="contained" onClick={handleLoginButton}>
                     Login
@@ -107,7 +135,7 @@ const Home = () => {
 
                 <CardHeader
                     title="Not registered?"
-                    style={{ marginTop: 60 }}
+                    style={{ marginTop: 30 }}
                 />
 
                 <Button style={{ marginBottom: 30 }} color="secondary" variant="contained" onClick={registerPage}>
