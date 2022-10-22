@@ -49,6 +49,7 @@ type Task {
     duetime: String 
     difficulty: Int
     description: String
+    color: String
 }
 
 type Mutation{

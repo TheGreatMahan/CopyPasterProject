@@ -51,7 +51,8 @@ const resolvers = {
             duedate: args.duedate,
             duetime: args.duetime,
             difficulty: args.difficulty,
-            description: args.description
+            description: args.description,
+            color: args.color
         };
         let results = await dbRtns.addOne(db, tasks, task);
         return results.acknowledged ? task : null;

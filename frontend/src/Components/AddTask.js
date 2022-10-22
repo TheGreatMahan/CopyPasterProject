@@ -26,6 +26,7 @@ const AddAdvisory = (props) => {
         duetime: "",
         difficulty: -1,
         description: "",
+        color: "",
         difficulties: Array.from({length: 11}, (x, i) => i),
         priorities: Array.from({length: 11}, (x, i) => i)
     };
@@ -159,7 +160,8 @@ const AddAdvisory = (props) => {
             duedate: d.toISOString(),
             duetime: d.getTime(),
             difficulty: state.difficulty,
-            description: state.description
+            description: state.description,
+            color: state.color
         };
 
         let myHeaders = new Headers();
