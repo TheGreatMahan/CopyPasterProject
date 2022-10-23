@@ -10,8 +10,10 @@ import {
     Typography,
     Button,
 } from "@mui/material";
+import { DateTimePickerComponent } from "@syncfusion/ej2-react-calendars";
 import theme from "../theme";
 import "../App.css";
+
 import { IntegrationInstructionsRounded } from "@mui/icons-material";
 const AddTask = (props) => {
     const initialState = {
@@ -22,7 +24,7 @@ const AddTask = (props) => {
         buttonDisabled: true,
         nameOfTask: "",
         priority: -1,
-        duedate: "",
+        duedate: new Date(),
         duetime: "",
         difficulty: -1,
         description: "",
@@ -67,7 +69,6 @@ const AddTask = (props) => {
                 }),
             });
             let payload = await response.json();
-            console.log(payload);
 
             setState({
                 users: payload.data.users,
@@ -146,6 +147,20 @@ const AddTask = (props) => {
         }
     };
 
+    const onChangeDateField = (e, selectedOption) => {
+
+        setState({
+            duedate: e.value,
+        });
+
+        if (state.nameOfTask === "" || state.selectedUser === null 
+        || state.difficulty === -1 || state.priority === -1) {
+            setButtonDisabled(true);
+        } else {
+            setButtonDisabled(false);
+        }
+    };
+
 
 
     const buttonPress = async () => {
@@ -159,7 +174,7 @@ const AddTask = (props) => {
             username: theUser.username,
             priority: state.priority,
             duedate: d.toISOString(),
-            duetime: d.getTime(),
+            duetime: d.getHours() + ":" + d.getMinutes(),
             difficulty: state.difficulty,
             description: state.description,
             color: state.color
@@ -186,7 +201,6 @@ const AddTask = (props) => {
                 body: query,
             });
             let json = await response.json();
-            console.log(json);
 
             setState({
                 contactServer: true,
@@ -274,6 +288,15 @@ const AddTask = (props) => {
                             />
                         )}
                     />
+
+                    <DateTimePickerComponent 
+                    placeholder="Please Choose the Due Date"
+                    format="dd-mm-yyyy hh:mm a" 
+                    id="duedate"
+                    value={state.duedate} 
+                    className="e-field" 
+                    data-name="duedate"
+                    onChange={onChangeDateField}/>
 
                     <Autocomplete
                         data-testid="autocomplete"
