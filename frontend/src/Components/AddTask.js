@@ -13,7 +13,7 @@ import {
 import theme from "../theme";
 import "../App.css";
 import { IntegrationInstructionsRounded } from "@mui/icons-material";
-const AddAdvisory = (props) => {
+const AddTask = (props) => {
     const initialState = {
         snackBarMsg: "",
         contactServer: false,
@@ -27,13 +27,13 @@ const AddAdvisory = (props) => {
         difficulty: -1,
         description: "",
         color: "",
-        difficulties: Array.from({length: 11}, (x, i) => i),
-        priorities: Array.from({length: 11}, (x, i) => i)
+        difficulties: Array.from({length: 11}, (x, i) => i.toString()),
+        priorities: Array.from({length: 11}, (x, i) => i.toString())
     };
 
 
-    // const GRAPHURL = "http://localhost:5000/graphql";
-    const GRAPHURL = "/graphql";
+    const GRAPHURL = "http://localhost:5000/graphql";
+    //const GRAPHURL = "/graphql";
     
     const sendSnackToApp = (msg) => {
         props.dataFromChild(msg);
@@ -63,15 +63,16 @@ const AddAdvisory = (props) => {
                     "Content-Type": "application/json; charset=utf-8",
                 },
                 body: JSON.stringify({
-                    query: "query {users{username, name}}",
+                    query: "query {users {username}}",
                 }),
             });
             let payload = await response.json();
+            console.log(payload);
 
             setState({
                 users: payload.data.users,
             });
-            sendSnackToApp( `${payload.data.users.length} countries loaded`);
+            sendSnackToApp( `${payload.data.users.length} users loaded`);
 
         } catch (error) {
             console.log(error);
@@ -95,7 +96,7 @@ const AddAdvisory = (props) => {
 
     const onChangePriorities = (e, selectedOption) => {
         selectedOption
-            ? setState({ priority: parseInt(selectedOption) })
+            ? setState({ priority: parseInt(selectedOption)})
             : setState({ priority: -1 });
 
         if (state.nameOfTask === "" || state.selectedUser === null || state.duedate === "" 
@@ -137,8 +138,8 @@ const AddAdvisory = (props) => {
             description: e.target.value,
         });
 
-        if (state.nameOfTask === "" || state.selectedUser === null || state.duedate === "" 
-        || state.duetime === "" || state.difficulty === -1 || state.priority === -1) {
+        if (state.nameOfTask === "" || state.selectedUser === null 
+        || state.difficulty === -1 || state.priority === -1) {
             setButtonDisabled(true);
         } else {
             setButtonDisabled(false);
@@ -170,12 +171,12 @@ const AddAdvisory = (props) => {
         setState({
             contactServer: true,
         })
-        sendSnackToApp(`Adding advisory for ${task.name}`);
+        sendSnackToApp(`Adding task for ${task.name}`);
         
         try {
             let query = JSON.stringify({
-                query: `mutation {task(name: "${task.name}",username: "${task.username}", priority: "${task.priority}" , duedate: "${task.duedate}"
-                , duetime: "${task.duetime}", difficulty: "${task.difficulty}", description: "${task.description}" ) { duedate }}`,
+                query: `mutation {addtask(name: "${task.name}",username: "${task.username}", priority: ${task.priority} , duedate: "${task.duedate}"
+                , duetime: "${task.duetime}", difficulty: ${task.difficulty}, description: "${task.description}" ) { duedate }}`,
             });
             let response = await fetch(GRAPHURL, {
                 method: "POST",
@@ -185,7 +186,8 @@ const AddAdvisory = (props) => {
                 body: query,
             });
             let json = await response.json();
-            
+            console.log(json);
+
             setState({
                 contactServer: true,
             })
@@ -259,14 +261,14 @@ const AddAdvisory = (props) => {
 
                     <Autocomplete
                         data-testid="autocomplete"
-                        options={state.priorities.map((prty) => prty)}
+                        options={state.priorities}
                         getOptionLabel={(option) => option}
                         style={{ width: "100%" }}
                         onChange={onChangePriorities}
                         renderInput={(params) => (
                             <TextField
                                 {...params}
-                                label="priorities"
+                                label="priority"
                                 variant="outlined"
                                 fullWidth
                             />
@@ -275,14 +277,14 @@ const AddAdvisory = (props) => {
 
                     <Autocomplete
                         data-testid="autocomplete"
-                        options={state.difficulties.map((dffty) => dffty)}
+                        options={state.difficulties}
                         getOptionLabel={(option) => option}
                         style={{ width: "100%" }}
                         onChange={onChangeDifficulties}
                         renderInput={(params) => (
                             <TextField
                                 {...params}
-                                label="difficulties"
+                                label="difficulty"
                                 variant="outlined"
                                 fullWidth
                             />
@@ -322,4 +324,4 @@ const AddAdvisory = (props) => {
         </ThemeProvider>
     );
 };
-export default AddAdvisory;
+export default AddTask;

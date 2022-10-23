@@ -23,6 +23,10 @@ const resolvers = {
         db = await dbRtns.getDBInstance();
         return await dbRtns.findAll(db, tasks, { username: args.username });
     },
+    users: async () => {
+        db = await dbRtns.getDBInstance();
+        return await dbRtns.findAll(db, users, {}, { username: 1 });
+    },
     regions: async () => {
         db = await dbRtns.getDBInstance();
         return await dbRtns.findUniqueValues(db, alerts, "region");

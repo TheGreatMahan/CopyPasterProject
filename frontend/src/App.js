@@ -8,6 +8,8 @@ import Register from "./Components/Register";
 // import ResetAlerts from "./Project1/ResetAlerts";
 // import AddAdvisory from "./Project1/AddAdvisory";
 // import ListAdvisory from "./Project1/ListAdvisories";
+import AddTask from "./Components/AddTask";
+
 import {
     Toolbar,
     AppBar,
@@ -80,6 +82,13 @@ const App = () => {
                         >
                             Register
                         </MenuItem>
+                        <MenuItem
+                            onClick={handleClose}
+                            component={Link}
+                            to="/addtask"
+                        >
+                            Add Task
+                        </MenuItem>
                         {/* <MenuItem
                             onClick={handleClose}
                             component={Link}
@@ -109,6 +118,7 @@ const App = () => {
                     <Route path="/" element={<Home />} />
                     <Route path="/home" element={<Home />} />
                     <Route path="/register" element={<Register />} />
+                    <Route path="/addtask" element={<AddTask dataFromChild={msgFromChild}/>}/>
                     {/* <Route path="/resetalerts" element={<ResetAlerts dataFromChild={msgFromChild} />} />
                     <Route path="/addadvisory" element={<AddAdvisory dataFromChild={msgFromChild} />} />
                     <Route path="/listadvisory" element={<ListAdvisory dataFromChild={msgFromChild} />} /> */}
