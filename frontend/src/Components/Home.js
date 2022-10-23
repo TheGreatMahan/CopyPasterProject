@@ -16,6 +16,9 @@ import { useNavigate } from 'react-router-dom';
 import theme from "../theme";
 import "../App.css";
 
+//const bcrypt = require('bcrypt');
+//import bcrypt from 'bcrypt';
+
 
 
 const Home = () => {
@@ -26,6 +29,8 @@ const Home = () => {
         holdPasswordData: "",
         isClicked: false,
     };
+
+    const GRAPHURL = "http://localhost:5000/graphql";
 
     const reducer = (state, newState) => ({ ...state, ...newState });
     const [state, setState] = useReducer(reducer, initialState);
@@ -39,31 +44,43 @@ const Home = () => {
     }
 
     const navigate = useNavigate();
+
     const registerPage = () => {
         navigate("/register")
     }
 
-    // TODO for backend developer : link up login button to backend
 
     const handleLoginButton = async () => {
-        // try {
-        //     let query = JSON.stringify({
-        //         query: `mutation {addproject(teamName: "${state.teamName}", projectName: "${state.projectName}", projectStartDate: "${state.projectStartDate}", hoursEquivanlentToStoryPoint: ${state.numHoursForStoryPoint}, totalEstNumberOfStoryPoints: ${state.numEstimatedStoryPoints}, totalEstCostForDevelopment: ${state.estimatedCostForDevelopment}, sprintNumber: ${state.sprintNumber})
-        //                 { teamName, projectName, projectStartDate, hoursEquivanlentToStoryPoint, totalEstNumberOfStoryPoints, totalEstCostForDevelopment, sprintNumber }}`,
-        //     });
 
-        //     await fetch('http://localhost:5000/graphql', {
-        //         method: "POST",
-        //         headers: {
-        //             "Content-Type": "application/json; charset=utf-8",
-        //         },
-        //         body: query,
-        //     });
-        //     console.log(`save all textfield data mutation complete`);
+        try {
+            setState({
+                contactServer: true,
+            });
 
-        // } catch (error) {
-        //     console.log(`error adding all textfield data mutation: ${error}`);
-        // }
+            let response = await fetch(GRAPHURL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json; charset=utf-8",
+                },
+                body: JSON.stringify({
+                    query: `query {userlogin(username: "${state.handleUsername}", password: "${state.handlePassword}")
+                    {msg}}`,
+                }),
+            });
+
+            let json = await response.json();
+            console.log(json);
+            if (json.data.userlogin.msg) {
+                alert("Successfully logged in");
+            }
+            else {
+                alert("Login Failed");
+            }
+
+        } catch (error) {
+            console.log(error);
+        }
+
     }
 
     const emptyorundefined =
@@ -91,7 +108,7 @@ const Home = () => {
 
                 <Card style={{ boxShadow: "none" }} >
                     <TextField
-                        style={{ marginTop: 20, width: '15%' }}
+                        style={{ marginTop: 20 }}
                         label="Enter username"
                         onChange={handleUsernameFunction}
                     />
@@ -127,7 +144,6 @@ const Home = () => {
 
 
                 <Button
-                    style={{ marginTop: 30 }}
                     disabled={emptyorundefined}
                     color="secondary" variant="contained" onClick={handleLoginButton}>
                     Login
@@ -135,7 +151,7 @@ const Home = () => {
 
                 <CardHeader
                     title="Not registered?"
-                    style={{ marginTop: 30 }}
+                    style={{ marginTop: 60 }}
                 />
 
                 <Button style={{ marginBottom: 30 }} color="secondary" variant="contained" onClick={registerPage}>
