@@ -168,13 +168,13 @@ const AddTask = (props) => {
             (user) => user.username === state.selectedUser
         );
 
-        const d = new Date();
+        //const d = new Date();
         let task={
             name: state.nameOfTask,
             username: theUser.username,
             priority: state.priority,
-            duedate: d.toISOString(),
-            duetime: d.getHours() + ":" + d.getMinutes(),
+            duedate: state.duedate.toISOString(),
+            duetime: state.duedate.getHours() + ":" + state.duedate.getMinutes(),
             difficulty: state.difficulty,
             description: state.description,
             color: state.color
