@@ -7,7 +7,7 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
 import Toolbar from "@mui/material/Toolbar";
-import Calendar from "./Calendar";
+import Calendar from "./Calendar/Calendar";
 
 import { ThemeProvider } from "@mui/material/styles";
 import {

@@ -15,15 +15,19 @@ import {
 //import "./schedule-component.css";
 import { extend } from "@syncfusion/ej2-base";
 import { DatePickerComponent } from "@syncfusion/ej2-react-calendars";
-//import { updateSampleSection } from "../common/sample-base";
-//import { PropertyPane } from "../common/property-pane";
-//import * as dataSource from "./datasource.json";
+import { updateSampleSection } from "./sample-base";
+import { PropertyPane } from "./property-pane";
+import dataSource from "./datasource.json";
+import "../../App.css";
 /**
  * Schedule Default sample
  */
 function Calendar() {
+  React.useEffect(() => {
+    updateSampleSection();
+  }, []);
   let scheduleObj;
-  //const data = extend([], dataSource.scheduleData, null, true);
+  const data = extend([], dataSource.scheduleData, null, true);
   function change(args) {
     scheduleObj.selectedDate = args.value;
     scheduleObj.dataBind();
@@ -39,7 +43,7 @@ function Calendar() {
             height="650px"
             ref={(schedule) => (scheduleObj = schedule)}
             selectedDate={new Date(2021, 0, 10)}
-            //eventSettings={{ dataSource: data }}
+            eventSettings={{ dataSource: data }}
             dragStart={onDragStart.bind(this)}
           >
             <ViewsDirective>

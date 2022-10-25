@@ -8,7 +8,7 @@ import { registerLicense } from "@syncfusion/ej2-base";
 
 // Registering Syncfusion license key
 registerLicense(
-  "ORg4AjUWIQA/Gnt2VVhiQlFac19JXGFWfVJpTGpQdk5xdV9DaVZUTWY/P1ZhSXxRd0VhW31fc3RWRmVUV0Q="
+  "ORg4AjUWIQA/Gnt2VVhjQlFaclhJXGFWfVJpTGpQdk5xdV9DaVZUTWY/P1ZhSXxRd0VhW31fc3BWQ2dbWUM="
 );
 
 render(
