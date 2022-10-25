@@ -5,15 +5,22 @@ type Query {
     alerts: [Alert],
     alertsforregion(region: String): [Alert]
     alertsforsubregion(subregion: String): [Alert]
+    tasksforuser(username: String): [Task]
     regions: [String]
     subregions: [String]
     advisories: [Advisory]
     userlogin(username: String, password: String): Message
+    users: [User]
 }
+
 type Results {
     results: String
-    
 }
+
+type User {
+    username: String
+}
+
 type Alert {
     country: String
     name: String
@@ -38,8 +45,21 @@ type Advisory{
     text: String
     date: String
 }
+
+type Task {
+    username: String
+    name: String 
+    priority: Int
+    duedate: String 
+    duetime: String 
+    difficulty: Int
+    description: String
+    color: String
+}
+
 type Mutation{
     addadvisory(name: String, country: String, text:String, date:String): Advisory
+    addtask(username: String, name: String, priority: Int, duedate: String, duetime: String, difficulty: Int, description: String, color: String) : Task
     adduser(username: String, password: String): UserDetail
 }
 `);

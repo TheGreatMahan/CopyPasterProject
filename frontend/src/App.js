@@ -9,6 +9,8 @@ import Register from "./Components/Register";
 // import ResetAlerts from "./Project1/ResetAlerts";
 // import AddAdvisory from "./Project1/AddAdvisory";
 // import ListAdvisory from "./Project1/ListAdvisories";
+import AddTask from "./Components/AddTask";
+
 import {
   Toolbar,
   AppBar,
