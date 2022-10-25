@@ -43,3 +43,57 @@
         transform: rotate(360deg);
     }
 }
+
+/* custom code start*/
+
+#EventLog b {
+  color: #388e3c;
+}
+  
+hr {
+  margin: 1px 10px 1px 0px;
+  border-top: 1px solid #eee;
+}
+
+.year-property-panel td {
+  padding-bottom: 1rem;
+}
+
+/* custom code end*/
+
+.e-schedule .e-schedule-toolbar .e-icon-schedule-print::before {
+  content: '\e973';
+}
+
+.e-schedule .e-schedule-toolbar .e-icon-schedule-pdf::before {
+  content: '\e7c8';
+}
+
+.custom-field-row {
+  margin-bottom: 20px;
+}
+
+.multi-prop div {
+  padding-left: 0;
+  padding-top: 0;
+}
+
+.year-view.e-schedule .e-timeline-year-view .e-resource-column-table, .year-view.e-schedule .e-timeline-year-view .e-resource-left-td {
+  width: 120px;
+}
+
+.inline-edit.e-schedule .e-timeline-view .e-resource-left-td, .inline-edit.e-schedule .e-timeline-month-view .e-resource-left-td {
+  width: 150px;
+}
+
+@import "../node_modules/@syncfusion/ej2-base/styles/material.css";
+@import "../node_modules/@syncfusion/ej2-buttons/styles/material.css";
+@import "../node_modules/@syncfusion/ej2-calendars/styles/material.css";
+@import "../node_modules/@syncfusion/ej2-dropdowns/styles/material.css";
+@import "../node_modules/@syncfusion/ej2-inputs/styles/material.css";
+@import "../node_modules/@syncfusion/ej2-lists/styles/material.css";
+@import "../node_modules/@syncfusion/ej2-navigations/styles/material.css";
+@import "../node_modules/@syncfusion/ej2-popups/styles/material.css";
+@import "../node_modules/@syncfusion/ej2-splitbuttons/styles/material.css";
+@import "../node_modules/@syncfusion/ej2-react-schedule/styles/material.css";
+@import "../node_modules/@syncfusion/ej2-react-calendars/styles/material.css";

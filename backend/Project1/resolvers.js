@@ -1,6 +1,6 @@
 const { loadAlerts } = require("./setupalerts");
 const dbRtns = require("./utilities");
-const { alerts, advisories, users } = require("./config");
+const { alerts, advisories, tasks, users } = require("./config");
 const bcrypt = require('bcrypt');
 
 const resolvers = {
@@ -18,6 +18,14 @@ const resolvers = {
     alertsforsubregion: async (args) => {
         db = await dbRtns.getDBInstance();
         return await dbRtns.findAll(db, alerts, { subregion: args.subregion });
+    },
+    tasksforuser: async (args) => {
+        db = await dbRtns.getDBInstance();
+        return await dbRtns.findAll(db, tasks, { username: args.username });
+    },
+    users: async () => {
+        db = await dbRtns.getDBInstance();
+        return await dbRtns.findAll(db, users, {}, { username: 1 });
     },
     regions: async () => {
         db = await dbRtns.getDBInstance();
@@ -37,6 +45,21 @@ const resolvers = {
         };
         let results = await dbRtns.addOne(db, advisories, advisory);
         return results.acknowledged ? advisory : null;
+    },
+    addtask: async (args) => {
+        db = await dbRtns.getDBInstance();
+        let task = {
+            username: args.username,
+            name: args.name,
+            priority: args.priority,
+            duedate: args.duedate,
+            duetime: args.duetime,
+            difficulty: args.difficulty,
+            description: args.description,
+            color: args.color
+        };
+        let results = await dbRtns.addOne(db, tasks, task);
+        return results.acknowledged ? task : null;
     },
     advisories: async () => {
         db = await dbRtns.getDBInstance();
