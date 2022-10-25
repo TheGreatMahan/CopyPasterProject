@@ -47,23 +47,9 @@ function Calendar() {
             dragStart={onDragStart.bind(this)}
           >
             <ViewsDirective>
-              <ViewDirective option="Day" />
-              <ViewDirective option="Week" />
-              <ViewDirective option="WorkWeek" />
               <ViewDirective option="Month" />
-              <ViewDirective option="Agenda" />
             </ViewsDirective>
-            <Inject
-              services={[
-                Day,
-                Week,
-                WorkWeek,
-                Month,
-                Agenda,
-                Resize,
-                DragAndDrop,
-              ]}
-            />
+            <Inject services={[Month]} />
           </ScheduleComponent>
         </div>
       </div>
