@@ -14,6 +14,8 @@ import {
 import theme from "../theme";
 import "../App.css";
 
+import Logo from "../images/logo.png";
+
 const Register = () => {
   const initialState = {
     handleUsername: "",
@@ -42,7 +44,6 @@ const Register = () => {
     else setState((state.isClicked = false));
   };
 
-  // TODO for backend developer : link up register button to backend
 
   const handleRegisterButton = async () => {
     //Send new user to server
@@ -95,21 +96,16 @@ const Register = () => {
   return (
     <ThemeProvider theme={theme}>
       <Card style={{ textAlign: "center" }}>
-        {/* add our own logo maybe ?  */}
-        {/* <img src={Logo} alt="Logo" style={{width:"50%",marginTop:70, marginLeft:100,marginBottom:-50}}/> */}
-        <CardHeader
-          title="ProActinators"
-          style={{ textAlign: "center", marginTop: 30 }}
-        />
+
+        <img src={Logo} alt="Logo" style={{ width: "20%" }} />
 
         <CardHeader
           title="Register"
-          style={{ textAlign: "center", marginTop: 50 }}
         />
 
         <Card style={{ boxShadow: "none" }}>
           <TextField
-            style={{ marginTop: 20 }}
+            style={{ width: '15%' }}
             label="Enter username"
             onChange={handleUsernameFunction}
           />

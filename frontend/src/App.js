@@ -11,6 +11,7 @@ import Register from "./Components/Register";
 // import ListAdvisory from "./Project1/ListAdvisories";
 import AddTask from "./Components/AddTask";
 
+
 import {
   Toolbar,
   AppBar,
@@ -19,6 +20,7 @@ import {
   IconButton,
   Typography,
   Snackbar,
+  Box,
 } from "@mui/material";
 const App = () => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -51,11 +53,16 @@ const App = () => {
 
   return (
     <ThemeProvider theme={theme}>
+
       <AppBar
         position="relative"
         color="error"
         sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
       >
+
+
+      
+
         <Toolbar>
           <Typography variant="h6" color="inherit" noWrap component="div">
             Team: Copypasters
