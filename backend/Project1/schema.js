@@ -6,6 +6,7 @@ type Query {
     alertsforregion(region: String): [Alert]
     alertsforsubregion(subregion: String): [Alert]
     tasksforuser(username: String): [Task]
+    taskbyid(_id: String) : Task
     regions: [String]
     subregions: [String]
     advisories: [Advisory]
@@ -34,6 +35,10 @@ type Message {
     msg: Boolean
 }
 
+type UpdateMessage {
+    msg: String
+}
+
 type UserDetail {
     username: String
     password: String
@@ -47,11 +52,12 @@ type Advisory{
 }
 
 type Task {
+    _id: String
     username: String
     name: String 
     priority: Int
     duedate: String 
-    duetime: String 
+    completiondate: String 
     difficulty: Int
     description: String
     color: String
@@ -59,8 +65,9 @@ type Task {
 
 type Mutation{
     addadvisory(name: String, country: String, text:String, date:String): Advisory
-    addtask(username: String, name: String, priority: Int, duedate: String, duetime: String, difficulty: Int, description: String, color: String) : Task
+    addtask(username: String, name: String, priority: Int, duedate: String, completiondate: String, difficulty: Int, description: String, color: String) : Task
     adduser(username: String, password: String): UserDetail
+    updatetask(_id: String, username: String, name: String, priority: Int, duedate: String, completiondate: String, difficulty: Int, description: String, color: String) : UpdateMessage
 }
 `);
 
