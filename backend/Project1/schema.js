@@ -68,6 +68,7 @@ type Mutation{
     addtask(username: String, name: String, priority: Int, duedate: String, completiondate: String, difficulty: Int, description: String, color: String) : Task
     adduser(username: String, password: String): UserDetail
     updatetask(_id: String, username: String, name: String, priority: Int, duedate: String, completiondate: String, difficulty: Int, description: String, color: String) : UpdateMessage
+    deletetask(_id: String) : UpdateMessage
 }
 `);
 

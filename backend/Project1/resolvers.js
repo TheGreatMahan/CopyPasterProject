@@ -92,6 +92,20 @@ const resolvers = {
           }
         return {msg: message};
     },
+    deletetask: async (args) => {
+        let message;
+        try {
+            let db = await dbRtns.getDBInstance();
+            let theId = args._id;
+            theId = new ObjectID(theId);
+            let result = await dbRtns.deleteOne(db, tasks, { _id: theId });
+            message = result.deletedCount === 1 ? `1 task was deleted`: `task was not deleted`;
+          } catch (err) {
+            console.log(err.stack);
+            return {msg: "delete member failed - internal server error"};
+          }
+        return {msg: message};
+    },
     advisories: async () => {
         db = await dbRtns.getDBInstance();
         return await dbRtns.findAll(db, advisories, {}, {});

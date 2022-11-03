@@ -50,8 +50,8 @@ const AddTask = (props) => {
   const [buttonDisabled, setButtonDisabled] = useState(true);
 
   useEffect(() => {
-    fetchUsers();
     fetchTask();
+    fetchUsers();
   }, []);
 
   const fetchTask = async () => {
@@ -73,6 +73,8 @@ const AddTask = (props) => {
           }),
         });
         let payload = await response.json();
+
+        console.log(payload);
 
         setState({
           selectedUser: payload.data.taskbyid.username,
@@ -122,7 +124,7 @@ const AddTask = (props) => {
 
   const onChange = (e, selectedOption) => {
     selectedOption
-      ? setState({ selectedUser: `${selectedOption}` })
+      ? setState({ selectedUser: selectedOption })
       : setState({ selectedUser: "" });
 
     if (
@@ -256,7 +258,7 @@ const AddTask = (props) => {
     let task = {
       id: state._id,
       name: state.nameOfTask,
-      username: state.selectedUser.username,
+      username: state.selectedUser,
       priority: parseInt(state.priority),
       duedate: state.duedate.toISOString(),
       completiondate: "",
@@ -325,12 +327,38 @@ const AddTask = (props) => {
         body: query,
       });
       let json = await response.json();
-      console.log(json);
 
       setState({
         contactServer: true,
       });
       sendSnackToApp(`${json.data.updatetask.msg}`);
+    } catch (error) {
+      setState({
+        contactServer: true,
+      });
+      sendSnackToApp(`${error.message} - task not updated`);
+    }
+  };
+
+  const deleteTask = async () => {
+    sendSnackToApp(`Updating task for ${state.name}`);
+    try {
+      let query = JSON.stringify({
+        query: `mutation {deletetask(_id: "${state._id}" ) { msg }}`,
+      });
+      let response = await fetch(GRAPHURL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+        },
+        body: query,
+      });
+      let json = await response.json();
+
+      setState({
+        contactServer: true,
+      });
+      sendSnackToApp(`${json.data.deletetask.msg}`);
     } catch (error) {
       setState({
         contactServer: true,
@@ -374,7 +402,6 @@ const AddTask = (props) => {
               style={{ width: "100%" }}
               onChange={onChange}
               value={state.selectedUser}
-              isOptionEqualToValue={(option, value) => option["username"] === value["username"]}
               renderInput={(params) => (
                 <TextField
                   {...params}
@@ -468,7 +495,7 @@ const AddTask = (props) => {
             <Typography align="center">
               <Button
                 style={{
-                  marginTop: 50,
+                  marginTop: 50, marginRight: 50
                 }}
                 disabled={buttonDisabled}
                 variant="contained"
@@ -477,6 +504,19 @@ const AddTask = (props) => {
                 }}
               >
                 Save Task
+              </Button>
+              <Button
+                style={{
+                  marginTop: 50,
+                }}
+                disabled={!state.isUpdate}
+                color="error"
+                variant="contained"
+                onClick={() => {
+                  deleteTask();
+                }}
+              >
+                Delete
               </Button>
             </Typography>
           </CardContent>
