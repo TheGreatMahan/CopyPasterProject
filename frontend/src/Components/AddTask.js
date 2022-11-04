@@ -21,7 +21,7 @@ const AddTask = (props) => {
     snackBarMsg: "",
     contactServer: false,
     users: [],
-    selectedUser: "",
+    selectedUser: "testman3",
     buttonDisabled: true,
     nameOfTask: "",
     priority: "-1",
@@ -51,7 +51,6 @@ const AddTask = (props) => {
 
   useEffect(() => {
     fetchTask();
-    fetchUsers();
   }, []);
 
   const fetchTask = async () => {
@@ -94,33 +93,33 @@ const AddTask = (props) => {
     }
   };
 
-  const fetchUsers = async () => {
-    try {
-      setState({
-        contactServer: true,
-      });
-      sendSnackToApp("Loading countries");
+  // const fetchUsers = async () => {
+  //   try {
+  //     setState({
+  //       contactServer: true,
+  //     });
+  //     sendSnackToApp("Loading countries");
 
-      let response = await fetch(GRAPHURL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json; charset=utf-8",
-        },
-        body: JSON.stringify({
-          query: "query {users {username}}",
-        }),
-      });
-      let payload = await response.json();
+  //     let response = await fetch(GRAPHURL, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json; charset=utf-8",
+  //       },
+  //       body: JSON.stringify({
+  //         query: "query {users {username}}",
+  //       }),
+  //     });
+  //     let payload = await response.json();
 
-      setState({
-        users: payload.data.users,
-      });
-      sendSnackToApp(`${payload.data.users.length} users loaded`);
-    } catch (error) {
-      console.log(error);
-      sendSnackToApp(`Problem loading server data - ${error.message}`);
-    }
-  };
+  //     setState({
+  //       users: payload.data.users,
+  //     });
+  //     sendSnackToApp(`${payload.data.users.length} users loaded`);
+  //   } catch (error) {
+  //     console.log(error);
+  //     sendSnackToApp(`Problem loading server data - ${error.message}`);
+  //   }
+  // };
 
   const onChange = (e, selectedOption) => {
     selectedOption
@@ -393,7 +392,7 @@ const AddTask = (props) => {
               Add Task
             </Typography>
 
-            <Autocomplete
+            {/* <Autocomplete
               data-testid="autocomplete"
               options={state.users.map((user) => {
                 return user["username"];
@@ -410,7 +409,7 @@ const AddTask = (props) => {
                   fullWidth
                 />
               )}
-            />
+            /> */}
 
             <TextField
               id="outlined-basic"
