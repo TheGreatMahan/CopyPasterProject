@@ -16,9 +16,10 @@ import { useNavigate } from 'react-router-dom';
 import theme from "../theme";
 import "../App.css";
 
+import Logo from "../images/logo.png";
+
 //const bcrypt = require('bcrypt');
 //import bcrypt from 'bcrypt';
-
 
 
 const Home = () => {
@@ -90,25 +91,17 @@ const Home = () => {
 
     return (
         <ThemeProvider theme={theme}>
-
             <Card style={{ textAlign: 'center' }}>
 
-
-                {/* add our own logo maybe ?  */}
-                {/* <img src={Logo} alt="Logo" style={{width:"50%",marginTop:70, marginLeft:100,marginBottom:-50}}/> */}
-                <CardHeader
-                    title="ProActinators"
-                    style={{ marginTop: 30 }}
-                />
+                <img src={Logo} alt="Logo" style={{ width: "20%" }} />
 
                 <CardHeader
-                    title="Login here"
-                    style={{ marginTop: 50 }}
+                    title="Login here"        
                 />
 
                 <Card style={{ boxShadow: "none" }} >
                     <TextField
-                        style={{ marginTop: 20 }}
+                        style={{ width: '15%'  }}
                         label="Enter username"
                         onChange={handleUsernameFunction}
                     />
@@ -134,14 +127,12 @@ const Home = () => {
                     }
                     <Card>
                         <Button
-                            style={{ fontSize: 10 }}
+                            style={{ fontSize: 10, marginBottom: 20 }}
                             color="primary" onClick={handleToggleShowPassword}>
                             Show Password
                         </Button>
                     </Card>
-
                 </Card>
-
 
                 <Button
                     disabled={emptyorundefined}
@@ -151,14 +142,12 @@ const Home = () => {
 
                 <CardHeader
                     title="Not registered?"
-                    style={{ marginTop: 60 }}
+                    style={{ marginTop: 50 }}
                 />
 
                 <Button style={{ marginBottom: 30 }} color="secondary" variant="contained" onClick={registerPage}>
                     Register here
                 </Button>
-
-
 
             </Card>
         </ThemeProvider>
