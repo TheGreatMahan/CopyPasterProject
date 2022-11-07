@@ -12,6 +12,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import AddTask from "./AddTask";
 import ControlPointIcon from '@mui/icons-material/ControlPoint';
+import { DataGrid } from '@mui/x-data-grid';
 import {
     Card,
     TextField,
@@ -23,6 +24,7 @@ import {
 } from "@mui/material";
 import theme from "../theme";
 import "../App.css";
+
 const ListTasks = (props) => {
     const initialState = {
         snackBarMsg: "",
@@ -39,6 +41,28 @@ const ListTasks = (props) => {
         snackBarMsg: "",
         gotData: false
     };
+
+    const columns = [
+        { field: 'name', headerName: 'Task Name', width: 200 },
+        { field: 'description', headerName: 'Task Description', width: 200 },
+        {
+          field: 'priority',
+          headerName: 'Task Priority',
+          type: 'number',
+          width: 130,
+        },
+        { field: 'duedate', headerName: 'Task Due Date', width: 200, sortable: true },
+        
+        {
+            field: 'difficulty',
+            headerName: 'Task Difficulty',
+            type: 'number',
+            width: 130,
+            sortable: true
+        },
+      ];
+
+
     const sendSnackToApp = (msg) => {
         props.dataFromChild(msg);
     };
@@ -66,7 +90,7 @@ const ListTasks = (props) => {
                     "Content-Type": "application/json; charset=utf-8",
                 },
                 body: JSON.stringify({
-                    query: `query {tasksforuser(username:"${user}"){_id, name, description, duedate}}`,
+                    query: `query {tasksforuser(username:"${user}"){_id, name, description, duedate, priority, difficulty}}`,
                 }),
             });
             let payload = await response.json();
@@ -76,6 +100,8 @@ const ListTasks = (props) => {
                 listForTable: payload.data.tasksforuser
             });
 
+            console.log(payload);
+
             return payload.data.tasksforuser;
         } catch (error) {
             console.log(error);
@@ -83,8 +109,8 @@ const ListTasks = (props) => {
         }
     };
 
-    const handleClick = (e, ID) => {
-        setState({ isOpen: true, selectedId: ID});
+    const handleClick = (params) => {
+        setState({ isOpen: true, selectedId: params ? params.row._id : null});
     };
 
     const handleClose = () => {
@@ -100,69 +126,21 @@ const ListTasks = (props) => {
                 />
                 <CardContent>
 
-                    <TableContainer>
-                        <Table stickyHeader aria-label="sticky table">
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell>
-                                        <Typography color="primary">
-                                            Task Name
-                                        </Typography>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Typography color="primary">
-                                            Task Description
-                                        </Typography>
-                                    </TableCell>
-
-                                    <TableCell>
-                                        <Typography color="primary">
-                                            Task Due Date
-                                        </Typography>
-                                    </TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {state.listForTable.map((element) => (
-                                    <TableRow key={element._id} onClick={(e) => handleClick(e, element._id)} id={element._id}>
-                                        <TableCell
-                                            component="th"
-                                            scope="element"
-                                        >
-                                            <Typography color="secondary">
-                                                {element.name}
-                                            </Typography>
-                                        </TableCell>
-                                        <TableCell
-                                            component="th"
-                                            scope="element"
-                                        >
-                                            <Typography color="secondary">
-                                                {element.description}
-                                            </Typography>
-                                        </TableCell>
-                                        <TableCell
-                                            component="th"
-                                            scope="element"
-                                        >
-                                            <Typography
-                                                color="secondary"
-                                                style={{ fontSize: 12 }}
-                                            >
-                                                {element.duedate}
-                                            </Typography>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
+                <div style={{ height: 400, width: '100%' }}>
+                <DataGrid getRowId={row => row._id}
+                    rows={state.listForTable}
+                    columns={columns}
+                    pageSize={5}
+                    rowsPerPageOptions={[10]}
+                    onRowClick={handleClick}
+                />
+                </div>
                     {state.isOpen && 
                         <AddTask open={state.isOpen} onClose={handleClose} id={state.selectedId} dataFromChild={sendSnackToApp}>
                         </AddTask>
                     }
                     <ControlPointIcon
-                        onClick={(e) => handleClick(e, null)}
+                        onClick={(e) => handleClick(null)}
                         className="addicon"
                     >
                     </ControlPointIcon>
