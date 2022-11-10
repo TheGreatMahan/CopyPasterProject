@@ -9,9 +9,7 @@ import Register from "./Components/Register";
 // import ResetAlerts from "./Project1/ResetAlerts";
 // import AddAdvisory from "./Project1/AddAdvisory";
 // import ListAdvisory from "./Project1/ListAdvisories";
-import AddTask from "./Components/AddTask";
-import ListTasks from "./Components/ListTasks";
-
+import ListTasks from "./Components/Calendar/ListTasks";
 
 import {
   Toolbar,
@@ -30,7 +28,7 @@ const App = () => {
     snackBarMsg: "",
     gotData: false,
     isOpen: false,
-    openModal: false
+    openModal: false,
   };
 
   const reducer = (state, newState) => ({ ...state, ...newState });
@@ -56,25 +54,20 @@ const App = () => {
 
   const handleModalClick = (component) => {
     setState({ isOpen: true });
-    return component
-};
+    return component;
+  };
 
-const handleModalClose = () => {
+  const handleModalClose = () => {
     setState({ isOpen: false, openModal: false });
-};
+  };
 
   return (
     <ThemeProvider theme={theme}>
-
       <AppBar
         position="relative"
         color="error"
         sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
       >
-
-
-      
-
         <Toolbar>
           <Typography variant="h6" color="inherit" noWrap component="div">
             Team: Copypasters
@@ -100,12 +93,6 @@ const handleModalClose = () => {
             </MenuItem>
             <MenuItem onClick={handleClose} component={Link} to="/home">
               Home
-            </MenuItem>
-            <MenuItem onClick={handleClose} component={Link} to="/addtask">
-              Add Task
-            </MenuItem>
-            <MenuItem onClick={handleClose} component={Link} to="/listtasks">
-              List Tasks
             </MenuItem>
             {/* <MenuItem
                             onClick={handleClose}
@@ -136,14 +123,14 @@ const handleModalClose = () => {
           <Route path="/" element={<Login />} />
           <Route path="/Login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/listtasks" element={<ListTasks dataFromChild={msgFromChild}/>} />
+          <Route path="/home" element={<Home dataFromChild={msgFromChild} />} />
+
           {/* <Route path="/resetalerts" element={<ResetAlerts dataFromChild={msgFromChild} />} />
                     <Route path="/addadvisory" element={<AddAdvisory dataFromChild={msgFromChild} />} />
                     <Route path="/listadvisory" element={<ListAdvisory dataFromChild={msgFromChild} />} /> */}
         </Routes>
       </div>
-      
+
       <Snackbar
         open={state.gotData}
         message={state.snackBarMsg}

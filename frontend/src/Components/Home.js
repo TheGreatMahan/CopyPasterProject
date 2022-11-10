@@ -8,6 +8,7 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
 import Toolbar from "@mui/material/Toolbar";
 import Calendar from "./Calendar/Calendar";
+import ListTasks from "./Calendar/ListTasks";
 
 import { ThemeProvider } from "@mui/material/styles";
 import {
@@ -51,6 +52,10 @@ const Home = (props) => {
     setMobileOpen(!mobileOpen);
   };
 
+  const sendSnackToApp = (msg) => {
+    props.dataFromChild(msg);
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <Card style={{ textAlign: "center" }}>
@@ -90,7 +95,9 @@ const Home = (props) => {
             </Box>
           </Drawer>
           <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-            {/* {state.currentView === "Tasks List" && <TaskList />} */}
+            {state.currentView === "Tasks List" && (
+              <ListTasks dataFromChild={sendSnackToApp} />
+            )}
             {state.currentView === "Calendar" && <Calendar />}
             {/* {state.currentView === "Growth Stats" && <GrowthStats />} */}
           </Box>

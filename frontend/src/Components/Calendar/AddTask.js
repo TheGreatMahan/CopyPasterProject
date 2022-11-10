@@ -1,6 +1,6 @@
 import React, { useReducer, useEffect, useState } from "react";
 import { ThemeProvider } from "@mui/material/styles";
-import Logo from "./worldimage.png";
+import Logo from "./../worldimage.png";
 import {
   Autocomplete,
   TextField,
@@ -9,11 +9,11 @@ import {
   CardContent,
   Typography,
   Button,
-  Modal
+  Modal,
 } from "@mui/material";
 import { DateTimePickerComponent } from "@syncfusion/ej2-react-calendars";
-import theme from "../theme";
-import "../App.css";
+import theme from "../../theme";
+import "../../App.css";
 
 import { IntegrationInstructionsRounded } from "@mui/icons-material";
 const AddTask = (props) => {
@@ -57,7 +57,9 @@ const AddTask = (props) => {
     if (props.id !== null) {
       try {
         setState({
-          contactServer: true, isUpdate: true, _id: props.id
+          contactServer: true,
+          isUpdate: true,
+          _id: props.id,
         });
         sendSnackToApp("Loading task");
 
@@ -78,12 +80,12 @@ const AddTask = (props) => {
         setState({
           selectedUser: payload.data.taskbyid.username,
           nameOfTask: payload.data.taskbyid.name,
-            priority: payload.data.taskbyid.priority.toString(),
-            duedate: new Date(payload.data.taskbyid.duedate),
-            completiondate: new Date(payload.data.taskbyid.completiondate),
-            difficulty: payload.data.taskbyid.difficulty.toString(),
-            description: payload.data.taskbyid.description,
-            color: payload.data.taskbyid.color,
+          priority: payload.data.taskbyid.priority.toString(),
+          duedate: new Date(payload.data.taskbyid.duedate),
+          completiondate: new Date(payload.data.taskbyid.completiondate),
+          difficulty: payload.data.taskbyid.difficulty.toString(),
+          description: payload.data.taskbyid.description,
+          color: payload.data.taskbyid.color,
         });
         sendSnackToApp(`${payload.data.taskbyid.name} task loaded`);
       } catch (error) {
@@ -272,13 +274,10 @@ const AddTask = (props) => {
     setState({
       contactServer: true,
     });
-    
-    if(state.isUpdate)
-    {
+
+    if (state.isUpdate) {
       updateTask(task);
-    }
-    else
-    {
+    } else {
       addTask(task);
     }
   };
@@ -366,7 +365,6 @@ const AddTask = (props) => {
     }
   };
 
-
   return (
     <Modal
       aria-labelledby="Task Info"
@@ -374,25 +372,25 @@ const AddTask = (props) => {
       open={props.open}
       onClose={props.onClose}
     >
-        <Card style={{}}>
-          <CardHeader
-            title="ProActinators"
-            style={{ textAlign: "center", marginTop: 50 }}
-          />
-          <CardContent>
-            <Typography
-              color="primary"
-              style={{
-                textAlign: "center",
-                fontSize: 25,
-                marginTop: -20,
-                marginBottom: 20,
-              }}
-            >
-              Add Task
-            </Typography>
+      <Card style={{}}>
+        <CardHeader
+          title="ProActinators"
+          style={{ textAlign: "center", marginTop: 50 }}
+        />
+        <CardContent>
+          <Typography
+            color="primary"
+            style={{
+              textAlign: "center",
+              fontSize: 25,
+              marginTop: -20,
+              marginBottom: 20,
+            }}
+          >
+            Add Task
+          </Typography>
 
-            {/* <Autocomplete
+          {/* <Autocomplete
               data-testid="autocomplete"
               options={state.users.map((user) => {
                 return user["username"];
@@ -411,47 +409,48 @@ const AddTask = (props) => {
               )}
             /> */}
 
-            <TextField
-              id="outlined-basic"
-              label="Name of Task"
-              variant="outlined"
-              style={{
-                width: "100%",
-                marginTop: 10,
-                marginBottom: 15,
-              }}
-              onChange={onChangeNameField}
-              value={state.nameOfTask}
-            />
+          <TextField
+            id="outlined-basic"
+            label="Name of Task"
+            variant="outlined"
+            style={{
+              width: "100%",
+              marginTop: 10,
+              marginBottom: 15,
+            }}
+            onChange={onChangeNameField}
+            value={state.nameOfTask}
+          />
 
-            <Autocomplete
-              data-testid="autocomplete"
-              options={state.priorities}
-              getOptionLabel={(option) => option}
-              style={{ width: "100%" }}
-              onChange={onChangePriorities}
-              value={state.priority}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="priority"
-                  variant="outlined"
-                  fullWidth
-                />
-              )}
-            />
+          <Autocomplete
+            data-testid="autocomplete"
+            options={state.priorities}
+            getOptionLabel={(option) => option}
+            style={{ width: "100%" }}
+            onChange={onChangePriorities}
+            value={state.priority}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="priority"
+                variant="outlined"
+                fullWidth
+              />
+            )}
+          />
 
+          <DateTimePickerComponent
+            placeholder="Please Choose the Due Date"
+            format="dd-mm-yyyy hh:mm a"
+            id="duedate"
+            value={state.duedate}
+            className="e-field"
+            data-name="duedate"
+            onChange={onChangeDateField}
+          />
+
+          {state.isUpdate && (
             <DateTimePickerComponent
-              placeholder="Please Choose the Due Date"
-              format="dd-mm-yyyy hh:mm a"
-              id="duedate"
-              value={state.duedate}
-              className="e-field"
-              data-name="duedate"
-              onChange={onChangeDateField}
-            />
-
-            { state.isUpdate && <DateTimePickerComponent
               placeholder="Please Choose the Completion Date"
               format="dd-mm-yyyy hh:mm a"
               id="duedate"
@@ -459,67 +458,69 @@ const AddTask = (props) => {
               className="e-field"
               data-name="duedate"
               onChange={onChangeCompletionDateField}
-            />}
-
-            <Autocomplete
-              data-testid="autocomplete"
-              options={state.difficulties}
-              getOptionLabel={(option) => option}
-              style={{ width: "100%" }}
-              onChange={onChangeDifficulties}
-              value={state.difficulty}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="difficulty"
-                  variant="outlined"
-                  fullWidth
-                />
-              )}
             />
+          )}
 
-            <TextField
-              id="outlined-basic"
-              label="Description of Task"
-              variant="outlined"
+          <Autocomplete
+            data-testid="autocomplete"
+            options={state.difficulties}
+            getOptionLabel={(option) => option}
+            style={{ width: "100%" }}
+            onChange={onChangeDifficulties}
+            value={state.difficulty}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="difficulty"
+                variant="outlined"
+                fullWidth
+              />
+            )}
+          />
+
+          <TextField
+            id="outlined-basic"
+            label="Description of Task"
+            variant="outlined"
+            style={{
+              width: "100%",
+              marginTop: 10,
+              marginBottom: 15,
+            }}
+            onChange={onChangeDescriptionField}
+            value={state.description}
+          />
+
+          <Typography align="center">
+            <Button
               style={{
-                width: "100%",
-                marginTop: 10,
-                marginBottom: 15,
+                marginTop: 50,
+                marginRight: 50,
               }}
-              onChange={onChangeDescriptionField}
-              value={state.description}
-            />
-
-            <Typography align="center">
-              <Button
-                style={{
-                  marginTop: 50, marginRight: 50
-                }}
-                disabled={buttonDisabled}
-                variant="contained"
-                onClick={() => {
-                  buttonPress();
-                }}
-              >
-                Save Task
-              </Button>
-              <Button
-                style={{
-                  marginTop: 50,
-                }}
-                disabled={!state.isUpdate}
-                color="error"
-                variant="contained"
-                onClick={() => {
-                  deleteTask();
-                }}
-              >
-                Delete
-              </Button>
-            </Typography>
-          </CardContent>
-        </Card>
+              disabled={buttonDisabled}
+              variant="contained"
+              onClick={() => {
+                buttonPress();
+              }}
+            >
+              Save Task
+            </Button>
+            <Button
+              style={{
+                marginTop: 50,
+              }}
+              disabled={!state.isUpdate}
+              color="error"
+              variant="contained"
+              onClick={() => {
+                deleteTask();
+              }}
+            >
+              Delete
+            </Button>
+          </Typography>
+        </CardContent>
+      </Card>
     </Modal>
   );
 };
