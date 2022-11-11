@@ -12,7 +12,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import AddTask from "./AddTask";
 import ControlPointIcon from '@mui/icons-material/ControlPoint';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridValueGetterParams } from '@mui/x-data-grid';
 import {
     Card,
     TextField,
@@ -39,7 +39,14 @@ const ListTasks = (props) => {
         openModal: false,
         selectedId: "",
         snackBarMsg: "",
-        gotData: false
+        gotData: false,
+        difficulties: [
+            'easy', 
+            'normal',
+            'hard', 
+            'very hard', 
+            'death'
+        ]
     };
 
     const columns = [
@@ -51,7 +58,17 @@ const ListTasks = (props) => {
           type: 'number',
           width: 130,
         },
-        { field: 'duedate', headerName: 'Task Due Date', width: 200, sortable: true },
+        { 
+            field: 'duedate', 
+            headerName: 'Task Due Date', 
+            width: 300, 
+            renderCell: (params) =>{
+                let date = new Date(params.row.duedate);
+                console.log(date.toISOString());
+                return date.toString();
+            },
+            sortComparator: (v1, v2) =>  v1.localeCompare(v2)
+        },
         
         {
             field: 'difficulty',
@@ -130,7 +147,7 @@ const ListTasks = (props) => {
                 <DataGrid getRowId={row => row._id}
                     rows={state.listForTable}
                     columns={columns}
-                    pageSize={5}
+                    pageSize={10}
                     rowsPerPageOptions={[10]}
                     onRowClick={handleClick}
                 />

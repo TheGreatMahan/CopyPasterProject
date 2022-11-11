@@ -20,6 +20,7 @@ import { updateSampleSection } from "./sample-base";
 import { DropDownListComponent } from '@syncfusion/ej2-react-dropdowns';
 import { PropertyPane } from "./property-pane";
 import dataSource from "./datasource.json";
+import { DataManager, WebApiAdaptor, Query } from '@syncfusion/ej2-data';
 import {
   Card,
   CardHeader,
@@ -51,12 +52,21 @@ function editorTemplate(props) {
 
 function Calendar() {
 
+  // let data = new DataManager({
+  //   url: 'http://localhost:5000/graphql',
+  //   adaptor: new WebApiAdaptor,
+  //   crossDomain: true
+  // });
+
   React.useEffect(() => {
     updateSampleSection();
   }, []);
 
   let scheduleObj;
   const data = extend([], dataSource.scheduleData, null, true);
+                
+  // let jsonData = { query: `query {tasksforuser(username: "testman3"){_id, name, description, duedate, priority, difficulty, color, completiondate}}`,}
+  // let query = new Query().addParams('body', JSON.stringify(jsonData)); 
 
   function onDragStart(args) {
     args.navigation.enable = true;
@@ -71,7 +81,7 @@ function Calendar() {
               height="650px"
               ref={(schedule) => (scheduleObj = schedule)}
               selectedDate={new Date().toJSON().slice(0, 10).replace(/-/g, '/')}
-              eventSettings={{ dataSource: data }}
+              eventSettings={{ dataSource: data }}//, query: query }}
               dragStart={onDragStart.bind(this)}
               editorTemplate={editorTemplate.bind(this)}
             >

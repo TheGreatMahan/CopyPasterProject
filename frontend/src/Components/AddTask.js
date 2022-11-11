@@ -32,7 +32,13 @@ const AddTask = (props) => {
     color: "",
     _id: "",
     isUpdate: false,
-    difficulties: Array.from({ length: 11 }, (x, i) => i.toString()),
+    difficulties: [
+      ['easy', 0], 
+      ['normal', 1], 
+      ['hard', 2], 
+      ['very hard', 3], 
+      ['death', 4]
+    ],
     priorities: Array.from({ length: 11 }, (x, i) => i.toString()),
   };
 
@@ -52,6 +58,10 @@ const AddTask = (props) => {
   useEffect(() => {
     fetchTask();
   }, []);
+
+  const getKeyByValue = (object, value) => {
+    return state.difficulties.find((diff) => diff[1] === value)
+  }
 
   const fetchTask = async () => {
     if (props.id !== null) {
@@ -73,15 +83,15 @@ const AddTask = (props) => {
         });
         let payload = await response.json();
 
-        console.log(payload);
 
+        console.log(Object.entries(state.difficulties).map(diff => {return diff}));
         setState({
           selectedUser: payload.data.taskbyid.username,
           nameOfTask: payload.data.taskbyid.name,
             priority: payload.data.taskbyid.priority.toString(),
             duedate: new Date(payload.data.taskbyid.duedate),
             completiondate: new Date(payload.data.taskbyid.completiondate),
-            difficulty: payload.data.taskbyid.difficulty.toString(),
+            difficulty: getKeyByValue(state.difficulties, payload.data.taskbyid.difficulty),
             description: payload.data.taskbyid.description,
             color: payload.data.taskbyid.color,
         });
@@ -161,8 +171,8 @@ const AddTask = (props) => {
 
   const onChangeDifficulties = (e, selectedOption) => {
     selectedOption
-      ? setState({ difficulty: selectedOption })
-      : setState({ difficulty: "-1" });
+      ? setState({ difficulty: selectedOption  })
+      : setState({ difficulty: state.difficulties[0] });
 
     if (
       state.nameOfTask === "" ||
@@ -261,7 +271,7 @@ const AddTask = (props) => {
       priority: parseInt(state.priority),
       duedate: state.duedate.toISOString(),
       completiondate: "",
-      difficulty: parseInt(state.difficulty),
+      difficulty: state.difficulty[1],
       description: state.description,
       color: state.color,
     };
@@ -463,8 +473,8 @@ const AddTask = (props) => {
 
             <Autocomplete
               data-testid="autocomplete"
-              options={state.difficulties}
-              getOptionLabel={(option) => option}
+              options={state.difficulties.map(diff => {return diff})}
+              getOptionLabel={(option) => option[0]}
               style={{ width: "100%" }}
               onChange={onChangeDifficulties}
               value={state.difficulty}
