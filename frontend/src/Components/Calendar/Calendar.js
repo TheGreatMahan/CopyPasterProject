@@ -128,6 +128,7 @@ function Calendar() {
               eventSettings={{ dataSource: data }}
               dragStart={onDragStart.bind(this)}
               editorTemplate={editorTemplate.bind(this)}
+              showQuickInfo={false}
             >
               <ViewsDirective>
                 <ViewDirective option="Month" />

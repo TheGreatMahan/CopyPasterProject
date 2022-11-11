@@ -31,7 +31,7 @@ const Home = (props) => {
     selectedCountry: "",
     nameOfPerson: "",
     buttonDisabled: true,
-    currentView: "",
+    currentView: "Calendar",
   };
 
   // const GRAPHURL = "http://localhost:5000/graphql";
@@ -74,7 +74,7 @@ const Home = (props) => {
             <Toolbar />
             <Box sx={{ overflow: "auto" }}>
               <List>
-                {["Tasks List", "Calendar", "Growth Stats"].map(
+                {["Calendar", "Tasks List", "Growth Stats"].map(
                   (text, index) => (
                     <ListItem key={text} disablePadding>
                       <ListItemButton
