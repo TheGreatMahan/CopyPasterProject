@@ -25,7 +25,7 @@ const AddTask = (props) => {
     buttonDisabled: true,
     nameOfTask: "",
     priority: "-1",
-    duedate: new Date(),
+    duedate: "",
     completiondate: "",
     difficulty: "-1",
     description: "",
@@ -367,28 +367,36 @@ const AddTask = (props) => {
 
   return (
     <Modal
+      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}
       aria-labelledby="Task Info"
       aria-describedby="simple-modal-description"
       open={props.open}
       onClose={props.onClose}
     >
-      <Card style={{}}>
-        <CardHeader
-          title="ProActinators"
-          style={{ textAlign: "center", marginTop: 50 }}
-        />
+
+      <Card style={{ width: 500, height: 600 }}>
         <CardContent>
+          <Typography
+            style={{
+              textAlign: "center",
+              fontSize: 25,
+              marginTop: 10,
+            }}
+          >
+            ProActinators
+          </Typography>
+
           <Typography
             color="primary"
             style={{
               textAlign: "center",
               fontSize: 25,
-              marginTop: -20,
               marginBottom: 20,
             }}
           >
             Add Task
           </Typography>
+
 
           {/* <Autocomplete
               data-testid="autocomplete"
@@ -409,92 +417,100 @@ const AddTask = (props) => {
               )}
             /> */}
 
-          <TextField
-            id="outlined-basic"
-            label="Name of Task"
-            variant="outlined"
-            style={{
-              width: "100%",
-              marginTop: 10,
-              marginBottom: 15,
-            }}
-            onChange={onChangeNameField}
-            value={state.nameOfTask}
-          />
 
-          <Autocomplete
-            data-testid="autocomplete"
-            options={state.priorities}
-            getOptionLabel={(option) => option}
-            style={{ width: "100%" }}
-            onChange={onChangePriorities}
-            value={state.priority}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="priority"
-                variant="outlined"
-                fullWidth
-              />
-            )}
-          />
+          <Card style={{ marginBottom: 20, border: "none", boxShadow: "none", width: '100%' }}>
+            <TextField
+              style={{ width: '100%', marginTop: 5 }}
+              id="outlined-basic"
+              label="Name of Task"
+              variant="outlined"
+              onChange={onChangeNameField}
+              value={state.nameOfTask}
+            />
+          </Card>
 
-          <DateTimePickerComponent
-            placeholder="Please Choose the Due Date"
-            format="dd-mm-yyyy hh:mm a"
-            id="duedate"
-            value={state.duedate}
-            className="e-field"
-            data-name="duedate"
-            onChange={onChangeDateField}
-          />
+          <Card style={{ marginBottom: 20, border: "none", boxShadow: "none", width: '100%' }}>
+            <Autocomplete
+              data-testid="autocomplete"
+              options={state.priorities}
+              getOptionLabel={(option) => option}
+              onChange={onChangePriorities}
+              value={state.priority}
+              renderInput={(params) => (
+                <TextField
+                  style={{ marginTop: 5 }}
+                  {...params}
+                  label="priority"
+                  variant="outlined"
+                  fullWidth
+                />
+              )}
+            />
+          </Card>
 
-          {state.isUpdate && (
+          <Card style={{ marginBottom: 10, border: "none", boxShadow: "none", width: '100%' }}>
             <DateTimePickerComponent
-              placeholder="Please Choose the Completion Date"
+              placeholder="Please Choose the Due Date"
               format="dd-mm-yyyy hh:mm a"
               id="duedate"
-              value={state.completiondate}
+              value={state.duedate}
               className="e-field"
               data-name="duedate"
-              onChange={onChangeCompletionDateField}
+              onChange={onChangeDateField}
             />
-          )}
+          </Card>
 
-          <Autocomplete
-            data-testid="autocomplete"
-            options={state.difficulties}
-            getOptionLabel={(option) => option}
-            style={{ width: "100%" }}
-            onChange={onChangeDifficulties}
-            value={state.difficulty}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="difficulty"
-                variant="outlined"
-                fullWidth
+          <Card style={{ marginBottom: 20, border: "none", boxShadow: "none", width: '100%' }}>
+            {state.isUpdate && (
+              <DateTimePickerComponent
+                placeholder="Please Choose the Completion Date"
+                format="dd-mm-yyyy hh:mm a"
+                id="completiondate"
+                value={state.completiondate}
+                className="e-field"
+                data-name="completiondate"
+                onChange={onChangeCompletionDateField}
               />
             )}
-          />
+          </Card>
 
-          <TextField
-            id="outlined-basic"
-            label="Description of Task"
-            variant="outlined"
-            style={{
-              width: "100%",
-              marginTop: 10,
-              marginBottom: 15,
-            }}
-            onChange={onChangeDescriptionField}
-            value={state.description}
-          />
+          <Card style={{ marginBottom: 20, border: "none", boxShadow: "none", width: '100%' }}>
+            <Autocomplete
+              data-testid="autocomplete"
+              options={state.difficulties}
+              getOptionLabel={(option) => option}
+              style={{ width: "100%" }}
+              onChange={onChangeDifficulties}
+              value={state.difficulty}
+              renderInput={(params) => (
+                <TextField
+                  style={{ marginTop: 5 }}
+                  {...params}
+                  label="difficulty"
+                  variant="outlined"
+                  fullWidth
+                />
+              )}
+            />
+          </Card>
+
+          <Card style={{ marginBottom: 20, border: "none", boxShadow: "none", width: '100%' }}>
+            <TextField
+              id="outlined-basic"
+              label="Description of Task"
+              variant="outlined"
+              style={{
+                width: "100%",
+                marginTop: 10,
+              }}
+              onChange={onChangeDescriptionField}
+              value={state.description}
+            />
+          </Card>
 
           <Typography align="center">
             <Button
               style={{
-                marginTop: 50,
                 marginRight: 50,
               }}
               disabled={buttonDisabled}
@@ -506,9 +522,6 @@ const AddTask = (props) => {
               Save Task
             </Button>
             <Button
-              style={{
-                marginTop: 50,
-              }}
               disabled={!state.isUpdate}
               color="error"
               variant="contained"

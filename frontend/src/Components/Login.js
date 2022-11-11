@@ -91,17 +91,17 @@ const Home = () => {
 
     return (
         <ThemeProvider theme={theme}>
-            <Card style={{ textAlign: 'center' }}>
+            <Card style={{ textAlign: 'center', border: "none", boxShadow: "none" }}>
 
                 <img src={Logo} alt="Logo" style={{ width: "20%" }} />
 
                 <CardHeader
-                    title="Login here"        
+                    title="Login here"
                 />
 
                 <Card style={{ boxShadow: "none" }} >
                     <TextField
-                        style={{ width: '15%'  }}
+                        style={{ width: '15%' }}
                         label="Enter username"
                         onChange={handleUsernameFunction}
                     />
@@ -125,7 +125,7 @@ const Home = () => {
                             onChange={handlePasswordFunction}
                         />
                     }
-                    <Card>
+                     <Card style={{border: "none", boxShadow: "none"}} >
                         <Button
                             style={{ fontSize: 10, marginBottom: 20 }}
                             color="primary" onClick={handleToggleShowPassword}>
