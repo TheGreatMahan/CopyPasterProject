@@ -2,6 +2,7 @@ const { loadAlerts } = require("./setupalerts");
 const dbRtns = require("./utilities");
 const { alerts, advisories, tasks, users } = require("./config");
 const bcrypt = require('bcrypt');
+const { ObjectID } = require('bson');
 
 const resolvers = {
     setupalerts: async () => {
@@ -22,6 +23,12 @@ const resolvers = {
     tasksforuser: async (args) => {
         db = await dbRtns.getDBInstance();
         return await dbRtns.findAll(db, tasks, { username: args.username });
+    },
+    taskbyid: async (args) => {
+        let theId = args._id;
+        theId = new ObjectID(theId);
+        db = await dbRtns.getDBInstance();
+        return await dbRtns.findOne(db, tasks, { _id: theId });
     },
     users: async () => {
         db = await dbRtns.getDBInstance();
@@ -53,13 +60,51 @@ const resolvers = {
             name: args.name,
             priority: args.priority,
             duedate: args.duedate,
-            duetime: args.duetime,
+            completiondate: args.completiondate,
             difficulty: args.difficulty,
             description: args.description,
             color: args.color
         };
         let results = await dbRtns.addOne(db, tasks, task);
         return results.acknowledged ? task : null;
+    },
+    updatetask: async (args) => {
+        let message;
+        try {
+            let db = await dbRtns.getDBInstance();
+            let theId = args._id;
+            theId = new ObjectID(theId);
+            let task = {
+                username: args.username,
+                name: args.name,
+                priority: args.priority,
+                duedate: args.duedate,
+                completiondate: args.completiondate,
+                difficulty: args.difficulty,
+                description: args.description,
+                color: args.color
+            };
+            let result = await dbRtns.updateOne(db, tasks, {_id: theId}, task);
+            message = result.lastErrorObject.updatedExisting ? `task was updated`: `task was not updated`;
+          } catch (err) {
+            console.log(err.stack);
+            return {msg: "update member failed - internal server error"};
+          }
+        return {msg: message};
+    },
+    deletetask: async (args) => {
+        let message;
+        try {
+            let db = await dbRtns.getDBInstance();
+            let theId = args._id;
+            theId = new ObjectID(theId);
+            let result = await dbRtns.deleteOne(db, tasks, { _id: theId });
+            message = result.deletedCount === 1 ? `1 task was deleted`: `task was not deleted`;
+          } catch (err) {
+            console.log(err.stack);
+            return {msg: "delete member failed - internal server error"};
+          }
+        return {msg: message};
     },
     advisories: async () => {
         db = await dbRtns.getDBInstance();

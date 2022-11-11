@@ -30,11 +30,11 @@ import "../../App.css";
 
 function editorTemplate(props) {
   return ((props !== undefined) ? <table className="custom-event-editor" style={{ width: '100%' }} cellPadding={5}><tbody>
-    <tr><td className="e-textlabel">Task</td><td colSpan={4}>
-      <input id="Task" className="e-field e-input" type="text" name="Task" style={{ width: '100%' }} />
+    <tr><td className="e-textlabel">Subject</td><td colSpan={4}>
+      <input id="Subject" className="e-field e-input" type="text" name="Subject" style={{ width: '100%' }} />
     </td></tr>
     <tr><td className="e-textlabel">Start date</td><td colSpan={4}>
-      <DatePickerComponent id="StartTime" format='dd/MM/yy' data-name="StartTime" value={new Date(props.startTime || props.StartTime)} className="e-field"></DatePickerComponent>
+      <DatePickerComponent id="StartTime" format='dd/MM/yy' data-name="StartTime" value={new Date(props.startTime || props.StartTime)} className="e-field" readonly ></DatePickerComponent>
     </td></tr>
     <tr><td className="e-textlabel">Finish date</td><td colSpan={4}>
       <DatePickerComponent id="EndTime" format='dd/MM/yy' data-name="EndTime" value={new Date(props.endTime || props.EndTime)} className="e-field"></DatePickerComponent>
