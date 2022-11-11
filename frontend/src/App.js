@@ -10,6 +10,9 @@ import Register from "./Components/Register";
 // import AddAdvisory from "./Project1/AddAdvisory";
 // import ListAdvisory from "./Project1/ListAdvisories";
 import ListTasks from "./Components/Calendar/ListTasks";
+import AddTask from "./Components/AddTask";
+import ListTasks from "./Components/ListTasks";
+import { ReactSession } from 'react-client-session';
 
 import {
   Toolbar,
