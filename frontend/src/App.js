@@ -6,6 +6,7 @@ import theme from "./theme";
 import Home from "./Components/Home";
 import Login from "./Components/Login";
 import Register from "./Components/Register";
+import Logout from "./Components/Logout";
 // import ResetAlerts from "./Project1/ResetAlerts";
 // import AddAdvisory from "./Project1/AddAdvisory";
 // import ListAdvisory from "./Project1/ListAdvisories";
@@ -94,6 +95,9 @@ const App = () => {
             <MenuItem onClick={handleClose} component={Link} to="/home">
               Home
             </MenuItem>
+            <MenuItem onClick={handleClose} component={Link} to="/logout">
+              Log Out
+            </MenuItem>
             {/* <MenuItem
                             onClick={handleClose}
                             component={Link}
@@ -123,6 +127,7 @@ const App = () => {
           <Route path="/" element={<Login />} />
           <Route path="/Login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/logout" element={<Logout />} />
           <Route path="/home" element={<Home dataFromChild={msgFromChild} />} />
 
           {/* <Route path="/resetalerts" element={<ResetAlerts dataFromChild={msgFromChild} />} />
