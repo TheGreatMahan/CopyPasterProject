@@ -32,6 +32,7 @@ const AddTask = (props) => {
     color: "",
     _id: "",
     isUpdate: false,
+    points: 0,
     difficulties: [
       ['easy', 0], 
       ['normal', 1], 
@@ -78,7 +79,7 @@ const AddTask = (props) => {
           },
           body: JSON.stringify({
             query: `query {taskbyid(_id: "${props.id}") {_id, name, username, priority, duedate, 
-                completiondate, difficulty, description, color}}`,
+                completiondate, difficulty, description, color, points}}`,
           }),
         });
         let payload = await response.json();
@@ -94,6 +95,7 @@ const AddTask = (props) => {
             difficulty: getKeyByValue(state.difficulties, payload.data.taskbyid.difficulty),
             description: payload.data.taskbyid.description,
             color: payload.data.taskbyid.color,
+            points: payload.data.taskbyid.points
         });
         sendSnackToApp(`${payload.data.taskbyid.name} task loaded`);
       } catch (error) {
@@ -274,6 +276,7 @@ const AddTask = (props) => {
       difficulty: state.difficulty[1],
       description: state.description,
       color: state.color,
+      points: state.points
     };
 
     let myHeaders = new Headers();
@@ -298,7 +301,7 @@ const AddTask = (props) => {
     try {
       let query = JSON.stringify({
         query: `mutation {addtask(name: "${task.name}",username: "${task.username}", priority: ${task.priority} , duedate: "${task.duedate}"
-                , completiondate: "${task.completiondate}", difficulty: ${task.difficulty}, description: "${task.description}" ) { duedate }}`,
+                , completiondate: "${task.completiondate}", difficulty: ${task.difficulty}, description: "${task.description}", points: ${task.points} ) { duedate }}`,
       });
       let response = await fetch(GRAPHURL, {
         method: "POST",
@@ -326,7 +329,7 @@ const AddTask = (props) => {
     try {
       let query = JSON.stringify({
         query: `mutation {updatetask(_id: "${task.id}", name: "${task.name}", username: "${task.username}", priority: ${task.priority} , duedate: "${task.duedate}"
-                , completiondate: "${task.completiondate}", difficulty: ${task.difficulty}, description: "${task.description}" ) { msg }}`,
+                , completiondate: "${task.completiondate}", difficulty: ${task.difficulty}, description: "${task.description}", points: ${task.points} ) { msg }}`,
       });
       let response = await fetch(GRAPHURL, {
         method: "POST",

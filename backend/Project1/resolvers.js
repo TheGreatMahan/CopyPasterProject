@@ -1,6 +1,6 @@
 const { loadAlerts } = require("./setupalerts");
 const dbRtns = require("./utilities");
-const { alerts, advisories, tasks, users } = require("./config");
+const { alerts, advisories, tasks, users, calendar } = require("./config");
 const bcrypt = require('bcrypt');
 const { ObjectID } = require('bson');
 
@@ -11,6 +11,10 @@ const resolvers = {
     alerts: async () => {
         db = await dbRtns.getDBInstance();
         return await dbRtns.findAll(db, alerts, {}, {});
+    },
+    calendarfindall: async () => {
+        db = await dbRtns.getDBInstance();
+        return await dbRtns.findAll(db, calendar, {}, {});
     },
     alertsforregion: async (args) => {
         db = await dbRtns.getDBInstance();
@@ -63,7 +67,8 @@ const resolvers = {
             completiondate: args.completiondate,
             difficulty: args.difficulty,
             description: args.description,
-            color: args.color
+            color: args.color,
+            points: args.points
         };
         let results = await dbRtns.addOne(db, tasks, task);
         return results.acknowledged ? task : null;
@@ -82,7 +87,8 @@ const resolvers = {
                 completiondate: args.completiondate,
                 difficulty: args.difficulty,
                 description: args.description,
-                color: args.color
+                color: args.color,
+                points: args.points
             };
             let result = await dbRtns.updateOne(db, tasks, {_id: theId}, task);
             message = result.lastErrorObject.updatedExisting ? `task was updated`: `task was not updated`;
