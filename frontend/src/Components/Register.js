@@ -95,7 +95,7 @@ const Register = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <Card style={{ textAlign: "center" }}>
+      <Card style={{ textAlign: "center", border: "none", boxShadow: "none" }}>
 
         <img src={Logo} alt="Logo" style={{ width: "20%" }} />
 
@@ -129,7 +129,7 @@ const Register = () => {
               onChange={handlePasswordFunction}
             />
           )}
-          <Card>
+          <Card style={{border: "none", boxShadow: "none"}} >
             <Button
               style={{ fontSize: 10 }}
               color="primary"

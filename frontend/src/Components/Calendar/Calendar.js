@@ -48,13 +48,13 @@ function editorTemplate(props) {
     >
       <tbody>
         <tr>
-          <td className="e-textlabel">Name</td>
+          <td className="e-textlabel">Subject</td>
           <td colSpan={4}>
             <input
-              id="name"
+              id="Subject"
               className="e-field e-input"
               type="text"
-              name="name"
+              name="Subject"
               style={{ width: "100%" }}
             />
           </td>
@@ -68,6 +68,7 @@ function editorTemplate(props) {
               data-name="StartTime"
               value={new Date(props.startTime || props.StartTime)}
               className="e-field"
+              readonly
             ></DatePickerComponent>
           </td>
         </tr>
@@ -100,9 +101,9 @@ function editorTemplate(props) {
           <td className="e-textlabel">Description</td>
           <td colSpan={4}>
             <textarea
-              id="description"
+              id="Description"
               className="e-field e-input"
-              name="description"
+              name="Description"
               rows={2}
               cols={50}
               style={{
