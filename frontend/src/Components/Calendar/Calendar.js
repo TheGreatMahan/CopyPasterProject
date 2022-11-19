@@ -217,11 +217,11 @@ function Calendar() {
                 selectedDate={new Date().toJSON().slice(0, 10).replace(/-/g, "/")}
                 eventSettings={{
                   dataSource: state.data,
-                  fields: {
-                    Id: "_id",
-                    Subject: { name: "name" },
-                    Description: { name: "description" },
-                  },
+                  // fields: {
+                  //   Id: "_id",
+                  //   Subject: { name: "name" },
+                  //   Description: { name: "description" },
+                  // },
                 }} //, query: query }}
                 dragStart={onDragStart.bind(this)}
                 editorTemplate={editorTemplate.bind(this)}
