@@ -35,7 +35,6 @@ const Home = (props) => {
   };
 
   // const GRAPHURL = "http://localhost:5000/graphql";
-  // test commit
   const GRAPHURL = "/graphql";
 
   const reducer = (state, newState) => ({ ...state, ...newState });
