@@ -7,13 +7,10 @@ import Home from "./Components/Home";
 import Login from "./Components/Login";
 import Register from "./Components/Register";
 import Logout from "./Components/Logout";
-// import ResetAlerts from "./Project1/ResetAlerts";
-// import AddAdvisory from "./Project1/AddAdvisory";
-// import ListAdvisory from "./Project1/ListAdvisories";
 import ListTasks from "./Components/Calendar/ListTasks";
-// import AddTask from "./Components/AddTask";
-// import ListTasks from "./Components/ListTasks";
 import { ReactSession } from 'react-client-session';
+import { AuthProvider } from './Components/Auth';
+import { useAuth } from './Components/Auth';
 
 import {
   Toolbar,
@@ -34,6 +31,8 @@ const App = () => {
     isOpen: false,
     openModal: false,
   };
+
+  const auth = useAuth();
 
   const reducer = (state, newState) => ({ ...state, ...newState });
 
@@ -66,86 +65,67 @@ const App = () => {
   };
 
   return (
-    <ThemeProvider theme={theme}>
-      <AppBar
-        position="relative"
-        color="error"
-        sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
-      >
-        <Toolbar>
-          <Typography variant="h6" color="inherit" noWrap component="div">
-            Team: Copypasters
-          </Typography>
-          <IconButton
-            onClick={handleClick}
-            color="inherit"
-            style={{ marginLeft: "auto", paddingRight: "1vh" }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Menu
-            id="simple-menu"
-            anchorEl={anchorEl}
-            open={Boolean(anchorEl)}
-            onClose={handleClose}
-          >
-            <MenuItem onClick={handleClose} component={Link} to="/login">
-              Login
-            </MenuItem>
-            <MenuItem onClick={handleClose} component={Link} to="/register">
-              Register
-            </MenuItem>
-            <MenuItem onClick={handleClose} component={Link} to="/home">
-              Home
-            </MenuItem>
-            <MenuItem onClick={handleClose} component={Link} to="/logout">
-              Log Out
-            </MenuItem>
-            {/* <MenuItem
-                            onClick={handleClose}
-                            component={Link}
-                            to="/resetalerts"
-                        >
-                            Reset Alerts
-                        </MenuItem>
-                        <MenuItem
-                            onClick={handleClose}
-                            component={Link}
-                            to="/addadvisory"
-                        >
-                            Add Advisory
-                        </MenuItem>
-                        <MenuItem
-                            onClick={handleClose}
-                            component={Link}
-                            to="/listadvisory"
-                        >
-                            List Advisory
-                        </MenuItem> */}
-          </Menu>
-        </Toolbar>
-      </AppBar>
-      <div>
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/Login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/logout" element={<Logout />} />
-          <Route path="/home" element={<Home dataFromChild={msgFromChild} />} />
+    <AuthProvider>
+      <ThemeProvider theme={theme}>
+        <AppBar
+          position="relative"
+          color="error"
+          sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        >
+          <Toolbar>
+            <Typography variant="h6" color="inherit" noWrap component="div">
+              Team: Copypasters
+            </Typography>
+            <IconButton
+              onClick={handleClick}
+              color="inherit"
+              style={{ marginLeft: "auto", paddingRight: "1vh" }}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Menu
+              id="simple-menu"
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={handleClose}
+            >
+              {!auth.user &&
+                <MenuItem onClick={handleClose} component={Link} to="/login">Login</MenuItem>
+              }
+              {!auth.user &&
+                <MenuItem onClick={handleClose} component={Link} to="/register">Register</MenuItem>
+              }
+              {!!auth.user &&
+                <MenuItem onClick={handleClose} component={Link} to="/register">Register</MenuItem>
+              }
+              {!!auth.user &&
+                <MenuItem onClick={handleClose} component={Link} to="/home">Home</MenuItem>
+              }
+              {!!auth.user && 
+                <MenuItem onClick={handleClose} component={Link} to="/logout">Log Out</MenuItem>
+              }
+            </Menu>
+          </Toolbar>
+        </AppBar>
+        <div>
+          <Routes>
+            <Route path="/" element={<Login />} />
+            <Route path="/Login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/logout" element={<Logout />} />
+            <Route path="/home" element={<Home dataFromChild={msgFromChild} />} />
+          </Routes>
+        </div>
 
-          {/* <Route path="/resetalerts" element={<ResetAlerts dataFromChild={msgFromChild} />} />
-                    <Route path="/addadvisory" element={<AddAdvisory dataFromChild={msgFromChild} />} />
-                    <Route path="/listadvisory" element={<ListAdvisory dataFromChild={msgFromChild} />} /> */}
-        </Routes>
-      </div>
+        <Snackbar
+          open={state.gotData}
+          message={state.snackBarMsg}
+          autoHideDuration={3000}
+          onClose={snackbarClose}
+        />
+      </ThemeProvider>
+    </AuthProvider>
 
-      <Snackbar
-        open={state.gotData}
-        message={state.snackBarMsg}
-        autoHideDuration={3000}
-        onClose={snackbarClose}
-      />
-    </ThemeProvider>
   );
 };
 export default App;

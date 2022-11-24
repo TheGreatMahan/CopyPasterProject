@@ -30,6 +30,8 @@ import {
 } from "@syncfusion/ej2-data";
 import { Card, CardHeader, CardContent } from "@mui/material";
 import "../../App.css";
+import { useAuth } from '../Auth';
+
 
 
 const initialState = {
@@ -205,7 +207,10 @@ function Calendar() {
     return (
       <Card style={{ maxHeight: "550px", overflow: "auto" }}>
         
-//         {//state.data !== null &&
+         {
+
+         }
+         {//state.data !== null &&
         <div className="schedule-control-section">
            <div className="col-lg-9 control-section">
              <div className="control-wrapper">

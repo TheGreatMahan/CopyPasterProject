@@ -15,6 +15,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import theme from "../theme";
 import "../App.css";
+import { useAuth } from './Auth';
 
 import Logo from "../images/logo.png";
 import { ReactSession } from 'react-client-session';
@@ -28,6 +29,8 @@ const Login = () => {
     holdPasswordData: "",
     isClicked: false,
   };
+
+  const auth = useAuth();
 
   const GRAPHURL = "http://localhost:5000/graphql";
 
@@ -76,6 +79,8 @@ const Login = () => {
       console.log(json);
       if (json.data.userlogin.msg) {
         alert("Successfully logged in");
+        auth.login(state.handleUsername);
+        navigate("/Home");
       } else {
         alert("Login Failed");
       }
