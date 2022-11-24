@@ -125,14 +125,18 @@ const ListTasks = (props) => {
 
   return (
     <ThemeProvider theme={theme}>
-      <Card style={{}}>
-        <CardHeader
-          title="Your Tasks"
-          style={{ textAlign: "center", marginTop: 60 }}
-        />
+
+      <Card style={{ border: "none", boxShadow: "none", display: 'flex', justifyContent: 'center', width: '100%' }}>
+
         <CardContent>
-          <div style={{ height: 400, width: "100%" }}>
+          <Card style={{ height: 500, width: 1000, border: "none", boxShadow: 'none' }}>
+            <CardHeader
+              title="Your Tasks"
+              style={{ marginTop: 60 }}
+            />
+
             <DataGrid
+              style={{ width: '100%' }}
               getRowId={(row) => row._id}
               rows={state.listForTable}
               columns={columns}
@@ -140,7 +144,8 @@ const ListTasks = (props) => {
               rowsPerPageOptions={[10]}
               onRowClick={handleClick}
             />
-          </div>
+          </Card>
+
           {state.isOpen && (
             <AddTask
               open={state.isOpen}
@@ -149,12 +154,16 @@ const ListTasks = (props) => {
               dataFromChild={sendSnackToApp}
             ></AddTask>
           )}
-          <ControlPointIcon
-            onClick={(e) => handleClick(null)}
-            className="addicon"
-          ></ControlPointIcon>
         </CardContent>
       </Card>
+
+      <Card style={{ border: "none", boxShadow: "none" }}>
+        <ControlPointIcon fontSize="large" style={{ position: "absolute", bottom: "50px", right: "50px" }}
+          onClick={(e) => handleClick(null)}
+          className="addicon"
+        ></ControlPointIcon>
+      </Card>
+
     </ThemeProvider>
   );
 };

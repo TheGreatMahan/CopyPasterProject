@@ -25,14 +25,21 @@ const AddTask = (props) => {
     buttonDisabled: true,
     nameOfTask: "",
     priority: "-1",
-    duedate: new Date(),
+    duedate: "",
     completiondate: "",
     difficulty: "-1",
     description: "",
     color: "",
     _id: "",
     isUpdate: false,
-    difficulties: Array.from({ length: 11 }, (x, i) => i.toString()),
+    points: 0,
+    difficulties: [
+      ['easy', 0], 
+      ['normal', 1], 
+      ['hard', 2], 
+      ['very hard', 3], 
+      ['death', 4]
+    ],
     priorities: Array.from({ length: 11 }, (x, i) => i.toString()),
   };
 
@@ -53,6 +60,10 @@ const AddTask = (props) => {
     fetchTask();
   }, []);
 
+  const getKeyByValue = (object, value) => {
+    return state.difficulties.find((diff) => diff[1] === value)
+  }
+
   const fetchTask = async () => {
     if (props.id !== null) {
       try {
@@ -70,22 +81,23 @@ const AddTask = (props) => {
           },
           body: JSON.stringify({
             query: `query {taskbyid(_id: "${props.id}") {_id, name, username, priority, duedate, 
-                completiondate, difficulty, description, color}}`,
+                completiondate, difficulty, description, color, points}}`,
           }),
         });
         let payload = await response.json();
 
-        console.log(payload);
 
+        console.log(Object.entries(state.difficulties).map(diff => {return diff}));
         setState({
           selectedUser: payload.data.taskbyid.username,
           nameOfTask: payload.data.taskbyid.name,
-          priority: payload.data.taskbyid.priority.toString(),
-          duedate: new Date(payload.data.taskbyid.duedate),
-          completiondate: new Date(payload.data.taskbyid.completiondate),
-          difficulty: payload.data.taskbyid.difficulty.toString(),
-          description: payload.data.taskbyid.description,
-          color: payload.data.taskbyid.color,
+            priority: payload.data.taskbyid.priority.toString(),
+            duedate: new Date(payload.data.taskbyid.duedate),
+            completiondate: new Date(payload.data.taskbyid.completiondate),
+            difficulty: getKeyByValue(state.difficulties, payload.data.taskbyid.difficulty),
+            description: payload.data.taskbyid.description,
+            color: payload.data.taskbyid.color,
+            points: payload.data.taskbyid.points
         });
         sendSnackToApp(`${payload.data.taskbyid.name} task loaded`);
       } catch (error) {
@@ -163,8 +175,8 @@ const AddTask = (props) => {
 
   const onChangeDifficulties = (e, selectedOption) => {
     selectedOption
-      ? setState({ difficulty: selectedOption })
-      : setState({ difficulty: "-1" });
+      ? setState({ difficulty: selectedOption  })
+      : setState({ difficulty: state.difficulties[0] });
 
     if (
       state.nameOfTask === "" ||
@@ -263,9 +275,10 @@ const AddTask = (props) => {
       priority: parseInt(state.priority),
       duedate: state.duedate.toISOString(),
       completiondate: "",
-      difficulty: parseInt(state.difficulty),
+      difficulty: state.difficulty[1],
       description: state.description,
       color: state.color,
+      points: state.points
     };
 
     let myHeaders = new Headers();
@@ -287,7 +300,7 @@ const AddTask = (props) => {
     try {
       let query = JSON.stringify({
         query: `mutation {addtask(name: "${task.name}",username: "${task.username}", priority: ${task.priority} , duedate: "${task.duedate}"
-                , completiondate: "${task.completiondate}", difficulty: ${task.difficulty}, description: "${task.description}" ) { duedate }}`,
+                , completiondate: "${task.completiondate}", difficulty: ${task.difficulty}, description: "${task.description}", points: ${task.points} ) { duedate }}`,
       });
       let response = await fetch(GRAPHURL, {
         method: "POST",
@@ -300,6 +313,11 @@ const AddTask = (props) => {
 
       setState({
         contactServer: true,
+        nameOfTask: "",
+        priority: "-1",
+        duedate: "",
+        difficulty: "-1",
+        description: ""
       });
       sendSnackToApp(`Added Task on ${json.data.addtask.duedate}`);
     } catch (error) {
@@ -315,7 +333,7 @@ const AddTask = (props) => {
     try {
       let query = JSON.stringify({
         query: `mutation {updatetask(_id: "${task.id}", name: "${task.name}", username: "${task.username}", priority: ${task.priority} , duedate: "${task.duedate}"
-                , completiondate: "${task.completiondate}", difficulty: ${task.difficulty}, description: "${task.description}" ) { msg }}`,
+                , completiondate: "${task.completiondate}", difficulty: ${task.difficulty}, description: "${task.description}", points: ${task.points} ) { msg }}`,
       });
       let response = await fetch(GRAPHURL, {
         method: "POST",
@@ -367,28 +385,36 @@ const AddTask = (props) => {
 
   return (
     <Modal
+      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}
       aria-labelledby="Task Info"
       aria-describedby="simple-modal-description"
       open={props.open}
       onClose={props.onClose}
     >
-      <Card style={{}}>
-        <CardHeader
-          title="ProActinators"
-          style={{ textAlign: "center", marginTop: 50 }}
-        />
+
+      <Card style={{ width: 500, height: 600 }}>
         <CardContent>
+          <Typography
+            style={{
+              textAlign: "center",
+              fontSize: 25,
+              marginTop: 10,
+            }}
+          >
+            ProActinators
+          </Typography>
+
           <Typography
             color="primary"
             style={{
               textAlign: "center",
               fontSize: 25,
-              marginTop: -20,
               marginBottom: 20,
             }}
           >
             Add Task
           </Typography>
+
 
           {/* <Autocomplete
               data-testid="autocomplete"
@@ -409,92 +435,100 @@ const AddTask = (props) => {
               )}
             /> */}
 
-          <TextField
-            id="outlined-basic"
-            label="Name of Task"
-            variant="outlined"
-            style={{
-              width: "100%",
-              marginTop: 10,
-              marginBottom: 15,
-            }}
-            onChange={onChangeNameField}
-            value={state.nameOfTask}
-          />
 
-          <Autocomplete
-            data-testid="autocomplete"
-            options={state.priorities}
-            getOptionLabel={(option) => option}
-            style={{ width: "100%" }}
-            onChange={onChangePriorities}
-            value={state.priority}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="priority"
-                variant="outlined"
-                fullWidth
-              />
-            )}
-          />
+          <Card style={{ marginBottom: 20, border: "none", boxShadow: "none", width: '100%' }}>
+            <TextField
+              style={{ width: '100%', marginTop: 5 }}
+              id="outlined-basic"
+              label="Name of Task"
+              variant="outlined"
+              onChange={onChangeNameField}
+              value={state.nameOfTask}
+            />
+          </Card>
 
-          <DateTimePickerComponent
-            placeholder="Please Choose the Due Date"
-            format="dd-mm-yyyy hh:mm a"
-            id="duedate"
-            value={state.duedate}
-            className="e-field"
-            data-name="duedate"
-            onChange={onChangeDateField}
-          />
+          <Card style={{ marginBottom: 20, border: "none", boxShadow: "none", width: '100%' }}>
+            <Autocomplete
+              data-testid="autocomplete"
+              options={state.priorities}
+              getOptionLabel={(option) => option}
+              onChange={onChangePriorities}
+              value={state.priority}
+              renderInput={(params) => (
+                <TextField
+                  style={{ marginTop: 5 }}
+                  {...params}
+                  label="priority"
+                  variant="outlined"
+                  fullWidth
+                />
+              )}
+            />
+          </Card>
 
-          {state.isUpdate && (
+          <Card style={{ marginBottom: 10, border: "none", boxShadow: "none", width: '100%' }}>
             <DateTimePickerComponent
-              placeholder="Please Choose the Completion Date"
+              placeholder="Please Choose the Due Date"
               format="dd-mm-yyyy hh:mm a"
               id="duedate"
-              value={state.completiondate}
+              value={state.duedate}
               className="e-field"
               data-name="duedate"
-              onChange={onChangeCompletionDateField}
+              onChange={onChangeDateField}
             />
-          )}
+          </Card>
 
-          <Autocomplete
-            data-testid="autocomplete"
-            options={state.difficulties}
-            getOptionLabel={(option) => option}
-            style={{ width: "100%" }}
-            onChange={onChangeDifficulties}
-            value={state.difficulty}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="difficulty"
-                variant="outlined"
-                fullWidth
+          <Card style={{ marginBottom: 20, border: "none", boxShadow: "none", width: '100%' }}>
+            {state.isUpdate && (
+              <DateTimePickerComponent
+                placeholder="Please Choose the Completion Date"
+                format="dd-mm-yyyy hh:mm a"
+                id="completiondate"
+                value={state.completiondate}
+                className="e-field"
+                data-name="completiondate"
+                onChange={onChangeCompletionDateField}
               />
             )}
-          />
+          </Card>
 
-          <TextField
-            id="outlined-basic"
-            label="Description of Task"
-            variant="outlined"
-            style={{
-              width: "100%",
-              marginTop: 10,
-              marginBottom: 15,
-            }}
-            onChange={onChangeDescriptionField}
-            value={state.description}
-          />
+          <Card style={{ marginBottom: 20, border: "none", boxShadow: "none", width: '100%' }}>
+            <Autocomplete
+              data-testid="autocomplete"
+              options={state.difficulties.map(diff => {return diff})}
+              getOptionLabel={(option) => option[0]}
+              style={{ width: "100%" }}
+              onChange={onChangeDifficulties}
+              value={state.difficulty}
+              renderInput={(params) => (
+                <TextField
+                  style={{ marginTop: 5 }}
+                  {...params}
+                  label="difficulty"
+                  variant="outlined"
+                  fullWidth
+                />
+              )}
+            />
+          </Card>
+
+          <Card style={{ marginBottom: 20, border: "none", boxShadow: "none", width: '100%' }}>
+            <TextField
+              id="outlined-basic"
+              label="Description of Task"
+              variant="outlined"
+              style={{
+                width: "100%",
+                marginTop: 10,
+              }}
+              onChange={onChangeDescriptionField}
+              value={state.description}
+            />
+          </Card>
 
           <Typography align="center">
             <Button
               style={{
-                marginTop: 50,
                 marginRight: 50,
               }}
               disabled={buttonDisabled}
@@ -506,9 +540,6 @@ const AddTask = (props) => {
               Save Task
             </Button>
             <Button
-              style={{
-                marginTop: 50,
-              }}
               disabled={!state.isUpdate}
               color="error"
               variant="contained"
