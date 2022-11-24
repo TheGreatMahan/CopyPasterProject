@@ -1,7 +1,6 @@
 import React, { useState, useReducer, useEffect } from "react";
 import { ThemeProvider } from "@mui/material/styles";
-import { useNavigate } from "react-router-dom";
-import { Route, Link, Routes } from "react-router-dom";
+// import { useNavigate, Route, Link, Routes } from "react-router-dom";
 // import Logo from "./worldimage.png"
 import {
     AppBar,
@@ -23,7 +22,7 @@ import { ReactSession } from 'react-client-session';
 //const bcrypt = require('bcrypt');
 //import bcrypt from 'bcrypt';
 
-const navigate = useNavigate();
+// const navigate = useNavigate();
 
 const Home = () => {
     const initialState = {
@@ -36,7 +35,8 @@ const Home = () => {
     useEffect(() => {
         let username = ReactSession.get("username");
         if(username){
-            navigate("/home");
+            // navigate("/home");
+            alert("Yes");
         }
     })
 
