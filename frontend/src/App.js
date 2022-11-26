@@ -89,19 +89,19 @@ const App = () => {
               open={Boolean(anchorEl)}
               onClose={handleClose}
             >
-              {!auth.user &&
+              {
+                console.log(auth.user)
+              }
+              {auth.user == '' &&
                 <MenuItem onClick={handleClose} component={Link} to="/login">Login</MenuItem>
               }
-              {!auth.user &&
+              {auth.user == ''&&
                 <MenuItem onClick={handleClose} component={Link} to="/register">Register</MenuItem>
               }
-              {!!auth.user &&
-                <MenuItem onClick={handleClose} component={Link} to="/register">Register</MenuItem>
-              }
-              {!!auth.user &&
+              {auth.user !== ''&&
                 <MenuItem onClick={handleClose} component={Link} to="/home">Home</MenuItem>
               }
-              {!!auth.user && 
+              {auth.user !== ''&& 
                 <MenuItem onClick={handleClose} component={Link} to="/logout">Log Out</MenuItem>
               }
             </Menu>

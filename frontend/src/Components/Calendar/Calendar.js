@@ -15,7 +15,6 @@ import {
   Resize,
   DragAndDrop,
 } from "@syncfusion/ej2-react-schedule";
-//import "./schedule-component.css";
 import { extend } from "@syncfusion/ej2-base";
 import { DatePickerComponent } from "@syncfusion/ej2-react-calendars";
 import { updateSampleSection } from "./sample-base";
@@ -123,19 +122,13 @@ function editorTemplate(props) {
   );
 }
 
-// function eventTemplate(props) {
-//   return (<div>
-// <div className="name">{props.name}</div>
-// <div className="time">
-// Time: {this.getTimeString(props.StartTime)} - {this.getTimeString(props.EndTime)}</div>
-// </div>);
-// }
-
 function Calendar() {
 
     const reducer = (state, newState) => ({ ...state, ...newState });
     const [state, setState] = useReducer(reducer, initialState);
   
+    const auth = useAuth();
+
     React.useEffect(() => {
       updateSampleSection();
       datamanager();
@@ -168,33 +161,7 @@ function Calendar() {
         });
       //   updateSampleSection();
       // }
-    }
-
-    // const datamanager = async () => {
-    //   new DataManager({
-    //     adaptor: new GraphQLAdaptor({
-    //       query: `query {calendarfindall {_id, EventID, Subject StartTime, EndTime, CategoryColor}}`,
-    //       response: {
-    //         result: "calendarfindall",
-    //       },
-    //     }),
-    //     url: "http://localhost:5000/graphql",
-    //   })
-    //     .executeQuery(new Query().take(100))
-    //     .then((e) => {
-    //       let data = e.result;
-    //       // data.forEach((task) => {
-    //       //   task.duedate = new Date(task.duedate);
-    //       // });
-    //       setState({ data: data });
-    //       console.log(data);
-    //     });
-    //   //   updateSampleSection();
-    //   // }
-    // }
-  
-  
-  
+    }  
   
     let scheduleObj;
     // const data = extend([], dataSource.scheduleData, null, true);
@@ -206,9 +173,9 @@ function Calendar() {
   //render() {
     return (
       <Card style={{ maxHeight: "550px", overflow: "auto" }}>
-        
+        Something {auth.user}
          {
-
+            console.log("username: "+ auth.user)
          }
          {//state.data !== null &&
         <div className="schedule-control-section">

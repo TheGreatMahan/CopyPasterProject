@@ -7,10 +7,13 @@ import theme from "../theme";
 import "../App.css";
 
 import Logo from "../images/logo.png";
+import { useAuth } from './Auth';
 
 const Logout = () => {
   const navigate = useNavigate();
 
+  const auth = useAuth();
+  auth.logout();
   const loginPage = () => {
     navigate("/login");
   };
