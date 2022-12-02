@@ -61,12 +61,13 @@ const resolvers = {
         db = await dbRtns.getDBInstance();
         let task = {
             username: args.username,
-            name: args.name,
+            Subject: args.Subject,
             priority: args.priority,
-            duedate: args.duedate,
+            StartTime: args.StartTime,
+            EndTime: args.EndTime,
             completiondate: args.completiondate,
             difficulty: args.difficulty,
-            description: args.description,
+            Description: args.Description,
             color: args.color,
             points: args.points
         };
@@ -81,12 +82,13 @@ const resolvers = {
             theId = new ObjectID(theId);
             let task = {
                 username: args.username,
-                name: args.name,
+                Subject: args.Subject,
                 priority: args.priority,
-                duedate: args.duedate,
+                StartTime: args.StartTime,
+                EndTime: args.EndTime,
                 completiondate: args.completiondate,
                 difficulty: args.difficulty,
-                description: args.description,
+                Description: args.Description,
                 color: args.color,
                 points: args.points
             };
