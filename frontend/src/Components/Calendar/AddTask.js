@@ -324,6 +324,11 @@ const AddTask = (props) => {
 
       setState({
         contactServer: true,
+        nameOfTask: "",
+        priority: "-1",
+        duedate: "",
+        difficulty: "-1",
+        description: ""
       });
       sendSnackToApp(`Added Task on ${json.data.addtask.StartTime}`);
       console.log(json);
