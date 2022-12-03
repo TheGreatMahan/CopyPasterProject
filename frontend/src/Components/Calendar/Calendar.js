@@ -280,7 +280,7 @@ function Calendar() {
             case "very hard":
                 difficultyNumeric = 4;
                 break;
-            case "death":
+            case "NIGHTMARE":
                 difficultyNumeric = 5;
                 break;
             default:
