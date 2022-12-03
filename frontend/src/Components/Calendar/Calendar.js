@@ -289,13 +289,15 @@ function Calendar() {
         }
         let priority = document.getElementById("Priority").value;
         let description = document.getElementById("Description").value;
+        let startDate = document.getElementById("StartTime").value;
+        let endDate = document.getElementById("EndTime").value;
 
         const Data = {
             Subject: subject,
             username: "testman3",
             priority: priority,
-            StartDate: "2022-11-30T08:00:00.000Z",
-            EndDate: "",
+            StartDate: startDate,
+            EndDate: endDate,
             difficulty: difficultyNumeric,
             Description: description,
             color: "",
