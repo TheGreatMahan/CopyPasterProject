@@ -16,7 +16,7 @@ import {
   DragAndDrop,
 } from "@syncfusion/ej2-react-schedule";
 //import "./schedule-component.css";
-import { extend } from "@syncfusion/ej2-base";
+import {extend, L10n} from "@syncfusion/ej2-base";
 import { DatePickerComponent } from "@syncfusion/ej2-react-calendars";
 import { updateSampleSection } from "./sample-base";
 import { DropDownListComponent } from "@syncfusion/ej2-react-dropdowns";
@@ -28,8 +28,20 @@ import {
   Query,
   GraphQLAdaptor,
 } from "@syncfusion/ej2-data";
-import { Card, CardHeader, CardContent } from "@mui/material";
+import {Card, CardHeader, CardContent, Button, TextField} from "@mui/material";
 import "../../App.css";
+import {findByTestId} from "@testing-library/react";
+
+L10n.load({
+    'en-US': {
+        'schedule': {
+            'saveButton': 'Add',
+            'cancelButton': 'Close',
+            'deleteButton': 'Remove',
+            'newEvent': 'Add Event',
+        },
+    }
+});
 
 
 const initialState = {
@@ -37,6 +49,44 @@ const initialState = {
   contactServer: false,
   data: [],
   scheduleObj: {}
+};
+
+const GRAPHURL = "http://localhost:5000/graphql";
+
+const fireAddTask = async (task) => {
+        try {
+            let query = JSON.stringify({
+                query: `mutation {addtask(name: "${task.name}", username: "${task.username}", priority: ${task.priority} , duedate: "${task.duedate}"
+                , completiondate: "${task.completiondate}", difficulty: ${task.difficulty}, description: "${task.description}", points: ${task.points} ) {duedate}}`,
+            });
+            let response = await fetch(GRAPHURL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json; charset=utf-8",
+                },
+                body: query,
+            });
+            let json = await response.json();
+            //0941166
+
+            /*setState({
+                contactServer: true,
+                nameOfTask: "",
+                priority: "-1",
+                duedate: "",
+                difficulty: "-1",
+                description: ""
+            });
+            sendSnackToApp(`Added Task on ${json.data.addtask.duedate}`);
+
+             */
+        } catch (error) {
+            /*setState({
+                contactServer: true,
+            });*/
+            //sendSnackToApp(`${error.message} - task not added`);
+            console.log(error);
+        }
 };
 
 function editorTemplate(props) {
@@ -111,6 +161,23 @@ function editorTemplate(props) {
                 height: "60px !important",
                 resize: "vertical",
               }}
+            ></textarea>
+          </td>
+        </tr>
+        <tr>
+          <td className="e-textlabel">Priority</td>
+          <td colSpan={4}>
+            <textarea
+                id="Priority"
+                className="e-field e-input"
+                name="Priority"
+                rows={2}
+                cols={50}
+                style={{
+                  width: "100%",
+                  height: "60px !important",
+                  resize: "vertical",
+                }}
             ></textarea>
           </td>
         </tr>
@@ -195,6 +262,47 @@ function Calendar() {
   
   
     let scheduleObj;
+
+    const onAddTask = () => {
+        let subject = document.getElementById("Subject").value;
+        let difficultyStr = document.getElementById("EventType").value;
+        let difficultyNumeric = 0;
+        switch (difficultyStr) {
+            case "easy":
+                difficultyNumeric = 1;
+                break;
+            case "normal":
+                difficultyNumeric = 2;
+                break;
+            case "hard":
+                difficultyNumeric = 3;
+                break;
+            case "very hard":
+                difficultyNumeric = 4;
+                break;
+            case "death":
+                difficultyNumeric = 5;
+                break;
+            default:
+                difficultyNumeric = 1;
+                break;
+        }
+        let priority = document.getElementById("Priority").value;
+        let description = document.getElementById("Description").value;
+
+        const Data = {
+            Subject: subject,
+            username: "testman3",
+            priority: priority,
+            StartDate: "2022-11-30T08:00:00.000Z",
+            EndDate: "",
+            difficulty: difficultyNumeric,
+            Description: description,
+            color: "",
+            points: 0,
+        }
+        scheduleObj.save().addEvent(fireAddTask(Data));
+    }
     // const data = extend([], dataSource.scheduleData, null, true);
   
     function onDragStart(args) {

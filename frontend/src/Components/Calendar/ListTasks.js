@@ -27,7 +27,7 @@ import "../../App.css";
 
 const ListTasks = (props) => {
   const initialState = {
-    snackBarMsg: "",
+    //snackBarMsg: "",
     msg: "",
     contactServer: false,
     advisories: [],
