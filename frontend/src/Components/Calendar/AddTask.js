@@ -23,24 +23,25 @@ const AddTask = (props) => {
     users: [],
     selectedUser: "testman3",
     buttonDisabled: true,
-    nameOfTask: "",
+    Subject: "",
     priority: "-1",
-    duedate: "",
+    StartTime: "",
+    EndTime: "",
     completiondate: "",
     difficulty: "-1",
-    description: "",
+    Description: "",
     color: "",
     _id: "",
     isUpdate: false,
     points: 0,
     difficulties: [
-      ['easy', 0], 
-      ['normal', 1], 
-      ['hard', 2], 
-      ['very hard', 3], 
-      ['death', 4]
+      ["easy", 0],
+      ["normal", 1],
+      ["hard", 2],
+      ["very hard", 3],
+      ["NIGHTMARE", 4],
     ],
-    priorities: Array.from({ length: 11 }, (x, i) => i.toString()),
+    priorities: Array.from({ length: 5 }, (x, i) => (i + 1).toString()),
   };
 
   const GRAPHURL = "http://localhost:5000/graphql";
@@ -61,8 +62,8 @@ const AddTask = (props) => {
   }, []);
 
   const getKeyByValue = (object, value) => {
-    return state.difficulties.find((diff) => diff[1] === value)
-  }
+    return state.difficulties.find((diff) => diff[1] === value);
+  };
 
   const fetchTask = async () => {
     if (props.id !== null) {
@@ -80,24 +81,31 @@ const AddTask = (props) => {
             "Content-Type": "application/json; charset=utf-8",
           },
           body: JSON.stringify({
-            query: `query {taskbyid(_id: "${props.id}") {_id, name, username, priority, duedate, 
-                completiondate, difficulty, description, color, points}}`,
+            query: `query {taskbyid(_id: "${props.id}") {_id, Subject, username, priority, StartTime, EndTime, 
+                completiondate, difficulty, Description, color, points}}`,
           }),
         });
         let payload = await response.json();
 
-
-        console.log(Object.entries(state.difficulties).map(diff => {return diff}));
+        console.log(
+          Object.entries(state.difficulties).map((diff) => {
+            return diff;
+          })
+        );
         setState({
           selectedUser: payload.data.taskbyid.username,
-          nameOfTask: payload.data.taskbyid.name,
-            priority: payload.data.taskbyid.priority.toString(),
-            duedate: new Date(payload.data.taskbyid.duedate),
-            completiondate: new Date(payload.data.taskbyid.completiondate),
-            difficulty: getKeyByValue(state.difficulties, payload.data.taskbyid.difficulty),
-            description: payload.data.taskbyid.description,
-            color: payload.data.taskbyid.color,
-            points: payload.data.taskbyid.points
+          Subject: payload.data.taskbyid.Subject,
+          priority: payload.data.taskbyid.priority.toString(),
+          StartTime: new Date(payload.data.taskbyid.StartTime),
+          EndTime: new Date(payload.data.taskbyid.EndTime),
+          completiondate: new Date(payload.data.taskbyid.completiondate),
+          difficulty: getKeyByValue(
+            state.difficulties,
+            payload.data.taskbyid.difficulty
+          ),
+          Description: payload.data.taskbyid.Description,
+          color: payload.data.taskbyid.color,
+          points: payload.data.taskbyid.points,
         });
         sendSnackToApp(`${payload.data.taskbyid.name} task loaded`);
       } catch (error) {
@@ -160,10 +168,10 @@ const AddTask = (props) => {
       : setState({ priority: "-1" });
 
     if (
-      state.nameOfTask === "" ||
+      state.Subject === "" ||
       state.selectedUser === null ||
-      state.duedate === "" ||
-      state.description === "" ||
+      state.StartTime === "" ||
+      state.Description === "" ||
       state.difficulty === -1 ||
       state.priority === -1
     ) {
@@ -175,14 +183,14 @@ const AddTask = (props) => {
 
   const onChangeDifficulties = (e, selectedOption) => {
     selectedOption
-      ? setState({ difficulty: selectedOption  })
+      ? setState({ difficulty: selectedOption })
       : setState({ difficulty: state.difficulties[0] });
 
     if (
-      state.nameOfTask === "" ||
+      state.Subject === "" ||
       state.selectedUser === null ||
-      state.duedate === "" ||
-      state.description === "" ||
+      state.StartTime === "" ||
+      state.Description === "" ||
       state.difficulty === -1 ||
       state.priority === -1
     ) {
@@ -194,16 +202,16 @@ const AddTask = (props) => {
 
   const onChangeNameField = (e, selectedOption) => {
     setState({
-      nameOfTask: e.target.value,
+      Subject: e.target.value,
     });
 
     if (
-      state.nameOfTask === "" ||
+      state.Subject === "" ||
       state.selectedUser === null ||
-      state.duedate === "" ||
+      state.StartTime === "" ||
       state.difficulty === -1 ||
       state.priority === -1 ||
-      state.description === ""
+      state.Description === ""
     ) {
       setButtonDisabled(true);
     } else {
@@ -213,13 +221,13 @@ const AddTask = (props) => {
 
   const onChangeDescriptionField = (e, selectedOption) => {
     setState({
-      description: e.target.value,
+      Description: e.target.value,
     });
 
     if (
-      state.nameOfTask === "" ||
+      state.Subject === "" ||
       state.selectedUser === null ||
-      state.duedate === "" ||
+      state.StartTime === "" ||
       state.difficulty === -1 ||
       state.priority === -1
     ) {
@@ -231,15 +239,15 @@ const AddTask = (props) => {
 
   const onChangeDateField = (e, selectedOption) => {
     setState({
-      duedate: e.value,
+      StartTime: e.value,
     });
 
     if (
-      state.nameOfTask === "" ||
+      state.Subject === "" ||
       state.selectedUser === null ||
       state.difficulty === -1 ||
       state.priority === -1 ||
-      state.description === ""
+      state.Description === ""
     ) {
       setButtonDisabled(true);
     } else {
@@ -253,12 +261,12 @@ const AddTask = (props) => {
     });
 
     if (
-      state.nameOfTask === "" ||
+      state.Subject === "" ||
       state.selectedUser === null ||
-      state.duedate === "" ||
+      state.StartTime === "" ||
       state.difficulty === -1 ||
       state.priority === -1 ||
-      state.description === ""
+      state.Description === ""
     ) {
       setButtonDisabled(true);
     } else {
@@ -268,17 +276,20 @@ const AddTask = (props) => {
 
   const buttonPress = async () => {
     //const d = new Date();
+    let enddate = state.StartTime;
+    enddate.setHours(enddate.getHours() + 1);
     let task = {
       id: state._id,
-      name: state.nameOfTask,
+      Subject: state.Subject,
       username: state.selectedUser,
       priority: parseInt(state.priority),
-      duedate: state.duedate.toISOString(),
+      StartTime: state.StartTime.toISOString(),
+      EndTime: enddate,
       completiondate: "",
       difficulty: state.difficulty[1],
-      description: state.description,
+      Description: state.Description,
       color: state.color,
-      points: state.points
+      points: state.points,
     };
 
     let myHeaders = new Headers();
@@ -299,8 +310,8 @@ const AddTask = (props) => {
     sendSnackToApp(`Adding task for ${task.name}`);
     try {
       let query = JSON.stringify({
-        query: `mutation {addtask(name: "${task.name}",username: "${task.username}", priority: ${task.priority} , duedate: "${task.duedate}"
-                , completiondate: "${task.completiondate}", difficulty: ${task.difficulty}, description: "${task.description}", points: ${task.points} ) { duedate }}`,
+        query: `mutation {addtask(Subject: "${task.Subject}", username: "${task.username}", priority: ${task.priority} , StartTime: "${task.StartTime}", EndTime: "${task.EndTime}"
+                , completiondate: "${task.completiondate}", difficulty: ${task.difficulty}, Description: "${task.Description}", points: ${task.points} ) { StartTime }}`,
       });
       let response = await fetch(GRAPHURL, {
         method: "POST",
@@ -319,7 +330,9 @@ const AddTask = (props) => {
         difficulty: "-1",
         description: ""
       });
-      sendSnackToApp(`Added Task on ${json.data.addtask.duedate}`);
+      sendSnackToApp(`Added Task on ${json.data.addtask.StartTime}`);
+      console.log(json);
+      clearBoxes();
     } catch (error) {
       setState({
         contactServer: true,
@@ -328,12 +341,22 @@ const AddTask = (props) => {
     }
   };
 
+  const clearBoxes = () => {
+    setState({Subject: "",
+    priority: "-1",
+    StartTime: "",
+    EndTime: "",
+    completiondate: "",
+    difficulty: "-1",
+    Description: ""});
+    props.onClose();
+  }
   const updateTask = async (task) => {
     sendSnackToApp(`Updating task for ${task.name}`);
     try {
       let query = JSON.stringify({
-        query: `mutation {updatetask(_id: "${task.id}", name: "${task.name}", username: "${task.username}", priority: ${task.priority} , duedate: "${task.duedate}"
-                , completiondate: "${task.completiondate}", difficulty: ${task.difficulty}, description: "${task.description}", points: ${task.points} ) { msg }}`,
+        query: `mutation {updatetask(_id: "${task.id}", Subject: "${task.Subject}", username: "${task.username}", priority: ${task.priority} , StartTime: "${task.StartTime}",
+                EndTime: "${task.EndTime}", completiondate: "${task.completiondate}", difficulty: ${task.difficulty}, Description: "${task.Description}", points: ${task.points} ) { msg }}`,
       });
       let response = await fetch(GRAPHURL, {
         method: "POST",
@@ -348,6 +371,7 @@ const AddTask = (props) => {
         contactServer: true,
       });
       sendSnackToApp(`${json.data.updatetask.msg}`);
+      clearBoxes();
     } catch (error) {
       setState({
         contactServer: true,
@@ -375,6 +399,7 @@ const AddTask = (props) => {
         contactServer: true,
       });
       sendSnackToApp(`${json.data.deletetask.msg}`);
+      clearBoxes();
     } catch (error) {
       setState({
         contactServer: true,
@@ -385,13 +410,18 @@ const AddTask = (props) => {
 
   return (
     <Modal
-      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        width: "100%",
+        height: "100%",
+      }}
       aria-labelledby="Task Info"
       aria-describedby="simple-modal-description"
       open={props.open}
       onClose={props.onClose}
     >
-
       <Card style={{ width: 500, height: 600 }}>
         <CardContent>
           <Typography
@@ -415,7 +445,6 @@ const AddTask = (props) => {
             Add Task
           </Typography>
 
-
           {/* <Autocomplete
               data-testid="autocomplete"
               options={state.users.map((user) => {
@@ -435,19 +464,32 @@ const AddTask = (props) => {
               )}
             /> */}
 
-
-          <Card style={{ marginBottom: 20, border: "none", boxShadow: "none", width: '100%' }}>
+          <Card
+            style={{
+              marginBottom: 20,
+              border: "none",
+              boxShadow: "none",
+              width: "100%",
+            }}
+          >
             <TextField
-              style={{ width: '100%', marginTop: 5 }}
+              style={{ width: "100%", marginTop: 5 }}
               id="outlined-basic"
               label="Name of Task"
               variant="outlined"
               onChange={onChangeNameField}
-              value={state.nameOfTask}
+              value={state.Subject}
             />
           </Card>
 
-          <Card style={{ marginBottom: 20, border: "none", boxShadow: "none", width: '100%' }}>
+          <Card
+            style={{
+              marginBottom: 20,
+              border: "none",
+              boxShadow: "none",
+              width: "100%",
+            }}
+          >
             <Autocomplete
               data-testid="autocomplete"
               options={state.priorities}
@@ -466,19 +508,33 @@ const AddTask = (props) => {
             />
           </Card>
 
-          <Card style={{ marginBottom: 10, border: "none", boxShadow: "none", width: '100%' }}>
+          <Card
+            style={{
+              marginBottom: 10,
+              border: "none",
+              boxShadow: "none",
+              width: "100%",
+            }}
+          >
             <DateTimePickerComponent
               placeholder="Please Choose the Due Date"
               format="dd-mm-yyyy hh:mm a"
               id="duedate"
-              value={state.duedate}
+              value={state.StartTime}
               className="e-field"
               data-name="duedate"
               onChange={onChangeDateField}
             />
           </Card>
 
-          <Card style={{ marginBottom: 20, border: "none", boxShadow: "none", width: '100%' }}>
+          <Card
+            style={{
+              marginBottom: 20,
+              border: "none",
+              boxShadow: "none",
+              width: "100%",
+            }}
+          >
             {state.isUpdate && (
               <DateTimePickerComponent
                 placeholder="Please Choose the Completion Date"
@@ -492,10 +548,19 @@ const AddTask = (props) => {
             )}
           </Card>
 
-          <Card style={{ marginBottom: 20, border: "none", boxShadow: "none", width: '100%' }}>
+          <Card
+            style={{
+              marginBottom: 20,
+              border: "none",
+              boxShadow: "none",
+              width: "100%",
+            }}
+          >
             <Autocomplete
               data-testid="autocomplete"
-              options={state.difficulties.map(diff => {return diff})}
+              options={state.difficulties.map((diff) => {
+                return diff;
+              })}
               getOptionLabel={(option) => option[0]}
               style={{ width: "100%" }}
               onChange={onChangeDifficulties}
@@ -512,7 +577,14 @@ const AddTask = (props) => {
             />
           </Card>
 
-          <Card style={{ marginBottom: 20, border: "none", boxShadow: "none", width: '100%' }}>
+          <Card
+            style={{
+              marginBottom: 20,
+              border: "none",
+              boxShadow: "none",
+              width: "100%",
+            }}
+          >
             <TextField
               id="outlined-basic"
               label="Description of Task"
@@ -522,7 +594,7 @@ const AddTask = (props) => {
                 marginTop: 10,
               }}
               onChange={onChangeDescriptionField}
-              value={state.description}
+              value={state.Description}
             />
           </Card>
 
