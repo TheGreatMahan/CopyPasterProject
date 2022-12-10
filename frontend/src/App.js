@@ -7,11 +7,7 @@ import Home from "./Components/Home";
 import Login from "./Components/Login";
 import Register from "./Components/Register";
 import Logout from "./Components/Logout";
-// import ResetAlerts from "./Project1/ResetAlerts";
-// import AddAdvisory from "./Project1/AddAdvisory";
-// import ListAdvisory from "./Project1/ListAdvisories";
 import ListTasks from "./Components/Calendar/ListTasks";
-
 import {
   Toolbar,
   AppBar,
@@ -22,6 +18,7 @@ import {
   Snackbar,
   Box,
 } from "@mui/material";
+
 const App = () => {
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -33,7 +30,6 @@ const App = () => {
   };
 
   const reducer = (state, newState) => ({ ...state, ...newState });
-
   const [state, setState] = useReducer(reducer, initialState);
 
   const handleClose = () => {
@@ -42,6 +38,7 @@ const App = () => {
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
+
   const snackbarClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
@@ -98,41 +95,16 @@ const App = () => {
             <MenuItem onClick={handleClose} component={Link} to="/logout">
               Log Out
             </MenuItem>
-            {/* <MenuItem
-                            onClick={handleClose}
-                            component={Link}
-                            to="/resetalerts"
-                        >
-                            Reset Alerts
-                        </MenuItem>
-                        <MenuItem
-                            onClick={handleClose}
-                            component={Link}
-                            to="/addadvisory"
-                        >
-                            Add Advisory
-                        </MenuItem>
-                        <MenuItem
-                            onClick={handleClose}
-                            component={Link}
-                            to="/listadvisory"
-                        >
-                            List Advisory
-                        </MenuItem> */}
           </Menu>
         </Toolbar>
       </AppBar>
       <div>
         <Routes>
-          <Route path="/" element={<Login dataFromChild={dataFromChild}/>} />
-          <Route path="/Login" element={<Login dataFromChild={dataFromChild}/>} />
-          <Route path="/register" element={<Register dataFromChild={dataFromChild}/>} />
-          <Route path="/logout" element={<Logout dataFromChild={dataFromChild}/>} />
+          <Route path="/" element={<Login dataFromChild={dataFromChild} />} />
+          <Route path="/login" element={<Login dataFromChild={dataFromChild} />} />
+          <Route path="/register" element={<Register dataFromChild={dataFromChild} />} />
+          <Route path="/logout" element={<Logout dataFromChild={dataFromChild} />} />
           <Route path="/home" element={<Home dataFromChild={dataFromChild} />} />
-
-          {/* <Route path="/resetalerts" element={<ResetAlerts dataFromChild={msgFromChild} />} />
-                    <Route path="/addadvisory" element={<AddAdvisory dataFromChild={msgFromChild} />} />
-                    <Route path="/listadvisory" element={<ListAdvisory dataFromChild={msgFromChild} />} /> */}
         </Routes>
       </div>
 
@@ -145,4 +117,5 @@ const App = () => {
     </ThemeProvider>
   );
 };
+
 export default App;

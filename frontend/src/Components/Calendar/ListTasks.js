@@ -1,6 +1,5 @@
 import React, { useReducer, useEffect } from "react";
 import { ThemeProvider } from "@mui/material/styles";
-import Logo from "../worldimage.png";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -58,12 +57,10 @@ const ListTasks = (props) => {
       width: 300,
       renderCell: (params) => {
         let date = new Date(params.row.StartTime);
-        console.log(date.toISOString());
         return date.toString();
       },
       sortComparator: (v1, v2) => v1.localeCompare(v2),
     },
-
     {
       field: "difficulty",
       headerName: "Task Difficulty",
@@ -71,11 +68,11 @@ const ListTasks = (props) => {
       width: 130,
       sortable: true,
       valueGetter: (params) =>
-      `${state.difficulties[params.row.difficulty]}`,
+        `${state.difficulties[params.row.difficulty]}`,
     },
   ];
 
-  const sendSnackToApp = (msg) => {
+  const sendMessageToSnackbar = (msg) => {
     props.dataFromChild(msg);
   };
   const reducer = (state, newState) => ({ ...state, ...newState });
@@ -94,7 +91,7 @@ const ListTasks = (props) => {
       setState({
         contactServer: true,
       });
-      sendSnackToApp("Loading tasks");
+      sendMessageToSnackbar("Loading tasks");
 
       let response = await fetch(GRAPHURL, {
         method: "POST",
@@ -107,7 +104,7 @@ const ListTasks = (props) => {
       });
       let payload = await response.json();
       console.log(payload);
-      sendSnackToApp(
+      sendMessageToSnackbar(
         `found ${payload.data.tasksforuser.length} tasks for ${user}`
       );
 
@@ -120,7 +117,7 @@ const ListTasks = (props) => {
       return payload.data.tasksforuser;
     } catch (error) {
       console.log(error);
-      sendSnackToApp(`Problem loading server data - ${error.message}`);
+      sendMessageToSnackbar(`Problem loading server data - ${error.message}`);
     }
   };
 
@@ -134,13 +131,11 @@ const ListTasks = (props) => {
 
   return (
     <ThemeProvider theme={theme}>
-      <Card style={{}}>
         <CardHeader
           title="Your Tasks"
-          style={{ textAlign: "center", marginTop: 60 }}
+          style={{ textAlign: "center", marginTop: 20 }}
         />
-        <CardContent>
-          <div style={{ height: 400, width: "100%" }}>
+          <div style={{ height: "500px", maxHeight: "600px", width: "100%" }}>
             <DataGrid
               getRowId={(row) => row._id}
               rows={state.listForTable}
@@ -155,7 +150,7 @@ const ListTasks = (props) => {
               open={state.isOpen}
               onClose={handleClose}
               id={state.selectedId}
-              dataFromChild={sendSnackToApp}
+              dataFromChild={sendMessageToSnackbar}
             ></AddTask>
           )}
           <ControlPointIcon
@@ -164,8 +159,6 @@ const ListTasks = (props) => {
             onClick={(e) => handleClick(null)}
             className="addicon"
           ></ControlPointIcon>
-        </CardContent>
-      </Card>
     </ThemeProvider>
   );
 };
