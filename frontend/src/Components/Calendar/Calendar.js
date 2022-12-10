@@ -35,10 +35,11 @@ import {findByTestId} from "@testing-library/react";
 L10n.load({
     'en-US': {
         'schedule': {
-            'saveButton': 'Add',
+            'saveButton': '',
             'cancelButton': 'Close',
             'deleteButton': 'Remove',
-            'newEvent': 'Add Event',
+            'newEvent': 'Add Task',
+            'editEvent': 'Edit Task',
         },
     }
 });
@@ -56,8 +57,8 @@ const GRAPHURL = "http://localhost:5000/graphql";
 const fireAddTask = async (task) => {
         try {
             let query = JSON.stringify({
-                query: `mutation {addtask(name: "${task.name}", username: "${task.username}", priority: ${task.priority} , duedate: "${task.duedate}"
-                , completiondate: "${task.completiondate}", difficulty: ${task.difficulty}, description: "${task.description}", points: ${task.points} ) {duedate}}`,
+                query: `mutation {addtask(Subject: "${task.Subject}", username: "${task.username}", priority: ${task.priority} , StartTime: "${task.StartTime}"
+                , completiondate: "${task.completiondate}", EndTime: "${task.EndTime}" difficulty: ${task.difficulty}, Description: "${task.Description}", points: ${task.points} ) {StartTime}}`,
             });
             let response = await fetch(GRAPHURL, {
                 method: "POST",
@@ -114,9 +115,9 @@ function editorTemplate(props) {
           <td colSpan={4}>
             <DatePickerComponent
               id="StartTime"
-              format="dd/MM/yy"
+              format="dd-mm-yyyy hh:mm a"
               data-name="StartTime"
-              value={new Date(props.startTime || props.StartTime)}
+              value={props.StartTime}
               className="e-field"
               readonly
             ></DatePickerComponent>
@@ -127,9 +128,9 @@ function editorTemplate(props) {
           <td colSpan={4}>
             <DatePickerComponent
               id="EndTime"
-              format="dd/MM/yy"
+              format="dd-mm-yyyy hh:mm a"
               data-name="EndTime"
-              value={new Date(props.endTime || props.EndTime)}
+              value={props.EndTime}
               className="e-field"
             ></DatePickerComponent>
           </td>
@@ -143,7 +144,7 @@ function editorTemplate(props) {
               data-name="EventType"
               className="e-field"
               style={{ width: "100%" }}
-              dataSource={["easy", "normal", "hard", "very hard", "death"]}
+              dataSource={["easy", "normal", "hard", "very hard", "NIGHTMARE"]}
             ></DropDownListComponent>
           </td>
         </tr>
@@ -180,6 +181,63 @@ function editorTemplate(props) {
                 }}
             ></textarea>
           </td>
+            <Button
+                style={{
+                    marginRight: 50,
+                }}
+                variant="contained"
+                onClick={() => {
+                    let subject = document.getElementById("Subject").value;
+                    let difficultyStr = document.getElementById("EventType").value;
+                    let difficultyNumeric = 0;
+                    switch (difficultyStr) {
+                        case "easy":
+                            difficultyNumeric = 1;
+                            break;
+                        case "normal":
+                            difficultyNumeric = 2;
+                            break;
+                        case "hard":
+                            difficultyNumeric = 3;
+                            break;
+                        case "very hard":
+                            difficultyNumeric = 4;
+                            break;
+                        case "NIGHTMARE":
+                            difficultyNumeric = 5;
+                            break;
+                        default:
+                            difficultyNumeric = 1;
+                            break;
+                    }
+                    let priority = document.getElementById("Priority").value;
+                    let description = document.getElementById("Description").value;
+                    //let startTime = document.getElementById("StartTime").value;
+
+                    //let startTime = new Date(startTimeTemp);
+                    //let endTime = document.getElementById("EndTime").value;
+
+                    let endTime = props.StartTime;
+                    endTime.setHours(endTime.getHours() + 1);
+
+                    const Data = {
+                        Subject: subject,
+                        username: "testman3",
+                        priority: priority,
+                        StartTime: props.StartTime.toISOString(),
+                        EndTime: endTime,
+                        difficulty: difficultyNumeric,
+                        Description: description,
+                        completiondate: "",
+                        color: "",
+                        points: 0,
+                    }
+
+                    fireAddTask(Data); //TODO: Assign payload to some state
+                }}
+            >
+                Save Task
+            </Button>
         </tr>
       </tbody>
     </table>
@@ -209,7 +267,7 @@ function Calendar() {
     const datamanager = async () => {
       new DataManager({
         adaptor: new GraphQLAdaptor({
-          query: `query {tasksforuser(username: "testman3") {_id, name, description, duedate, priority, difficulty, color, completiondate}}`,
+          query: `query {tasksforuser(username: "testman3") {_id, Subject, Description, StartTime, EndTime, priority, difficulty, color, completiondate}}`,
           response: {
             result: "tasksforuser",
           },
@@ -220,12 +278,12 @@ function Calendar() {
         .then((e) => {
           let data = e.result;
           data.forEach((task) => {
-            let enddate = new Date(task.duedate);
-            enddate.setHours(enddate.getHours() + 1);
-            task.EndTime = enddate;
-            task.StartTime = task.duedate;
-            task.Subject = task.name;
-            task.Description = task.description;
+            //let enddate = new Date(task.duedate);
+            //enddate.setHours(enddate.getHours() + 1);
+            //task.EndTime = enddate;
+            //task.StartTime = task.duedate;
+            //task.Subject = task.name;
+            //task.Description = task.description;
             //task.StartTime = new Date(task.duedate);
           });
           setState({ data: data });
@@ -263,7 +321,7 @@ function Calendar() {
   
     let scheduleObj;
 
-    const onAddTask = () => {
+    /*const onAddTask = () => {
         let subject = document.getElementById("Subject").value;
         let difficultyStr = document.getElementById("EventType").value;
         let difficultyNumeric = 0;
@@ -289,22 +347,24 @@ function Calendar() {
         }
         let priority = document.getElementById("Priority").value;
         let description = document.getElementById("Description").value;
-        let startDate = document.getElementById("StartTime").value;
+        let startTime = document.getElementById("StartTime").value;
         let endDate = document.getElementById("EndTime").value;
 
         const Data = {
             Subject: subject,
             username: "testman3",
             priority: priority,
-            StartDate: startDate,
+            StartTime: startTime,
             EndDate: endDate,
             difficulty: difficultyNumeric,
             Description: description,
+            completiondate: "",
             color: "",
             points: 0,
         }
         scheduleObj.save().addEvent(fireAddTask(Data));
-    }
+    }*/ //END ADDTASK
+
     // const data = extend([], dataSource.scheduleData, null, true);
   
     function onDragStart(args) {
@@ -336,6 +396,7 @@ function Calendar() {
                 dragStart={onDragStart.bind(this)}
                 editorTemplate={editorTemplate.bind(this)}
                 timezone="America/New_York"
+                showQuickInfo={false}
               >
                  <ViewsDirective>
                    <ViewDirective option="Month" />

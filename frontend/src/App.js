@@ -49,7 +49,7 @@ const App = () => {
     setState({ gotData: false });
   };
 
-  const msgFromChild = (msg) => {
+  const dataFromChild = (msg) => {
     setState({ snackBarMsg: msg, gotData: true });
   };
 
@@ -124,11 +124,11 @@ const App = () => {
       </AppBar>
       <div>
         <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/Login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/logout" element={<Logout />} />
-          <Route path="/home" element={<Home dataFromChild={msgFromChild} />} />
+          <Route path="/" element={<Login dataFromChild={dataFromChild}/>} />
+          <Route path="/Login" element={<Login dataFromChild={dataFromChild}/>} />
+          <Route path="/register" element={<Register dataFromChild={dataFromChild}/>} />
+          <Route path="/logout" element={<Logout dataFromChild={dataFromChild}/>} />
+          <Route path="/home" element={<Home dataFromChild={dataFromChild} />} />
 
           {/* <Route path="/resetalerts" element={<ResetAlerts dataFromChild={msgFromChild} />} />
                     <Route path="/addadvisory" element={<AddAdvisory dataFromChild={msgFromChild} />} />
