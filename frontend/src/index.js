@@ -5,6 +5,8 @@ import App from "./App";
 import { BrowserRouter as Router } from "react-router-dom";
 import reportWebVitals from "./reportWebVitals";
 import { registerLicense } from "@syncfusion/ej2-base";
+import { AuthProvider } from './Components/Auth';
+import { useAuth } from './Components/Auth';
 
 // Registering Syncfusion license key
 registerLicense(
@@ -12,10 +14,12 @@ registerLicense(
 );
 
 render(
-  <React.StrictMode>
-    <Router>
-      <App />
-    </Router>
-  </React.StrictMode>,
+  <AuthProvider>
+    <React.StrictMode>
+      <Router>
+        <App />
+      </Router>
+    </React.StrictMode>
+  </AuthProvider>,
   document.querySelector("#root")
 );

@@ -173,11 +173,6 @@ function Calendar() {
   //render() {
     return (
       <Card style={{ maxHeight: "550px", overflow: "auto" }}>
-        Something {auth.user}
-         {
-            console.log("username: "+ auth.user)
-         }
-         {//state.data !== null &&
         <div className="schedule-control-section">
            <div className="col-lg-9 control-section">
              <div className="control-wrapper">
@@ -206,7 +201,7 @@ function Calendar() {
                </ScheduleComponent>
              </div>
            </div>
-        </div> }
+        </div>
     </Card> 
     );
   }

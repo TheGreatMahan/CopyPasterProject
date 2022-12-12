@@ -8,8 +8,6 @@ import Login from "./Components/Login";
 import Register from "./Components/Register";
 import Logout from "./Components/Logout";
 import ListTasks from "./Components/Calendar/ListTasks";
-import { ReactSession } from 'react-client-session';
-import { AuthProvider } from './Components/Auth';
 import { useAuth } from './Components/Auth';
 
 import {
@@ -65,7 +63,7 @@ const App = () => {
   };
 
   return (
-    <AuthProvider>
+
       <ThemeProvider theme={theme}>
         <AppBar
           position="relative"
@@ -74,7 +72,7 @@ const App = () => {
         >
           <Toolbar>
             <Typography variant="h6" color="inherit" noWrap component="div">
-              Team: Copypasters
+              Welcome {auth.user}
             </Typography>
             <IconButton
               onClick={handleClick}
@@ -92,10 +90,10 @@ const App = () => {
               {
                 console.log(auth.user)
               }
-              {auth.user == '' &&
+              {auth.user === '' &&
                 <MenuItem onClick={handleClose} component={Link} to="/login">Login</MenuItem>
               }
-              {auth.user == ''&&
+              {auth.user === ''&&
                 <MenuItem onClick={handleClose} component={Link} to="/register">Register</MenuItem>
               }
               {auth.user !== ''&&
@@ -124,7 +122,7 @@ const App = () => {
           onClose={snackbarClose}
         />
       </ThemeProvider>
-    </AuthProvider>
+
 
   );
 };
