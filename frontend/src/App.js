@@ -18,6 +18,7 @@ import {
   Snackbar,
   Box,
 } from "@mui/material";
+import { useAuth } from './Components/Auth';
 
 const App = () => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -28,6 +29,8 @@ const App = () => {
     isOpen: false,
     openModal: false,
   };
+
+  const auth = useAuth();
 
   const reducer = (state, newState) => ({ ...state, ...newState });
   const [state, setState] = useReducer(reducer, initialState);
@@ -68,7 +71,12 @@ const App = () => {
       >
         <Toolbar>
           <Typography variant="h6" color="inherit" noWrap component="div">
-            Team: Copypasters
+            {auth.user === '' &&
+              "Team: Copypasters"
+            } 
+            {auth.user !== '' &&
+              `Welcome ${auth.user}`
+            }
           </Typography>
           <IconButton
             onClick={handleClick}
@@ -83,18 +91,18 @@ const App = () => {
             open={Boolean(anchorEl)}
             onClose={handleClose}
           >
-            <MenuItem onClick={handleClose} component={Link} to="/login">
-              Login
-            </MenuItem>
-            <MenuItem onClick={handleClose} component={Link} to="/register">
-              Register
-            </MenuItem>
-            <MenuItem onClick={handleClose} component={Link} to="/home">
-              Home
-            </MenuItem>
-            <MenuItem onClick={handleClose} component={Link} to="/logout">
-              Log Out
-            </MenuItem>
+          {auth.user == '' &&
+            <MenuItem onClick={handleClose} component={Link} to="/login">Login</MenuItem>
+          }
+          {auth.user == ''&&
+            <MenuItem onClick={handleClose} component={Link} to="/register">Register</MenuItem>
+          }
+          {auth.user !== ''&&
+            <MenuItem onClick={handleClose} component={Link} to="/home">Home</MenuItem>
+          }
+          {auth.user !== ''&& 
+            <MenuItem onClick={handleClose} component={Link} to="/logout">Log Out</MenuItem>
+          }
           </Menu>
         </Toolbar>
       </AppBar>

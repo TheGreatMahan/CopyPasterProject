@@ -17,6 +17,8 @@ import theme from "../theme";
 import "../App.css";
 
 import Logo from "../images/logo.png";
+import { useAuth } from './Auth';
+
 
 //const bcrypt = require('bcrypt');
 //import bcrypt from 'bcrypt';
@@ -36,6 +38,8 @@ const Login = (props) => {
     snackBarMsg: "",
     msg: ""
   };
+
+  const auth = useAuth();
 
   const GRAPHURL = "http://localhost:5000/graphql"
 
@@ -85,6 +89,7 @@ const Login = (props) => {
       console.log(json);
       if (json.data.userlogin.msg) {
         sendMessageToSnackbar("Successfully Logged In!");
+        auth.login(state.handleUsername);
         navigate("/home");
       } else {
         sendMessageToSnackbar("Login Failed: Incorrect Username or Password");
