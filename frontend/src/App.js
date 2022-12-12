@@ -9,7 +9,6 @@ import Register from "./Components/Register";
 import Logout from "./Components/Logout";
 import ListTasks from "./Components/Calendar/ListTasks";
 import { useAuth } from './Components/Auth';
-
 import {
   Toolbar,
   AppBar,
@@ -20,6 +19,7 @@ import {
   Snackbar,
   Box,
 } from "@mui/material";
+
 const App = () => {
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -33,7 +33,6 @@ const App = () => {
   const auth = useAuth();
 
   const reducer = (state, newState) => ({ ...state, ...newState });
-
   const [state, setState] = useReducer(reducer, initialState);
 
   const handleClose = () => {
@@ -42,6 +41,7 @@ const App = () => {
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
+
   const snackbarClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
@@ -49,7 +49,7 @@ const App = () => {
     setState({ gotData: false });
   };
 
-  const msgFromChild = (msg) => {
+  const dataFromChild = (msg) => {
     setState({ snackBarMsg: msg, gotData: true });
   };
 
@@ -111,19 +111,12 @@ const App = () => {
             <Route path="/Login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/logout" element={<Logout />} />
-            <Route path="/home" element={<Home dataFromChild={msgFromChild} />} />
+            <Route path="/home" element={<Home/>} />
           </Routes>
         </div>
-
-        <Snackbar
-          open={state.gotData}
-          message={state.snackBarMsg}
-          autoHideDuration={3000}
-          onClose={snackbarClose}
-        />
-      </ThemeProvider>
-
+    </ThemeProvider>
 
   );
 };
+
 export default App;
