@@ -142,7 +142,7 @@ function Calendar() {
     const datamanager = async () => {
       new DataManager({
         adaptor: new GraphQLAdaptor({
-          query: `query {tasksforuser(username: "testman3") {_id, name, description, duedate, priority, difficulty, color, completiondate}}`,
+          query: `query {tasksforuser(username: "testman3") {_id, Subject, Description, StartTime, EndTime, priority, difficulty, color, completiondate}}`,
           response: {
             result: "tasksforuser",
           },
@@ -153,12 +153,12 @@ function Calendar() {
         .then((e) => {
           let data = e.result;
           data.forEach((task) => {
-            let enddate = new Date(task.duedate);
-            enddate.setHours(enddate.getHours() + 1);
-            task.EndTime = enddate;
-            task.StartTime = task.duedate;
-            task.Subject = task.name;
-            task.Description = task.description;
+            // let enddate = new Date(task.duedate);
+            // enddate.setHours(enddate.getHours() + 1);
+            // task.EndTime = enddate;
+            // task.StartTime = task.duedate;
+            // task.Subject = task.name;
+            // task.Description = task.description;
             //task.StartTime = new Date(task.duedate);
           });
           setState({ data: data });
