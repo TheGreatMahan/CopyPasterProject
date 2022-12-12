@@ -1,5 +1,5 @@
 const MongoClient = require("mongodb").MongoClient;
-const { atlas, testdb } = require("./config");
+const { atlas, testtestdb, testdb } = require("./config");
 
 let db;
 const getDBInstance = async () => {

@@ -12,6 +12,7 @@ type Query {
     advisories: [Advisory]
     userlogin(username: String, password: String): Message
     users: [User]
+    calendarfindall: [Calendar]
 }
 
 type Results {
@@ -54,20 +55,31 @@ type Advisory{
 type Task {
     _id: String
     username: String
-    name: String 
+    Subject: String 
     priority: Int
-    duedate: String 
+    StartTime: String 
+    EndTime: String
     completiondate: String 
     difficulty: Int
-    description: String
+    Description: String
     color: String
+    points: Float
+}
+
+type Calendar {
+    _id: String
+    EventID: Int
+    Subject: String
+    StartTime: String
+    EndTime: String
+    CategoryColor: String
 }
 
 type Mutation{
     addadvisory(name: String, country: String, text:String, date:String): Advisory
-    addtask(username: String, name: String, priority: Int, duedate: String, completiondate: String, difficulty: Int, description: String, color: String) : Task
+    addtask(username: String, Subject: String, priority: Int, StartTime: String, EndTime: String, completiondate: String, difficulty: Int, Description: String, color: String, points: Float) : Task
     adduser(username: String, password: String): UserDetail
-    updatetask(_id: String, username: String, name: String, priority: Int, duedate: String, completiondate: String, difficulty: Int, description: String, color: String) : UpdateMessage
+    updatetask(_id: String, username: String, Subject: String, priority: Int, StartTime: String, EndTime: String, completiondate: String, difficulty: Int, Description: String, color: String, points: Float) : UpdateMessage
     deletetask(_id: String) : UpdateMessage
 }
 `);

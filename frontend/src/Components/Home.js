@@ -35,13 +35,10 @@ const Home = (props) => {
   };
 
   // const GRAPHURL = "http://localhost:5000/graphql";
-  // test commit
   const GRAPHURL = "/graphql";
 
   const reducer = (state, newState) => ({ ...state, ...newState });
   const [state, setState] = useReducer(reducer, initialState);
-  // const [buttonDisabled, setButtonDisabled] = useState(true);
-  //useEffect(() => {}, []);
 
   const drawerWidth = 240;
 
@@ -52,7 +49,7 @@ const Home = (props) => {
     setMobileOpen(!mobileOpen);
   };
 
-  const sendSnackToApp = (msg) => {
+  const sendMessageToSnackbar = (msg) => {
     props.dataFromChild(msg);
   };
 
@@ -96,7 +93,7 @@ const Home = (props) => {
           </Drawer>
           <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
             {state.currentView === "Tasks List" && (
-              <ListTasks dataFromChild={sendSnackToApp} />
+              <ListTasks dataFromChild={sendMessageToSnackbar} />
             )}
             {state.currentView === "Calendar" && <Calendar />}
             {/* {state.currentView === "Growth Stats" && <GrowthStats />} */}

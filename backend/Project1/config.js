@@ -11,5 +11,7 @@ module.exports = {
     advisories: process.env.ADVISORIES,
     tasks: process.env.TASKS,
     testdb: process.env.DBTEST,
-    users: process.env.USERCOLLECTION
+    users: process.env.USERCOLLECTION,
+    calendar: process.env.CALENDARCOLLECTION,
+    testtestdb: process.env.DBTESTTEST
 };

@@ -10,25 +10,39 @@ import {
   Typography,
   Button,
   TextField,
+  Snackbar,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import theme from "../theme";
 import "../App.css";
 
 import Logo from "../images/logo.png";
+import { useAuth } from './Auth';
+
 
 //const bcrypt = require('bcrypt');
 //import bcrypt from 'bcrypt';
 
-const Login = () => {
+const Login = (props) => {
+
+
+  const sendMessageToSnackbar = (msg) => {
+    props.dataFromChild(msg)
+  };
+
   const initialState = {
     handleUsername: "",
     handlePassword: "",
     holdPasswordData: "",
     isClicked: false,
+    snackBarMsg: "",
+    msg: ""
   };
 
-  const GRAPHURL = "http://localhost:5000/graphql";
+  const auth = useAuth();
+
+  const GRAPHURL = "http://localhost:5000/graphql"
+
 
   const reducer = (state, newState) => ({ ...state, ...newState });
   const [state, setState] = useReducer(reducer, initialState);
@@ -74,9 +88,11 @@ const Login = () => {
       let json = await response.json();
       console.log(json);
       if (json.data.userlogin.msg) {
-        alert("Successfully logged in");
+        sendMessageToSnackbar("Successfully Logged In!");
+        auth.login(state.handleUsername);
+        navigate("/home");
       } else {
-        alert("Login Failed");
+        sendMessageToSnackbar("Login Failed: Incorrect Username or Password");
       }
     } catch (error) {
       console.log(error);
