@@ -24,7 +24,7 @@ const Logout = () => {
     <ThemeProvider theme={theme}>
       <Card style={{ textAlign: "center" }}>
         <img src={Logo} alt="Logo" style={{ width: "20%" }} />
-        <CardHeader title="You are loged out" />
+        <CardHeader title="You are logged out" />
         <Button
           style={{ marginBottom: 30 }}
           color="secondary"

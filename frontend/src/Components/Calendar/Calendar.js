@@ -77,6 +77,8 @@ const Calendar = (props) => {
     datamanager();
   }, []);
 
+  const auth = useAuth();
+
   const datamanager = async () => {
     try {
       new DataManager({
@@ -133,7 +135,6 @@ const Calendar = (props) => {
       //sendMessageToSnackbar(`Task not added: ${error}`);
       console.log(error);
     }
-
     datamanager();
   };
 
