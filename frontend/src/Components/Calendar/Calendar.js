@@ -16,7 +16,7 @@ import {
   DragAndDrop,
 } from "@syncfusion/ej2-react-schedule";
 //import "./schedule-component.css";
-import { extend } from "@syncfusion/ej2-base";
+import { extend, L10n } from "@syncfusion/ej2-base";
 import { DatePickerComponent } from "@syncfusion/ej2-react-calendars";
 import { updateSampleSection } from "./sample-base";
 import { DropDownListComponent } from "@syncfusion/ej2-react-dropdowns";
@@ -28,98 +28,9 @@ import {
   Query,
   GraphQLAdaptor,
 } from "@syncfusion/ej2-data";
-import { Card, CardHeader, CardContent } from "@mui/material";
+import { Card, CardHeader, CardContent, Button, TextField } from "@mui/material";
 import "../../App.css";
-
-
-const initialState = {
-  snackBarMsg: "",
-  contactServer: false,
-  data: [],
-  scheduleObj: {}
-};
-
-function editorTemplate(props) {
-  return props !== undefined ? (
-    <table
-      className="custom-event-editor"
-      style={{ width: "100%" }}
-      cellPadding={5}
-    >
-      <tbody>
-        <tr>
-          <td className="e-textlabel">Subject</td>
-          <td colSpan={4}>
-            <input
-              id="Subject"
-              className="e-field e-input"
-              type="text"
-              name="Subject"
-              style={{ width: "100%" }}
-            />
-          </td>
-        </tr>
-        <tr>
-          <td className="e-textlabel">Start date</td>
-          <td colSpan={4}>
-            <DatePickerComponent
-              id="StartTime"
-              format="dd/MM/yy"
-              data-name="StartTime"
-              value={new Date(props.startTime || props.StartTime)}
-              className="e-field"
-              readonly
-            ></DatePickerComponent>
-          </td>
-        </tr>
-        <tr>
-          <td className="e-textlabel">Finish date</td>
-          <td colSpan={4}>
-            <DatePickerComponent
-              id="EndTime"
-              format="dd/MM/yy"
-              data-name="EndTime"
-              value={new Date(props.endTime || props.EndTime)}
-              className="e-field"
-            ></DatePickerComponent>
-          </td>
-        </tr>
-        <tr>
-          <td className="e-textlabel">Difficulty</td>
-          <td colSpan={4}>
-            <DropDownListComponent
-              id="EventType"
-              placeholder="Choose difficulty"
-              data-name="EventType"
-              className="e-field"
-              style={{ width: "100%" }}
-              dataSource={["easy", "normal", "hard", "very hard", "death"]}
-            ></DropDownListComponent>
-          </td>
-        </tr>
-        <tr>
-          <td className="e-textlabel">Description</td>
-          <td colSpan={4}>
-            <textarea
-              id="Description"
-              className="e-field e-input"
-              name="Description"
-              rows={2}
-              cols={50}
-              style={{
-                width: "100%",
-                height: "60px !important",
-                resize: "vertical",
-              }}
-            ></textarea>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  ) : (
-    <div></div>
-  );
-}
+import { findByTestId } from "@testing-library/react";
 
 // function eventTemplate(props) {
 //   return (<div>
@@ -129,116 +40,262 @@ function editorTemplate(props) {
 // </div>);
 // }
 
-function Calendar() {
+const Calendar = (props) => {
 
-    const reducer = (state, newState) => ({ ...state, ...newState });
-    const [state, setState] = useReducer(reducer, initialState);
-  
-    React.useEffect(() => {
-      updateSampleSection();
-      datamanager();
-    }, []);
-  
-    const datamanager = async () => {
-      new DataManager({
-        adaptor: new GraphQLAdaptor({
-          query: `query {tasksforuser(username: "testman3") {_id, Subject, Description, StartTime, EndTime, priority, difficulty, color, completiondate}}`,
-          response: {
-            result: "tasksforuser",
-          },
-        }),
-        url: "http://localhost:5000/graphql",
-      })
-        .executeQuery(new Query().take(100))
-        .then((e) => {
-          let data = e.result;
-          data.forEach((task) => {
-            // let enddate = new Date(task.duedate);
-            // enddate.setHours(enddate.getHours() + 1);
-            // task.EndTime = enddate;
-            // task.StartTime = task.duedate;
-            // task.Subject = task.name;
-            // task.Description = task.description;
-            //task.StartTime = new Date(task.duedate);
-          });
-          setState({ data: data });
-          console.log(data);
-        });
-      //   updateSampleSection();
-      // }
+  const initialState = {
+    snackBarMsg: "",
+    contactServer: false,
+    data: [],
+    scheduleObj: {},
+    difficulties: ["easy", "normal", "hard", "very hard", "NIGHTMARE"]
+  };
+
+  L10n.load({
+    'en-US': {
+      'schedule': {
+        'saveButton': '',
+        'cancelButton': 'Close',
+        'deleteButton': 'Remove',
+        'newEvent': 'Add Task',
+        'editEvent': 'Edit Task',
+      },
     }
+  });
 
-    // const datamanager = async () => {
-    //   new DataManager({
-    //     adaptor: new GraphQLAdaptor({
-    //       query: `query {calendarfindall {_id, EventID, Subject StartTime, EndTime, CategoryColor}}`,
-    //       response: {
-    //         result: "calendarfindall",
-    //       },
-    //     }),
-    //     url: "http://localhost:5000/graphql",
-    //   })
-    //     .executeQuery(new Query().take(100))
-    //     .then((e) => {
-    //       let data = e.result;
-    //       // data.forEach((task) => {
-    //       //   task.duedate = new Date(task.duedate);
-    //       // });
-    //       setState({ data: data });
-    //       console.log(data);
-    //     });
-    //   //   updateSampleSection();
-    //   // }
-    // }
+  const GRAPHURL = "http://localhost:5000/graphql";
+
+  // const sendMessageToSnackbar = (msg) => {
+  //   props.dataFromChild(msg);
+  // };
+
+  const reducer = (state, newState) => ({ ...state, ...newState });
+  const [state, setState] = useReducer(reducer, initialState);
+
+  useEffect(() => {
+    updateSampleSection();
+    datamanager();
+  }, []);
+
+  const datamanager = async () => {
+    new DataManager({
+      adaptor: new GraphQLAdaptor({
+        query: `query {tasksforuser(username: "testman3") {_id, Subject, Description, StartTime, EndTime, priority, difficulty, color, completiondate}}`,
+        response: {
+          result: "tasksforuser",
+        },
+      }),
+      url: "http://localhost:5000/graphql",
+    })
+      .executeQuery(new Query().take(100))
+      .then((e) => {
+        let data = e.result;
+        setState({ data: data });
+        console.log(data);
+      });
+  }
+
+  const fireAddTask = async (task) => {
+    try {
+      let query = JSON.stringify({
+        query: `mutation {addtask(Subject: "${task.Subject}", username: "${task.username}", priority: ${task.priority} , StartTime: "${task.StartTime}"
+                  , completiondate: "${task.completiondate}", EndTime: "${task.EndTime}" difficulty: ${task.difficulty}, Description: "${task.Description}", points: ${task.points} ) {StartTime}}`,
+      });
+      let response = await fetch(GRAPHURL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+        },
+        body: query,
+      });
+      //sendMessageToSnackbar(`Added Task due: ${json.data.addtask.duedate}`);
+      console.log('added task on calendar');
+      let json = await response.json();
+      //0941166
+
+      /*setState({
+          contactServer: true,
+          nameOfTask: "",
+          priority: "-1",
+          duedate: "",
+          difficulty: "-1",
+          description: ""
+      });
   
-  
-  
-  
-    let scheduleObj;
-    // const data = extend([], dataSource.scheduleData, null, true);
-  
-    function onDragStart(args) {
-      args.navigation.enable = true;
+       */
+    } catch (error) {
+      //sendMessageToSnackbar(`Task not added: ${error}`);
+      console.log(error);
     }
+  };
 
-  //render() {
-    return (
-      <Card style={{ maxHeight: "550px", overflow: "auto" }}>
-        
-//         {//state.data !== null &&
+  function editorTemplate(props) {
+    return props !== undefined ? (
+      <table
+        className="custom-event-editor"
+        style={{ width: "100%" }}
+        cellPadding={5}
+      >
+        <tbody>
+          <tr>
+            <td className="e-textlabel">Subject</td>
+            <td colSpan={4}>
+              <input
+                id="Subject"
+                className="e-field e-input"
+                type="text"
+                name="Subject"
+                style={{ width: "100%" }}
+              />
+            </td>
+          </tr>
+          <tr>
+            <td className="e-textlabel">Start date</td>
+            <td colSpan={4}>
+              <DatePickerComponent
+                id="StartTime"
+                format="dd-mm-yyyy hh:mm a"
+                data-name="StartTime"
+                value={props.StartTime}
+                className="e-field"
+                readonly
+              ></DatePickerComponent>
+            </td>
+          </tr>
+          <tr>
+            <td className="e-textlabel">Finish date</td>
+            <td colSpan={4}>
+              <DatePickerComponent
+                id="EndTime"
+                format="dd-mm-yyyy hh:mm a"
+                data-name="EndTime"
+                value={props.EndTime}
+                className="e-field"
+              ></DatePickerComponent>
+            </td>
+          </tr>
+          <tr>
+            <td className="e-textlabel">Difficulty</td>
+            <td colSpan={4}>
+              <DropDownListComponent
+                id="EventType"
+                placeholder="Choose difficulty"
+                data-name="EventType"
+                className="e-field"
+                style={{ width: "100%" }}
+                dataSource={state.difficulties}
+              ></DropDownListComponent>
+            </td>
+          </tr>
+          <tr>
+            <td className="e-textlabel">Description</td>
+            <td colSpan={4}>
+              <textarea
+                id="Description"
+                className="e-field e-input"
+                name="Description"
+                rows={2}
+                cols={50}
+                style={{
+                  width: "100%",
+                  height: "60px !important",
+                  resize: "vertical",
+                }}
+              ></textarea>
+            </td>
+          </tr>
+          <tr>
+            <td className="e-textlabel">Priority</td>
+            <td colSpan={4}>
+              <textarea
+                id="Priority"
+                className="e-field e-input"
+                name="Priority"
+                rows={2}
+                cols={50}
+                style={{
+                  width: "100%",
+                  height: "60px !important",
+                  resize: "vertical",
+                }}
+              ></textarea>
+            </td>
+            <Button
+              style={{
+                marginRight: 50,
+              }}
+              variant="contained"
+              onClick={() => {
+                let subject = document.getElementById("Subject").value;
+                let difficultyStr = document.getElementById("EventType").value;
+                let difficultyNumeric = state.difficulties.indexOf(difficultyStr);
+                let priority = document.getElementById("Priority").value;
+                let description = document.getElementById("Description").value;
+                let endTime = props.StartTime;
+                endTime.setHours(endTime.getHours() + 1);
+
+                const Data = {
+                  Subject: subject,
+                  username: "testman3",
+                  priority: priority,
+                  StartTime: props.StartTime.toISOString(),
+                  EndTime: endTime,
+                  difficulty: difficultyNumeric,
+                  Description: description,
+                  completiondate: "",
+                  color: "",
+                  points: 0,
+                }
+                fireAddTask(Data); //TODO: Assign payload to some state
+              }}
+            >
+              Save Task
+            </Button>
+          </tr>
+        </tbody>
+      </table>
+    ) : (
+      <div></div>
+    );
+  }
+
+  let scheduleObj;
+
+  function onDragStart(args) {
+    args.navigation.enable = true;
+  }
+
+  return (
+    <Card style={{ height: "551px", minHeight: "551px", maxHeight: "1000px", overflow: "auto" }}>
+
+      {//state.data !== null &&
         <div className="schedule-control-section">
-           <div className="col-lg-9 control-section">
-             <div className="control-wrapper">
-               <ScheduleComponent
-                height="650px"
+          <div className="col-lg-9 control-section">
+            <div className="control-wrapper">
+              <ScheduleComponent
+                height="550px"
                 ref={(schedule) => {
                   (scheduleObj = schedule)
                 }}
                 selectedDate={new Date().toJSON().slice(0, 10).replace(/-/g, "/")}
                 eventSettings={{
                   dataSource: state.data,
-                  // fields: {
-                  //   Id: "_id",
-                  //   Subject: { name: "name" },
-                  //   Description: { name: "description" },
-                  // },
-                }} //, query: query }}
+                }}
                 dragStart={onDragStart.bind(this)}
                 editorTemplate={editorTemplate.bind(this)}
                 timezone="America/New_York"
+                showQuickInfo={false}
               >
-                 <ViewsDirective>
-                   <ViewDirective option="Month" />
-                 </ViewsDirective>
-                 <Inject services={[Month]} />
-               </ScheduleComponent>
-             </div>
-           </div>
-        </div> }
-    </Card> 
-    );
-  }
-    
-//}
+                <ViewsDirective>
+                  <ViewDirective option="Month" />
+                </ViewsDirective>
+                <Inject services={[Month]} />
+              </ScheduleComponent>
+            </div>
+          </div>
+        </div>
+      }
+    </Card>
+  );
+}
 
 export default Calendar

@@ -1,6 +1,5 @@
 import React, { useReducer, useEffect } from "react";
 import { ThemeProvider } from "@mui/material/styles";
-import Logo from "../worldimage.png";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -27,7 +26,7 @@ import "../../App.css";
 
 const ListTasks = (props) => {
   const initialState = {
-    snackBarMsg: "",
+    //snackBarMsg: "",
     msg: "",
     contactServer: false,
     advisories: [],
@@ -58,12 +57,10 @@ const ListTasks = (props) => {
       width: 300,
       renderCell: (params) => {
         let date = new Date(params.row.StartTime);
-        console.log(date.toISOString());
         return date.toString();
       },
       sortComparator: (v1, v2) => v1.localeCompare(v2),
     },
-
     {
       field: "difficulty",
       headerName: "Task Difficulty",
@@ -76,7 +73,7 @@ const ListTasks = (props) => {
     },
   ];
 
-  const sendSnackToApp = (msg) => {
+  const sendMessageToSnackbar = (msg) => {
     props.dataFromChild(msg);
   };
   const reducer = (state, newState) => ({ ...state, ...newState });
@@ -95,7 +92,7 @@ const ListTasks = (props) => {
       setState({
         contactServer: true,
       });
-      sendSnackToApp("Loading tasks");
+      sendMessageToSnackbar("Loading tasks");
 
       let response = await fetch(GRAPHURL, {
         method: "POST",
@@ -108,7 +105,7 @@ const ListTasks = (props) => {
       });
       let payload = await response.json();
       console.log(payload);
-      sendSnackToApp(
+      sendMessageToSnackbar(
         `found ${payload.data.tasksforuser.length} tasks for ${user}`
       );
 
@@ -122,7 +119,7 @@ const ListTasks = (props) => {
       return payload.data.tasksforuser;
     } catch (error) {
       console.log(error);
-      sendSnackToApp(`Problem loading server data - ${error.message}`);
+      sendMessageToSnackbar(`Problem loading server data - ${error.message}`);
     }
   };
 
@@ -136,45 +133,37 @@ const ListTasks = (props) => {
 
   return (
     <ThemeProvider theme={theme}>
-
-      <Card style={{ border: "none", boxShadow: "none", display: 'flex', justifyContent: 'center', width: '100%' }}>
-
-        <CardContent>
-          <Card style={{ height: 500, width: 1000, border: "none", boxShadow: 'none' }}>
-            <CardHeader
-              title="Your Tasks"
-              style={{ marginTop: 60 }}
-            />
-
+        <CardHeader
+          title="Your Tasks"
+          style={{ textAlign: "center", marginTop: 20 }}
+        />
+          <div style={{ height: "500px", maxHeight: "600px", width: "100%" }}>
             <DataGrid
-              style={{ width: '100%' }}
+              style={{ width: '85%', height: '75%' }}
               getRowId={(row) => row._id}
               rows={state.listForTable}
               columns={columns}
-              pageSize={10}
-              rowsPerPageOptions={[10]}
+              pageSize={6}
+              rowsPerPageOptions={[6]}
               onRowClick={handleClick}
             />
-          </Card>
+            </div>
+          
 
           {state.isOpen && (
             <AddTask
               open={state.isOpen}
               onClose={handleClose}
               id={state.selectedId}
-              dataFromChild={sendSnackToApp}
+              dataFromChild={sendMessageToSnackbar}
             ></AddTask>
           )}
-        </CardContent>
-      </Card>
-
-      <Card style={{ border: "none", boxShadow: "none" }}>
-        <ControlPointIcon fontSize="large" style={{ position: "absolute", bottom: "50px", right: "50px" }}
-          onClick={(e) => handleClick(null)}
-          className="addicon"
-        ></ControlPointIcon>
-      </Card>
-
+          <ControlPointIcon
+            fontSize="large"
+            style={{ position: "absolute", bottom: "50px", right: "50px" }}
+            onClick={(e) => handleClick(null)}
+            className="addicon"
+          ></ControlPointIcon>
     </ThemeProvider>
   );
 };

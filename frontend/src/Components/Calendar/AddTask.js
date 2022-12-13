@@ -1,6 +1,5 @@
 import React, { useReducer, useEffect, useState } from "react";
 import { ThemeProvider } from "@mui/material/styles";
-import Logo from "./../worldimage.png";
 import {
   Autocomplete,
   TextField,
@@ -14,9 +13,10 @@ import {
 import { DateTimePickerComponent } from "@syncfusion/ej2-react-calendars";
 import theme from "../../theme";
 import "../../App.css";
-
 import { IntegrationInstructionsRounded } from "@mui/icons-material";
+
 const AddTask = (props) => {
+
   const initialState = {
     snackBarMsg: "",
     contactServer: false,
@@ -45,14 +45,12 @@ const AddTask = (props) => {
   };
 
   const GRAPHURL = "http://localhost:5000/graphql";
-  //const GRAPHURL = "/graphql";
 
-  const sendSnackToApp = (msg) => {
+  const sendMessageToSnackbar = (msg) => {
     props.dataFromChild(msg);
   };
 
   const reducer = (state, newState) => ({ ...state, ...newState });
-
   const [state, setState] = useReducer(reducer, initialState);
 
   const [buttonDisabled, setButtonDisabled] = useState(true);
@@ -73,7 +71,7 @@ const AddTask = (props) => {
           isUpdate: true,
           _id: props.id,
         });
-        sendSnackToApp("Loading task");
+        sendMessageToSnackbar("Loading task");
 
         let response = await fetch(GRAPHURL, {
           method: "POST",
@@ -107,10 +105,10 @@ const AddTask = (props) => {
           color: payload.data.taskbyid.color,
           points: payload.data.taskbyid.points,
         });
-        sendSnackToApp(`${payload.data.taskbyid.name} task loaded`);
+        sendMessageToSnackbar(`${payload.data.taskbyid.name} task loaded`);
       } catch (error) {
         console.log(error);
-        sendSnackToApp(`Problem loading server data - ${error.message}`);
+        sendMessageToSnackbar(`Problem loading server data - ${error.message}`);
       }
     }
   };
@@ -120,7 +118,7 @@ const AddTask = (props) => {
   //     setState({
   //       contactServer: true,
   //     });
-  //     sendSnackToApp("Loading countries");
+  //     sendMessageToSnackbar("Loading countries");
 
   //     let response = await fetch(GRAPHURL, {
   //       method: "POST",
@@ -136,10 +134,10 @@ const AddTask = (props) => {
   //     setState({
   //       users: payload.data.users,
   //     });
-  //     sendSnackToApp(`${payload.data.users.length} users loaded`);
+  //     sendMessageToSnackbar(`${payload.data.users.length} users loaded`);
   //   } catch (error) {
   //     console.log(error);
-  //     sendSnackToApp(`Problem loading server data - ${error.message}`);
+  //     sendMessageToSnackbar(`Problem loading server data - ${error.message}`);
   //   }
   // };
 
@@ -307,7 +305,7 @@ const AddTask = (props) => {
   };
 
   const addTask = async (task) => {
-    sendSnackToApp(`Adding task for ${task.name}`);
+    sendMessageToSnackbar(`Adding task for ${task.name}`);
     try {
       let query = JSON.stringify({
         query: `mutation {addtask(Subject: "${task.Subject}", username: "${task.username}", priority: ${task.priority} , StartTime: "${task.StartTime}", EndTime: "${task.EndTime}"
@@ -330,14 +328,15 @@ const AddTask = (props) => {
         difficulty: "-1",
         description: ""
       });
-      sendSnackToApp(`Added Task on ${json.data.addtask.StartTime}`);
+      console.log('added task on list');
+      sendMessageToSnackbar(`Added Task on ${json.data.addtask.StartTime}`);
       console.log(json);
       clearBoxes();
     } catch (error) {
       setState({
         contactServer: true,
       });
-      sendSnackToApp(`${error.message} - task not added`);
+      sendMessageToSnackbar(`${error.message} - task not added`);
     }
   };
 
@@ -351,8 +350,9 @@ const AddTask = (props) => {
     Description: ""});
     props.onClose();
   }
+  
   const updateTask = async (task) => {
-    sendSnackToApp(`Updating task for ${task.name}`);
+    sendMessageToSnackbar(`Updating task for ${task.name}`);
     try {
       let query = JSON.stringify({
         query: `mutation {updatetask(_id: "${task.id}", Subject: "${task.Subject}", username: "${task.username}", priority: ${task.priority} , StartTime: "${task.StartTime}",
@@ -370,18 +370,18 @@ const AddTask = (props) => {
       setState({
         contactServer: true,
       });
-      sendSnackToApp(`${json.data.updatetask.msg}`);
+      sendMessageToSnackbar(`${json.data.updatetask.msg}`);
       clearBoxes();
     } catch (error) {
       setState({
         contactServer: true,
       });
-      sendSnackToApp(`${error.message} - task not updated`);
+      sendMessageToSnackbar(`${error.message} - task not updated`);
     }
   };
 
   const deleteTask = async () => {
-    sendSnackToApp(`Updating task for ${state.name}`);
+    sendMessageToSnackbar(`Updating task for ${state.name}`);
     try {
       let query = JSON.stringify({
         query: `mutation {deletetask(_id: "${state._id}" ) { msg }}`,
@@ -398,13 +398,13 @@ const AddTask = (props) => {
       setState({
         contactServer: true,
       });
-      sendSnackToApp(`${json.data.deletetask.msg}`);
+      sendMessageToSnackbar(`${json.data.deletetask.msg}`);
       clearBoxes();
     } catch (error) {
       setState({
         contactServer: true,
       });
-      sendSnackToApp(`${error.message} - task not updated`);
+      sendMessageToSnackbar(`${error.message} - task not updated`);
     }
   };
 
@@ -627,4 +627,5 @@ const AddTask = (props) => {
     </Modal>
   );
 };
+
 export default AddTask;
