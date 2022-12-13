@@ -128,6 +128,19 @@ const Calendar = (props) => {
     }
   };
 
+  const onActionBegin = (args) => {
+    console.log(args);
+    if (args.requestType === 'eventCreate') {
+        // This block is execute before an appointment create
+    }
+    if (args.requestType === 'eventChange') {
+        // This block is execute before an appointment change
+    }
+    if(args.requestType === 'eventRemove') {
+        // This block is execute before an appointment remove
+    }
+  };
+
   function editorTemplate(props) {
     return props !== undefined ? (
       <table
