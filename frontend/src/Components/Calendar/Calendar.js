@@ -77,13 +77,11 @@ const Calendar = (props) => {
     datamanager();
   }, []);
 
-  const auth = useAuth();
-
   const datamanager = async () => {
     try {
       new DataManager({
         adaptor: new GraphQLAdaptor({
-          query: `query {tasksforuser(username: "${auth.user}"}) {_id, Subject, Description, StartTime, EndTime, priority, difficulty, color, completiondate}}`,
+          query: `query {tasksforuser(username: "${auth.user}") {_id, Subject, Description, StartTime, EndTime, priority, difficulty, color, completiondate}}`,
           response: {
             result: "tasksforuser",
           },
@@ -235,7 +233,7 @@ const Calendar = (props) => {
               style={{
                 marginTop: '20px',
                 width: '30px',
-                height: '30px'            
+                height: '30px'
               }}
               variant="contained"
               onClick={() => {
