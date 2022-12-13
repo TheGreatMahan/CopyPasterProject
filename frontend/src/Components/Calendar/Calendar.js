@@ -31,7 +31,7 @@ import {
 import { Card, CardHeader, CardContent, Button, TextField } from "@mui/material";
 import "../../App.css";
 import { findByTestId } from "@testing-library/react";
-
+import { useAuth } from "../Auth";
 // function eventTemplate(props) {
 //   return (<div>
 // <div className="name">{props.name}</div>
@@ -75,10 +75,12 @@ const Calendar = (props) => {
     datamanager();
   }, []);
 
+  const auth = useAuth();
+
   const datamanager = async () => {
     new DataManager({
       adaptor: new GraphQLAdaptor({
-        query: `query {tasksforuser(username: "testman3") {_id, Subject, Description, StartTime, EndTime, priority, difficulty, color, completiondate}}`,
+        query: `query {tasksforuser(username: "${auth.user}") {_id, Subject, Description, StartTime, EndTime, priority, difficulty, color, completiondate}}`,
         response: {
           result: "tasksforuser",
         },
@@ -136,6 +138,7 @@ const Calendar = (props) => {
       //sendMessageToSnackbar(`Task not added: ${error}`);
       console.log(error);
     }
+    datamanager();
   };
 
   function editorTemplate(props) {
@@ -163,7 +166,7 @@ const Calendar = (props) => {
             <td colSpan={4}>
               <DatePickerComponent
                 id="StartTime"
-                format="dd-mm-yyyy hh:mm a"
+                format="dd-MM-yyyy hh:mm a"
                 data-name="StartTime"
                 value={props.StartTime}
                 className="e-field"
@@ -176,7 +179,7 @@ const Calendar = (props) => {
             <td colSpan={4}>
               <DatePickerComponent
                 id="EndTime"
-                format="dd-mm-yyyy hh:mm a"
+                format="dd-MM-yyyy hh:mm a"
                 data-name="EndTime"
                 value={props.EndTime}
                 className="e-field"
@@ -265,7 +268,7 @@ const Calendar = (props) => {
 
                 const Data = {
                   Subject: subject,
-                  username: "testman3",
+                  username: auth.user,
                   priority: priority,
                   StartTime: props.StartTime.toISOString(),
                   EndTime: endTime,
