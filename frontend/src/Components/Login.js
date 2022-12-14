@@ -114,7 +114,7 @@ const Login = (props) => {
 
         <Card style={{ boxShadow: "none" }}>
           <TextField
-            style={{ width: "15%" }}
+            style={{ width: "15%", marginTop: 15 }}
             label="Enter username"
             onChange={handleUsernameFunction}
           />

@@ -23,6 +23,7 @@ import {
 } from "@mui/material";
 import theme from "../../theme";
 import "../../App.css";
+import {useAuth} from "../Auth";
 
 const ListTasks = (props) => {
   const initialState = {
@@ -41,6 +42,8 @@ const ListTasks = (props) => {
     gotData: false,
     difficulties: ["easy", "normal", "hard", "very hard", "NIGHTMARE"],
   };
+
+  const auth = useAuth();
 
   const columns = [
     { field: "Subject", headerName: "Task Name", width: 200 },
@@ -84,7 +87,7 @@ const ListTasks = (props) => {
   //const GRAPHURL = "/graphql";
 
   useEffect(() => {
-    fetchTasksForUser("testman3");
+    fetchTasksForUser(auth.user);
   }, []);
 
   const fetchTasksForUser = async (user) => {
