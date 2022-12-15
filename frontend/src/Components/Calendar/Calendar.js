@@ -31,6 +31,7 @@ import {
 import { Card, CardHeader, CardContent, Button, TextField } from "@mui/material";
 import "../../App.css";
 import { findByTestId } from "@testing-library/react";
+import { useAuth } from '../Auth';
 
 // function eventTemplate(props) {
 //   return (<div>
@@ -49,11 +50,13 @@ const Calendar = (props) => {
     scheduleObj: {}
   };
 
+  const auth = useAuth();
+
   L10n.load({
     'en-US': {
       'schedule': {
         'saveButton': '',
-        'cancelButton': 'Close',
+        'cancelButton': '',
         'deleteButton': 'Remove',
         'newEvent': 'Add Task',
         'editEvent': 'Edit Task',
@@ -71,37 +74,31 @@ const Calendar = (props) => {
   const [state, setState] = useReducer(reducer, initialState);
 
   useEffect(() => {
-    updateSampleSection();
     datamanager();
   }, []);
 
   const datamanager = async () => {
-    new DataManager({
-      adaptor: new GraphQLAdaptor({
-        query: `query {tasksforuser(username: "testman3") {_id, Subject, Description, StartTime, EndTime, priority, difficulty, color, completiondate}}`,
-        response: {
-          result: "tasksforuser",
-        },
-      }),
-      url: "http://localhost:5000/graphql",
-    })
-      .executeQuery(new Query().take(100))
-      .then((e) => {
-        let data = e.result;
-        data.forEach((task) => {
-          //let enddate = new Date(task.duedate);
-          //enddate.setHours(enddate.getHours() + 1);
-          //task.EndTime = enddate;
-          //task.StartTime = task.duedate;
-          //task.Subject = task.name;
-          //task.Description = task.description;
-          //task.StartTime = new Date(task.duedate);
+    try {
+      new DataManager({
+        adaptor: new GraphQLAdaptor({
+          query: `query {tasksforuser(username: "${auth.user}") {_id, Subject, Description, StartTime, EndTime, priority, difficulty, color, completiondate}}`,
+          response: {
+            result: "tasksforuser",
+          },
+        }),
+        url: "http://localhost:5000/graphql",
+      })
+        .executeQuery(new Query().take(100))
+        .then((e) => {
+          let data = e.result;
+          data.forEach((task) => {
+          });
+          setState({ data: data });
+          console.log(data);
         });
-        setState({ data: data });
-        console.log(data);
-      });
-    //   updateSampleSection();
-    // }
+    } catch (error) {
+      console.log('error fetching tasks');
+    }
   }
 
   const fireAddTask = async (task) => {
@@ -136,6 +133,7 @@ const Calendar = (props) => {
       //sendMessageToSnackbar(`Task not added: ${error}`);
       console.log(error);
     }
+    datamanager();
   };
 
   function editorTemplate(props) {
@@ -163,7 +161,7 @@ const Calendar = (props) => {
             <td colSpan={4}>
               <DatePickerComponent
                 id="StartTime"
-                format="dd-mm-yyyy hh:mm a"
+                format="dd-MM-yyyy hh:mm a"
                 data-name="StartTime"
                 value={props.StartTime}
                 className="e-field"
@@ -176,7 +174,7 @@ const Calendar = (props) => {
             <td colSpan={4}>
               <DatePickerComponent
                 id="EndTime"
-                format="dd-mm-yyyy hh:mm a"
+                format="dd-MM-yyyy hh:mm a"
                 data-name="EndTime"
                 value={props.EndTime}
                 className="e-field"
@@ -229,9 +227,13 @@ const Calendar = (props) => {
                 }}
               ></textarea>
             </td>
+          </tr>
+          <tr>
             <Button
               style={{
-                marginRight: 50,
+                marginTop: '20px',
+                width: '30px',
+                height: '30px'
               }}
               variant="contained"
               onClick={() => {
@@ -265,7 +267,7 @@ const Calendar = (props) => {
 
                 const Data = {
                   Subject: subject,
-                  username: "testman3",
+                  username: auth.user,
                   priority: priority,
                   StartTime: props.StartTime.toISOString(),
                   EndTime: endTime,
@@ -278,9 +280,10 @@ const Calendar = (props) => {
                 fireAddTask(Data); //TODO: Assign payload to some state
               }}
             >
-              Save Task
+              Add
             </Button>
           </tr>
+
         </tbody>
       </table>
     ) : (
@@ -297,7 +300,7 @@ const Calendar = (props) => {
   return (
     <Card style={{ height: "551px", minHeight: "551px", maxHeight: "1000px", overflow: "auto" }}>
 
-      {//state.data !== null &&
+      {
         <div className="schedule-control-section">
           <div className="col-lg-9 control-section">
             <div className="control-wrapper">
@@ -309,12 +312,7 @@ const Calendar = (props) => {
                 selectedDate={new Date().toJSON().slice(0, 10).replace(/-/g, "/")}
                 eventSettings={{
                   dataSource: state.data,
-                  // fields: {
-                  //   Id: "_id",
-                  //   Subject: { name: "name" },
-                  //   Description: { name: "description" },
-                  // },
-                }} //, query: query }}
+                }}
                 dragStart={onDragStart.bind(this)}
                 editorTemplate={editorTemplate.bind(this)}
                 timezone="America/New_York"
