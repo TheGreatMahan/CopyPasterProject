@@ -135,38 +135,104 @@ const Calendar = (props) => {
     datamanager();
   };
 
+  const updateTask = async (task) => {
+    //sendMessageToSnackbar(`Updating task for ${task.name}`);
+    try {
+      let query = JSON.stringify({
+        query: `mutation {updatetask(_id: "${task.id}", Subject: "${task.Subject}", username: "${task.username}", priority: ${task.priority} , StartTime: "${task.StartTime}",
+                EndTime: "${task.EndTime}", completiondate: "${task.completiondate}", difficulty: ${task.difficulty}, Description: "${task.Description}", points: ${task.points} ) { msg }}`,
+      });
+      let response = await fetch(GRAPHURL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+        },
+        body: query,
+      });
+      let json = await response.json();
+      console.log(json);
+      // setState({
+      //   contactServer: true,
+      // });
+      //sendMessageToSnackbar(`${json.data.updatetask.msg}`);
+      //clearBoxes();
+    } catch (error) {
+      // setState({
+      //   contactServer: true,
+      // });
+      //sendMessageToSnackbar(`${error.message} - task not updated`);
+      console.log(error);
+    }
+    datamanager();
+  };
+
+  const deleteTask = async (_id) => {
+    // sendMessageToSnackbar(`Updating task for ${state.name}`);
+    try {
+      let query = JSON.stringify({
+        query: `mutation {deletetask(_id: "${_id}" ) { msg }}`,
+      });
+      let response = await fetch(GRAPHURL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+        },
+        body: query,
+      });
+      let json = await response.json();
+      console.log(json);
+      // setState({
+      //   contactServer: true,
+      // });
+      // sendMessageToSnackbar(`${json.data.deletetask.msg}`);
+      // clearBoxes();
+    } catch (error) {
+      // setState({
+      //   contactServer: true,
+      // });
+      // sendMessageToSnackbar(`${error.message} - task not updated`);
+    }
+  };
+
   const onActionBegin = (args) => {
     console.log(args);
-    if (args.requestType === 'eventCreate') {
-        // This block is execute before an appointment create
-        let subject = document.getElementById("Subject").value;
-        let difficultyStr = document.getElementById("EventType").value;
-        let difficultyNumeric = state.difficulties.indexOf(difficultyStr);
-        let priority = document.getElementById("Priority").value;
-        let description = document.getElementById("Description").value;
-        let endTime = document.getElementById('StartTime').value;
+    let Data = {};
+    if(args.requestType === 'eventCreate' || args.requestType === 'eventChange')
+    {
+      let subject = args.data.Subject;
+        let difficultyStr = state.difficulties.indexOf(args.data.difficulty);
+        let priority = parseInt(args.data.priority);
+        let description = args.data.Description;
+        let endTime = new Date(args.data.StartTime);
         endTime.setHours(endTime.getHours() + 1);
+        let completiondate = args.data.completiondate;
+        let startTime = new Date(args.data.StartTime);
 
-        const Data = {
+        Data = {
+          id: args.data._id,
           Subject: subject,
           username: auth.user,
           priority: priority,
-          StartTime: props.StartTime.toISOString(),
+          StartTime: startTime.toISOString(),
           EndTime: endTime,
-          difficulty: difficultyNumeric,
+          difficulty: difficultyStr,
           Description: description,
-          completiondate: "",
+          completiondate: completiondate,
           color: "",
           points: 0,
         }
+    }
+    if (args.requestType === 'eventCreate') {
         fireAddTask(Data); //TODO: Assign payload to some state
       
     }
     if (args.requestType === 'eventChange') {
-        // This block is execute before an appointment change
+
+        updateTask(Data);
     }
     if(args.requestType === 'eventRemove') {
         // This block is execute before an appointment remove
+        deleteTask(args.data[0]._id);
     }
   };
 
@@ -212,6 +278,7 @@ const Calendar = (props) => {
                 data-name="completiondate"
                 value={props1.completiondate}
                 className="e-field"
+                displayDefaultDate="false"
               ></DatePickerComponent>
             </td>
           </tr>
@@ -219,9 +286,9 @@ const Calendar = (props) => {
             <td className="e-textlabel">Difficulty</td>
             <td colSpan={4}>
               <DropDownListComponent
-                id="EventType"
+                id="difficulty"
                 placeholder="Choose difficulty"
-                data-name="EventType"
+                data-name="difficulty"
                 className="e-field"
                 style={{ width: "100%" }}
                 dataSource={["easy", "normal", "hard", "very hard", "NIGHTMARE"]}
@@ -251,9 +318,9 @@ const Calendar = (props) => {
             <td className="e-textlabel">Priority</td>
             <td colSpan={4}>
               <textarea
-                id="Priority"
+                id="priority"
                 className="e-field e-input"
-                name="Priority"
+                name="priority"
                 rows={2}
                 cols={50}
                 style={{
