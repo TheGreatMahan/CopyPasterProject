@@ -28,10 +28,16 @@ import {
   Query,
   GraphQLAdaptor,
 } from "@syncfusion/ej2-data";
-import { Card, CardHeader, CardContent, Button, TextField } from "@mui/material";
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  Button,
+  TextField,
+} from "@mui/material";
 import "../../App.css";
 import { findByTestId } from "@testing-library/react";
-import { useAuth } from '../Auth';
+import { useAuth } from "../Auth";
 
 // function eventTemplate(props) {
 //   return (<div>
@@ -42,26 +48,25 @@ import { useAuth } from '../Auth';
 // }
 
 const Calendar = (props) => {
-
   const initialState = {
     snackBarMsg: "",
     contactServer: false,
     data: [],
-    scheduleObj: {}
+    scheduleObj: {},
   };
 
   const auth = useAuth();
 
   L10n.load({
-    'en-US': {
-      'schedule': {
-        'saveButton': '',
-        'cancelButton': '',
-        'deleteButton': 'Remove',
-        'newEvent': 'Add Task',
-        'editEvent': 'Edit Task',
+    "en-US": {
+      schedule: {
+        saveButton: "",
+        cancelButton: "",
+        deleteButton: "Remove",
+        newEvent: "Add Task",
+        editEvent: "Edit Task",
       },
-    }
+    },
   });
 
   const GRAPHURL = "http://localhost:5000/graphql";
@@ -91,15 +96,14 @@ const Calendar = (props) => {
         .executeQuery(new Query().take(100))
         .then((e) => {
           let data = e.result;
-          data.forEach((task) => {
-          });
+          data.forEach((task) => {});
           setState({ data: data });
           console.log(data);
         });
     } catch (error) {
-      console.log('error fetching tasks');
+      console.log("error fetching tasks");
     }
-  }
+  };
 
   const fireAddTask = async (task) => {
     try {
@@ -115,7 +119,7 @@ const Calendar = (props) => {
         body: query,
       });
       //sendMessageToSnackbar(`Added Task due: ${json.data.addtask.duedate}`);
-      console.log('added task on calendar');
+      console.log("added task on calendar");
       let json = await response.json();
       //0941166
 
@@ -190,7 +194,13 @@ const Calendar = (props) => {
                 data-name="EventType"
                 className="e-field"
                 style={{ width: "100%" }}
-                dataSource={["easy", "normal", "hard", "very hard", "NIGHTMARE"]}
+                dataSource={[
+                  "easy",
+                  "normal",
+                  "hard",
+                  "very hard",
+                  "NIGHTMARE",
+                ]}
               ></DropDownListComponent>
             </td>
           </tr>
@@ -231,9 +241,9 @@ const Calendar = (props) => {
           <tr>
             <Button
               style={{
-                marginTop: '20px',
-                width: '30px',
-                height: '30px'
+                marginTop: "20px",
+                width: "30px",
+                height: "30px",
               }}
               variant="contained"
               onClick={() => {
@@ -276,14 +286,13 @@ const Calendar = (props) => {
                   completiondate: "",
                   color: "",
                   points: 0,
-                }
+                };
                 fireAddTask(Data); //TODO: Assign payload to some state
               }}
             >
               Add
             </Button>
           </tr>
-
         </tbody>
       </table>
     ) : (
@@ -291,15 +300,19 @@ const Calendar = (props) => {
     );
   }
 
-  let scheduleObj;
-
   function onDragStart(args) {
     args.navigation.enable = true;
   }
 
   return (
-    <Card style={{ height: "551px", minHeight: "551px", maxHeight: "1000px", overflow: "auto" }}>
-
+    <Card
+      style={{
+        height: "551px",
+        minHeight: "551px",
+        maxHeight: "1000px",
+        overflow: "auto",
+      }}
+    >
       {
         <div className="schedule-control-section">
           <div className="col-lg-9 control-section">
@@ -307,9 +320,12 @@ const Calendar = (props) => {
               <ScheduleComponent
                 height="550px"
                 ref={(schedule) => {
-                  (scheduleObj = schedule)
+                  state.scheduleObj = schedule;
                 }}
-                selectedDate={new Date().toJSON().slice(0, 10).replace(/-/g, "/")}
+                selectedDate={new Date()
+                  .toJSON()
+                  .slice(0, 10)
+                  .replace(/-/g, "/")}
                 eventSettings={{
                   dataSource: state.data,
                 }}
@@ -329,6 +345,6 @@ const Calendar = (props) => {
       }
     </Card>
   );
-}
+};
 
-export default Calendar
+export default Calendar;
