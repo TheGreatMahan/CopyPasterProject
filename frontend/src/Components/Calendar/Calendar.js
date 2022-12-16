@@ -48,7 +48,8 @@ const Calendar = (props) => {
     contactServer: false,
     data: [],
     scheduleObj: {},
-    difficulties: ["easy", "normal", "hard", "very hard", "NIGHTMARE"]
+    difficulties: ["easy", "normal", "hard", "very hard", "NIGHTMARE"],
+    isTaskComplete: 0
   };
 
   const auth = useAuth();
@@ -140,7 +141,7 @@ const Calendar = (props) => {
     try {
       let query = JSON.stringify({
         query: `mutation {updatetask(_id: "${task.id}", Subject: "${task.Subject}", username: "${task.username}", priority: ${task.priority} , StartTime: "${task.StartTime}",
-                EndTime: "${task.EndTime}", completiondate: "${task.completiondate}", difficulty: ${task.difficulty}, Description: "${task.Description}", points: ${task.points} ) { msg }}`,
+                EndTime: "${task.EndTime}", completiondate: "${task.completiondate}", difficulty: ${task.difficulty}, Description: "${task.Description}", points: ${task.points} , completed: ${state.completed}) { msg }}`,
       });
       let response = await fetch(GRAPHURL, {
         method: "POST",
@@ -199,7 +200,7 @@ const Calendar = (props) => {
     let Data = {};
     if(args.requestType === 'eventCreate' || args.requestType === 'eventChange')
     {
-      let subject = args.data.Subject;
+      /*let subject = args.data.Subject;
         let difficultyStr = state.difficulties.indexOf(args.data.difficulty);
         let priority = parseInt(args.data.priority);
         let description = args.data.Description;
@@ -220,13 +221,60 @@ const Calendar = (props) => {
           completiondate: completiondate,
           color: "",
           points: 0,
-        }
+        }*/
     }
     if (args.requestType === 'eventCreate') {
+      let dataObj = args.data[0];
+
+      let subject = dataObj.Subject;
+      let difficultyStr = state.difficulties.indexOf(dataObj.difficulties);
+      let priority = parseInt(dataObj.priority);
+      let description = dataObj.description;
+      let endTime = new Date(dataObj.endTime);
+      endTime.setHours(endTime.getHours() + 1);
+      let completiondate = new Date(dataObj.completiondate);
+      let startTime = new Date(dataObj.StartTime);
+
+      Data = {
+        id: args.data._id,
+        Subject: subject,
+        username: auth.user,
+        priority: priority,
+        StartTime: startTime.toISOString(),
+        EndTime: endTime,
+        difficulty: difficultyStr,
+        Description: description,
+        completiondate: completiondate.toISOString(),
+        color: "",
+        points: 0,
+      }
+
         fireAddTask(Data); //TODO: Assign payload to some state
       
     }
     if (args.requestType === 'eventChange') {
+      let subject = args.data.Subject;
+      let difficultyStr = state.difficulties.indexOf(args.data.difficulty);
+      let priority = parseInt(args.data.priority);
+      let description = args.data.Description;
+      let endTime = new Date(args.data.StartTime);
+      endTime.setHours(endTime.getHours() + 1);
+      let completiondate = args.data.completiondate;
+      let startTime = new Date(args.data.StartTime);
+
+      Data = {
+        id: args.data._id,
+        Subject: subject,
+        username: auth.user,
+        priority: priority,
+        StartTime: startTime.toISOString(),
+        EndTime: endTime,
+        difficulty: difficultyStr,
+        Description: description,
+        completiondate: completiondate.toISOString,
+        color: "",
+        points: 0,
+      }
 
         updateTask(Data);
     }
@@ -235,6 +283,11 @@ const Calendar = (props) => {
         deleteTask(args.data[0]._id);
     }
   };
+
+  const setTaskState = () => {
+    let id = document.getElementById('taskState')
+    id.checked ? setState({ isTaskComplete: 1 }) : setState({ isTaskComplete: 0 })
+  }
 
   function editorTemplate(props1) {
     return props1 !== undefined ? (
@@ -330,6 +383,10 @@ const Calendar = (props) => {
                 }}
               ></textarea>
             </td>
+          </tr>
+          <tr>
+            <label htmlFor="taskState">Task complete?</label>
+            <input type="checkbox" id="taskState" name="taskState" value="taskState" onClick={setTaskState}></input>
           </tr>
 
         </tbody>
