@@ -17,7 +17,7 @@ import {
 } from "@syncfusion/ej2-react-schedule";
 //import "./schedule-component.css";
 import { extend, L10n } from "@syncfusion/ej2-base";
-import { DatePickerComponent } from "@syncfusion/ej2-react-calendars";
+import { DateTimePickerComponent } from "@syncfusion/ej2-react-calendars";
 import { updateSampleSection } from "./sample-base";
 import { DropDownListComponent } from "@syncfusion/ej2-react-dropdowns";
 import { PropertyPane } from "./property-pane";
@@ -55,6 +55,7 @@ const Calendar = (props) => {
     scheduleObj: {},
     difficulties: ["easy", "normal", "hard", "very hard", "NIGHTMARE"],
     isTaskComplete: 0,
+    totalPoints: 0,
   };
 
   const auth = useAuth();
@@ -88,7 +89,7 @@ const Calendar = (props) => {
     try {
       new DataManager({
         adaptor: new GraphQLAdaptor({
-          query: `query {tasksforuser(username: "${auth.user}") {_id, Subject, Description, StartTime, EndTime, priority, difficulty, color, completiondate, completed}}`,
+          query: `query {tasksforuser(username: "${auth.user}") {_id, Subject, Description, StartTime, EndTime, priority, difficulty, color, completed, points}}`,
           response: {
             result: "tasksforuser",
           },
@@ -110,8 +111,7 @@ const Calendar = (props) => {
   const fireAddTask = async (task) => {
     try {
       let query = JSON.stringify({
-        query: `mutation {addtask(Subject: "${task.Subject}", username: "${task.username}", priority: ${task.priority} , StartTime: "${task.StartTime}"
-                  , completiondate: "${task.completiondate}", EndTime: "${task.EndTime}" difficulty: ${task.difficulty}, Description: "${task.Description}", points: ${task.points} ) {StartTime}}`,
+        query: `mutation {addtask(Subject: "${task.Subject}", username: "${task.username}", priority: ${task.priority} , StartTime: "${task.StartTime}", EndTime: "${task.EndTime}" difficulty: ${task.difficulty}, Description: "${task.Description}", points: ${task.points} ) {username}}`,
       });
       let response = await fetch(GRAPHURL, {
         method: "POST",
@@ -123,6 +123,7 @@ const Calendar = (props) => {
       //sendMessageToSnackbar(`Added Task due: ${json.data.addtask.duedate}`);
       console.log("added task on calendar");
       let json = await response.json();
+      console.log(json);
       //0941166
 
       /*setState({
@@ -147,7 +148,7 @@ const Calendar = (props) => {
     try {
       let query = JSON.stringify({
         query: `mutation {updatetask(_id: "${task.id}", Subject: "${task.Subject}", username: "${task.username}", priority: ${task.priority} , StartTime: "${task.StartTime}",
-                EndTime: "${task.EndTime}", completiondate: "${task.completiondate}", difficulty: ${task.difficulty}, Description: "${task.Description}", points: ${task.points} , completed: ${state.isTaskComplete}) { msg }}`,
+                EndTime: "${task.EndTime}", difficulty: ${task.difficulty}, Description: "${task.Description}", points: ${task.points} , completed: ${state.isTaskComplete}) { msg }}`,
       });
       let response = await fetch(GRAPHURL, {
         method: "POST",
@@ -212,26 +213,33 @@ const Calendar = (props) => {
       let difficultyStr = state.difficulties.indexOf(dataObj.difficulty);
       let priority = parseInt(dataObj.priority);
       let description = dataObj.Description;
-      let endTime = new Date(dataObj.endTime);
+      let endTime = new Date(dataObj.StartTime);
       endTime.setHours(endTime.getHours() + 1);
-      let completiondate = new Date(dataObj.completiondate);
+      endTime = endTime.toISOString();
       let startTime = new Date(dataObj.StartTime);
+      startTime = startTime.toISOString();
 
       Data = {
         id: args.data._id,
         Subject: subject,
         username: auth.user,
         priority: priority,
-        StartTime: startTime.toISOString(),
-        EndTime: startTime.toISOString(),
+        StartTime: startTime,
+        EndTime: endTime,
         difficulty: difficultyStr,
         Description: description,
-        completiondate: completiondate.toISOString(),
         color: "",
         points: 0,
       };
       console.log(Data);
+      let counterPoints = 0;
+      state.data.forEach((task, index) => {
+        counterPoints += task.points;
+      });
+      setState({ totalPoints: counterPoints });
+      console.log(state.totalPoints);
       fireAddTask(Data); //TODO: Assign payload to some state
+      //FIXME: here
     }
     if (args.requestType === "eventChange") {
       let subject = args.data.Subject;
@@ -240,7 +248,6 @@ const Calendar = (props) => {
       let description = args.data.Description;
       let endTime = new Date(args.data.StartTime);
       endTime.setHours(endTime.getHours() + 1);
-      let completiondate = args.data.completiondate;
       let startTime = new Date(args.data.StartTime);
 
       let currentdate = new Date();
@@ -258,19 +265,30 @@ const Calendar = (props) => {
         username: auth.user,
         priority: priority,
         StartTime: startTime.toISOString(),
-        EndTime: endTime,
+        EndTime: endTime.toISOString(),
         difficulty: difficultyStr,
         Description: description,
-        completiondate: completiondate.toISOString,
         color: "",
         points: pointStatus,
       };
 
       console.log(Data);
+      let counterPoints = 0;
+      state.data.forEach((task, index) => {
+        counterPoints += task.points;
+      });
+      setState({ totalPoints: counterPoints });
+      console.log(counterPoints);
       updateTask(Data);
     }
     if (args.requestType === "eventRemove") {
       // This block is execute before an appointment remove
+      let counterPoints = 0;
+      state.data.forEach((task, index) => {
+        counterPoints += task.points;
+      });
+      setState({ totalPoints: counterPoints });
+      console.log(state.totalPoints);
       deleteTask(args.data[0]._id);
     }
   };
@@ -305,27 +323,14 @@ const Calendar = (props) => {
           <tr>
             <td className="e-textlabel">Due date</td>
             <td colSpan={4}>
-              <DatePickerComponent
+              <DateTimePickerComponent
                 id="StartTime"
                 format="dd-MM-yyyy hh:mm a"
                 data-name="StartTime"
                 value={props1.StartTime}
                 className="e-field"
-                readonly
-              ></DatePickerComponent>
-            </td>
-          </tr>
-          <tr>
-            <td className="e-textlabel">Finish date</td>
-            <td colSpan={4}>
-              <DatePickerComponent
-                id="completiondate"
-                format="dd-MM-yyyy hh:mm a"
-                data-name="completiondate"
-                value={props1.completiondate}
-                className="e-field"
-                displayDefaultDate="false"
-              ></DatePickerComponent>
+                serverTimezoneOffset="-5"
+              ></DateTimePickerComponent>
             </td>
           </tr>
           <tr>
