@@ -274,9 +274,9 @@ const Calendar = (props) => {
       console.log(Math.floor(currentdate.getTime()));
 
       let pointStatus =
-          Math.floor(currentdate.getTime()) < Math.floor(startTime.getTime())
-              ? 1
-              : -1;
+        Math.floor(currentdate.getTime()) < Math.floor(startTime.getTime())
+          ? 1
+          : -1;
 
       console.log(pointStatus);
 
@@ -419,62 +419,6 @@ const Calendar = (props) => {
               value="taskState"
               onClick={setTaskState}
             ></input>
-          </tr>
-
-          <tr>
-            <Button
-              style={{
-                marginTop: "20px",
-                width: "30px",
-                height: "30px",
-              }}
-              variant="contained"
-              onClick={() => {
-                let subject = document.getElementById("Subject").value;
-                let difficultyStr = document.getElementById("EventType").value;
-                let difficultyNumeric = 0;
-                switch (difficultyStr) {
-                  case "easy":
-                    difficultyNumeric = 1;
-                    break;
-                  case "normal":
-                    difficultyNumeric = 2;
-                    break;
-                  case "hard":
-                    difficultyNumeric = 3;
-                    break;
-                  case "very hard":
-                    difficultyNumeric = 4;
-                    break;
-                  case "NIGHTMARE":
-                    difficultyNumeric = 5;
-                    break;
-                  default:
-                    difficultyNumeric = 1;
-                    break;
-                }
-                let priority = document.getElementById("Priority").value;
-                let description = document.getElementById("Description").value;
-                let endTime = props.StartTime;
-                endTime.setHours(endTime.getHours() + 1);
-
-                const Data = {
-                  Subject: subject,
-                  username: auth.user,
-                  priority: priority,
-                  StartTime: props.StartTime.toISOString(),
-                  EndTime: endTime,
-                  difficulty: difficultyNumeric,
-                  Description: description,
-                  completiondate: "",
-                  color: "",
-                  points: 0,
-                };
-                fireAddTask(Data); //TODO: Assign payload to some state
-              }}
-            >
-              Add
-            </Button>
           </tr>
         </tbody>
       </table>
