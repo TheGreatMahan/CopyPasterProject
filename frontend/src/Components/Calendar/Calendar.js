@@ -147,7 +147,7 @@ const Calendar = (props) => {
     try {
       let query = JSON.stringify({
         query: `mutation {updatetask(_id: "${task.id}", Subject: "${task.Subject}", username: "${task.username}", priority: ${task.priority} , StartTime: "${task.StartTime}",
-                EndTime: "${task.EndTime}", completiondate: "${task.completiondate}", difficulty: ${task.difficulty}, Description: "${task.Description}", points: ${task.points} , completed: ${state.completed}) { msg }}`,
+                EndTime: "${task.EndTime}", completiondate: "${task.completiondate}", difficulty: ${task.difficulty}, Description: "${task.Description}", points: ${task.points} , completed: ${state.isTaskComplete}) { msg }}`,
       });
       let response = await fetch(GRAPHURL, {
         method: "POST",
@@ -199,45 +199,19 @@ const Calendar = (props) => {
       // });
       // sendMessageToSnackbar(`${error.message} - task not updated`);
     }
+    datamanager();
   };
 
   const onActionBegin = (args) => {
     console.log(args);
     let Data = {};
-    if (
-      args.requestType === "eventCreate" ||
-      args.requestType === "eventChange"
-    ) {
-      /*let subject = args.data.Subject;
-        let difficultyStr = state.difficulties.indexOf(args.data.difficulty);
-        let priority = parseInt(args.data.priority);
-        let description = args.data.Description;
-        let endTime = new Date(args.data.StartTime);
-        endTime.setHours(endTime.getHours() + 1);
-        let completiondate = args.data.completiondate;
-        let startTime = new Date(args.data.StartTime);
-
-        Data = {
-          id: args.data._id,
-          Subject: subject,
-          username: auth.user,
-          priority: priority,
-          StartTime: startTime.toISOString(),
-          EndTime: endTime,
-          difficulty: difficultyStr,
-          Description: description,
-          completiondate: completiondate,
-          color: "",
-          points: 0,
-        }*/
-    }
     if (args.requestType === "eventCreate") {
       let dataObj = args.data[0];
 
       let subject = dataObj.Subject;
-      let difficultyStr = state.difficulties.indexOf(dataObj.difficulties);
+      let difficultyStr = state.difficulties.indexOf(dataObj.difficulty);
       let priority = parseInt(dataObj.priority);
-      let description = dataObj.description;
+      let description = dataObj.Description;
       let endTime = new Date(dataObj.endTime);
       endTime.setHours(endTime.getHours() + 1);
       let completiondate = new Date(dataObj.completiondate);
@@ -256,7 +230,7 @@ const Calendar = (props) => {
         color: "",
         points: 0,
       };
-
+      console.log(Data);
       fireAddTask(Data); //TODO: Assign payload to some state
     }
     if (args.requestType === "eventChange") {
@@ -270,8 +244,6 @@ const Calendar = (props) => {
       let startTime = new Date(args.data.StartTime);
 
       let currentdate = new Date();
-
-      console.log(Math.floor(currentdate.getTime()));
 
       let pointStatus =
         Math.floor(currentdate.getTime()) < Math.floor(startTime.getTime())
@@ -291,9 +263,10 @@ const Calendar = (props) => {
         Description: description,
         completiondate: completiondate.toISOString,
         color: "",
-        points: 0,
+        points: pointStatus,
       };
 
+      console.log(Data);
       updateTask(Data);
     }
     if (args.requestType === "eventRemove") {
