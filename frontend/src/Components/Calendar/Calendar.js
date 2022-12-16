@@ -53,6 +53,7 @@ const Calendar = (props) => {
     contactServer: false,
     data: [],
     scheduleObj: {},
+    difficulties: ["easy", "normal", "hard", "very hard", "NIGHTMARE"],
   };
 
   const auth = useAuth();
@@ -65,6 +66,13 @@ const Calendar = (props) => {
         deleteButton: "Remove",
         newEvent: "Add Task",
         editEvent: "Edit Task",
+    'en-US': {
+      'schedule': {
+        'saveButton': 'Save',
+        'cancelButton': 'Cancel',
+        'deleteButton': 'Remove',
+        'newEvent': 'Add Task',
+        'editEvent': 'Edit Task',
       },
     },
   });
@@ -140,8 +148,109 @@ const Calendar = (props) => {
     datamanager();
   };
 
-  function editorTemplate(props) {
-    return props !== undefined ? (
+  const updateTask = async (task) => {
+    //sendMessageToSnackbar(`Updating task for ${task.name}`);
+    try {
+      let query = JSON.stringify({
+        query: `mutation {updatetask(_id: "${task.id}", Subject: "${task.Subject}", username: "${task.username}", priority: ${task.priority} , StartTime: "${task.StartTime}",
+                EndTime: "${task.EndTime}", completiondate: "${task.completiondate}", difficulty: ${task.difficulty}, Description: "${task.Description}", points: ${task.points} ) { msg }}`,
+      });
+      let response = await fetch(GRAPHURL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+        },
+        body: query,
+      });
+      let json = await response.json();
+      console.log(json);
+      // setState({
+      //   contactServer: true,
+      // });
+      //sendMessageToSnackbar(`${json.data.updatetask.msg}`);
+      //clearBoxes();
+    } catch (error) {
+      // setState({
+      //   contactServer: true,
+      // });
+      //sendMessageToSnackbar(`${error.message} - task not updated`);
+      console.log(error);
+    }
+    datamanager();
+  };
+
+  const deleteTask = async (_id) => {
+    // sendMessageToSnackbar(`Updating task for ${state.name}`);
+    try {
+      let query = JSON.stringify({
+        query: `mutation {deletetask(_id: "${_id}" ) { msg }}`,
+      });
+      let response = await fetch(GRAPHURL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+        },
+        body: query,
+      });
+      let json = await response.json();
+      console.log(json);
+      // setState({
+      //   contactServer: true,
+      // });
+      // sendMessageToSnackbar(`${json.data.deletetask.msg}`);
+      // clearBoxes();
+    } catch (error) {
+      // setState({
+      //   contactServer: true,
+      // });
+      // sendMessageToSnackbar(`${error.message} - task not updated`);
+    }
+  };
+
+  const onActionBegin = (args) => {
+    console.log(args);
+    let Data = {};
+    if(args.requestType === 'eventCreate' || args.requestType === 'eventChange')
+    {
+      let subject = args.data.Subject;
+        let difficultyStr = state.difficulties.indexOf(args.data.difficulty);
+        let priority = parseInt(args.data.priority);
+        let description = args.data.Description;
+        let endTime = new Date(args.data.StartTime);
+        endTime.setHours(endTime.getHours() + 1);
+        let completiondate = args.data.completiondate;
+        let startTime = new Date(args.data.StartTime);
+
+        Data = {
+          id: args.data._id,
+          Subject: subject,
+          username: auth.user,
+          priority: priority,
+          StartTime: startTime.toISOString(),
+          EndTime: endTime,
+          difficulty: difficultyStr,
+          Description: description,
+          completiondate: completiondate,
+          color: "",
+          points: 0,
+        }
+    }
+    if (args.requestType === 'eventCreate') {
+        fireAddTask(Data); //TODO: Assign payload to some state
+      
+    }
+    if (args.requestType === 'eventChange') {
+
+        updateTask(Data);
+    }
+    if(args.requestType === 'eventRemove') {
+        // This block is execute before an appointment remove
+        deleteTask(args.data[0]._id);
+    }
+  };
+
+  function editorTemplate(props1) {
+    return props1 !== undefined ? (
       <table
         className="custom-event-editor"
         style={{ width: "100%" }}
@@ -161,13 +270,13 @@ const Calendar = (props) => {
             </td>
           </tr>
           <tr>
-            <td className="e-textlabel">Start date</td>
+            <td className="e-textlabel">Due date</td>
             <td colSpan={4}>
               <DatePickerComponent
                 id="StartTime"
                 format="dd-MM-yyyy hh:mm a"
                 data-name="StartTime"
-                value={props.StartTime}
+                value={props1.StartTime}
                 className="e-field"
                 readonly
               ></DatePickerComponent>
@@ -177,11 +286,12 @@ const Calendar = (props) => {
             <td className="e-textlabel">Finish date</td>
             <td colSpan={4}>
               <DatePickerComponent
-                id="EndTime"
+                id="completiondate"
                 format="dd-MM-yyyy hh:mm a"
-                data-name="EndTime"
-                value={props.EndTime}
+                data-name="completiondate"
+                value={props1.completiondate}
                 className="e-field"
+                displayDefaultDate="false"
               ></DatePickerComponent>
             </td>
           </tr>
@@ -189,9 +299,9 @@ const Calendar = (props) => {
             <td className="e-textlabel">Difficulty</td>
             <td colSpan={4}>
               <DropDownListComponent
-                id="EventType"
+                id="difficulty"
                 placeholder="Choose difficulty"
-                data-name="EventType"
+                data-name="difficulty"
                 className="e-field"
                 style={{ width: "100%" }}
                 dataSource={[
@@ -201,6 +311,8 @@ const Calendar = (props) => {
                   "very hard",
                   "NIGHTMARE",
                 ]}
+                //ref={(scope) => { this.dropDownListObject = scope; }}
+                index={props1.difficulty}
               ></DropDownListComponent>
             </td>
           </tr>
@@ -225,9 +337,9 @@ const Calendar = (props) => {
             <td className="e-textlabel">Priority</td>
             <td colSpan={4}>
               <textarea
-                id="Priority"
+                id="priority"
                 className="e-field e-input"
-                name="Priority"
+                name="priority"
                 rows={2}
                 cols={50}
                 style={{
@@ -238,6 +350,7 @@ const Calendar = (props) => {
               ></textarea>
             </td>
           </tr>
+
           <tr>
             <Button
               style={{
@@ -333,6 +446,7 @@ const Calendar = (props) => {
                 editorTemplate={editorTemplate.bind(this)}
                 timezone="America/New_York"
                 showQuickInfo={false}
+                actionBegin={onActionBegin.bind(this)}
               >
                 <ViewsDirective>
                   <ViewDirective option="Month" />

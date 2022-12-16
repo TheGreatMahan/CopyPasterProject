@@ -71,7 +71,8 @@ const ListTasks = (props) => {
       width: 130,
       sortable: true,
       valueGetter: (params) =>
-        `${state.difficulties[params.row.difficulty]}`,
+      `${state.difficulties[params.row.difficulty]}`,
+      sortComparator: (v1, v2) => state.difficulties.indexOf(v1) - (state.difficulties.indexOf(v2)),
     },
   ];
 
@@ -116,6 +117,7 @@ const ListTasks = (props) => {
       });
 
       console.log(payload);
+      //console.log(state.difficulties.indexOf('hard'));
 
       return payload.data.tasksforuser;
     } catch (error) {
@@ -140,14 +142,17 @@ const ListTasks = (props) => {
         />
           <div style={{ height: "500px", maxHeight: "600px", width: "100%" }}>
             <DataGrid
+              style={{ width: '85%', height: '75%' }}
               getRowId={(row) => row._id}
               rows={state.listForTable}
               columns={columns}
-              pageSize={10}
-              rowsPerPageOptions={[10]}
+              pageSize={6}
+              rowsPerPageOptions={[6]}
               onRowClick={handleClick}
             />
-          </div>
+            </div>
+          
+
           {state.isOpen && (
             <AddTask
               open={state.isOpen}
