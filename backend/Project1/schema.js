@@ -64,6 +64,7 @@ type Task {
     Description: String
     color: String
     points: Float
+    completed: Int
 }
 
 type Calendar {
@@ -79,7 +80,7 @@ type Mutation{
     addadvisory(name: String, country: String, text:String, date:String): Advisory
     addtask(username: String, Subject: String, priority: Int, StartTime: String, EndTime: String, completiondate: String, difficulty: Int, Description: String, color: String, points: Float) : Task
     adduser(username: String, password: String): UserDetail
-    updatetask(_id: String, username: String, Subject: String, priority: Int, StartTime: String, EndTime: String, completiondate: String, difficulty: Int, Description: String, color: String, points: Float) : UpdateMessage
+    updatetask(_id: String, username: String, Subject: String, priority: Int, StartTime: String, EndTime: String, completiondate: String, difficulty: Int, Description: String, color: String, points: Float, completed: Int) : UpdateMessage
     deletetask(_id: String) : UpdateMessage
 }
 `);
