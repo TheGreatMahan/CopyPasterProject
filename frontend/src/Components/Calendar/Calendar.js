@@ -61,18 +61,11 @@ const Calendar = (props) => {
   L10n.load({
     "en-US": {
       schedule: {
-        saveButton: "",
-        cancelButton: "",
+        saveButton: "Save",
+        cancelButton: "Cancel",
         deleteButton: "Remove",
         newEvent: "Add Task",
         editEvent: "Edit Task",
-    'en-US': {
-      'schedule': {
-        'saveButton': 'Save',
-        'cancelButton': 'Cancel',
-        'deleteButton': 'Remove',
-        'newEvent': 'Add Task',
-        'editEvent': 'Edit Task',
       },
     },
   });
@@ -210,42 +203,42 @@ const Calendar = (props) => {
   const onActionBegin = (args) => {
     console.log(args);
     let Data = {};
-    if(args.requestType === 'eventCreate' || args.requestType === 'eventChange')
-    {
+    if (
+      args.requestType === "eventCreate" ||
+      args.requestType === "eventChange"
+    ) {
       let subject = args.data.Subject;
-        let difficultyStr = state.difficulties.indexOf(args.data.difficulty);
-        let priority = parseInt(args.data.priority);
-        let description = args.data.Description;
-        let endTime = new Date(args.data.StartTime);
-        endTime.setHours(endTime.getHours() + 1);
-        let completiondate = args.data.completiondate;
-        let startTime = new Date(args.data.StartTime);
+      let difficultyStr = state.difficulties.indexOf(args.data.difficulty);
+      let priority = parseInt(args.data.priority);
+      let description = args.data.Description;
+      let endTime = new Date(args.data.StartTime);
+      endTime.setHours(endTime.getHours() + 1);
+      let completiondate = args.data.completiondate;
+      let startTime = new Date(args.data.StartTime);
 
-        Data = {
-          id: args.data._id,
-          Subject: subject,
-          username: auth.user,
-          priority: priority,
-          StartTime: startTime.toISOString(),
-          EndTime: endTime,
-          difficulty: difficultyStr,
-          Description: description,
-          completiondate: completiondate,
-          color: "",
-          points: 0,
-        }
+      Data = {
+        id: args.data._id,
+        Subject: subject,
+        username: auth.user,
+        priority: priority,
+        StartTime: startTime.toISOString(),
+        EndTime: endTime,
+        difficulty: difficultyStr,
+        Description: description,
+        completiondate: completiondate,
+        color: "",
+        points: 0,
+      };
     }
-    if (args.requestType === 'eventCreate') {
-        fireAddTask(Data); //TODO: Assign payload to some state
-      
+    if (args.requestType === "eventCreate") {
+      fireAddTask(Data); //TODO: Assign payload to some state
     }
-    if (args.requestType === 'eventChange') {
-
-        updateTask(Data);
+    if (args.requestType === "eventChange") {
+      updateTask(Data);
     }
-    if(args.requestType === 'eventRemove') {
-        // This block is execute before an appointment remove
-        deleteTask(args.data[0]._id);
+    if (args.requestType === "eventRemove") {
+      // This block is execute before an appointment remove
+      deleteTask(args.data[0]._id);
     }
   };
 
