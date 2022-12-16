@@ -88,7 +88,7 @@ const Calendar = (props) => {
     try {
       new DataManager({
         adaptor: new GraphQLAdaptor({
-          query: `query {tasksforuser(username: "${auth.user}") {_id, Subject, Description, StartTime, EndTime, priority, difficulty, color, completiondate}}`,
+          query: `query {tasksforuser(username: "${auth.user}") {_id, Subject, Description, StartTime, EndTime, priority, difficulty, color, completiondate, completed}}`,
           response: {
             result: "tasksforuser",
           },
@@ -249,7 +249,7 @@ const Calendar = (props) => {
         username: auth.user,
         priority: priority,
         StartTime: startTime.toISOString(),
-        EndTime: endTime,
+        EndTime: startTime.toISOString(),
         difficulty: difficultyStr,
         Description: description,
         completiondate: completiondate.toISOString(),
@@ -268,6 +268,17 @@ const Calendar = (props) => {
       endTime.setHours(endTime.getHours() + 1);
       let completiondate = args.data.completiondate;
       let startTime = new Date(args.data.StartTime);
+
+      let currentdate = new Date();
+
+      console.log(Math.floor(currentdate.getTime()));
+
+      let pointStatus =
+          Math.floor(currentdate.getTime()) < Math.floor(startTime.getTime())
+              ? 1
+              : -1;
+
+      console.log(pointStatus);
 
       Data = {
         id: args.data._id,
