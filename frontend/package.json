@@ -9,6 +9,7 @@
     "@mui/material": "^5.4.1",
     "@mui/x-data-grid": "^5.17.10",
     "@syncfusion/ej2-data": "^20.3.56",
+    "@syncfusion/ej2-react-buttons": "^20.3.58",
     "@syncfusion/ej2-react-calendars": "^20.3.50",
     "@syncfusion/ej2-react-dropdowns": "^20.3.50",
     "@syncfusion/ej2-react-schedule": "^20.3.50",
