@@ -9,6 +9,7 @@ import ListItemText from "@mui/material/ListItemText";
 import Toolbar from "@mui/material/Toolbar";
 import Calendar from "./Calendar/Calendar";
 import ListTasks from "./Calendar/ListTasks";
+import GrowthStats from "./Calendar/GrowthStats";
 
 import { ThemeProvider } from "@mui/material/styles";
 import {
@@ -96,7 +97,7 @@ const Home = (props) => {
               <ListTasks dataFromChild={sendMessageToSnackbar} />
             )}
             {state.currentView === "Calendar" && <Calendar />}
-            {/* {state.currentView === "Growth Stats" && <GrowthStats />} */}
+            {state.currentView === "Growth Stats" && (<GrowthStats dataFromChild={sendMessageToSnackbar}/>)}
           </Box>
         </Box>
       </Card>
