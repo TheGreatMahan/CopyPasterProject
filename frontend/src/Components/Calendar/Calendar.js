@@ -228,6 +228,7 @@ const Calendar = (props) => {
         priority: priority,
         StartTime: startTime,
         EndTime: endTime,
+        completed: 0,
         difficulty: difficultyStr,
         Description: description,
         color: "",
