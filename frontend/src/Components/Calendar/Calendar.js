@@ -55,6 +55,7 @@ const Calendar = (props) => {
     scheduleObj: {},
     difficulties: ["easy", "normal", "hard", "very hard", "NIGHTMARE"],
     isTaskComplete: 0, // checkbox bool
+    checked: false, // checkbox bool v2 
     totalPoints: 0,
   };
 
@@ -99,7 +100,7 @@ const Calendar = (props) => {
         .executeQuery(new Query().take(100))
         .then((e) => {
           let data = e.result;
-          data.forEach((task) => {});
+          data.forEach((task) => { });
           setState({ data: data });
           console.log(data);
         });
@@ -315,11 +316,20 @@ const Calendar = (props) => {
   };
 
   const setTaskState = () => {
-    let id = document.getElementById("taskState");
-    id.checked
-      ? setState({ isTaskComplete: 1 })
-      : setState({ isTaskComplete: 0 });
+    let id = document.getElementById('taskState')
+
+    if (id.checked) {
+      setState({ isTaskComplete: 1 })
+      console.log('checked')
+      setState({ checked: true })
+    }
+    else {
+      setState({ isTaskComplete: 0 })
+      console.log('not checked')
+      setState({ checked: false })
+    }
   };
+  console.log('checkbox state: ' + state.isTaskComplete)
 
   function editorTemplate(props1) {
     return props1 !== undefined ? (
@@ -409,16 +419,19 @@ const Calendar = (props) => {
               ></textarea>
             </td>
           </tr>
-          <tr>
+          <div>
             <label htmlFor="taskState">Task complete?</label>
             <input
               type="checkbox"
               id="taskState"
               name="taskState"
               value="taskState"
-              onClick={setTaskState}
+              checked={state.checked}
+              onChange={setTaskState}
             ></input>
-          </tr>
+          </div>
+
+
         </tbody>
       </table>
     ) : (
