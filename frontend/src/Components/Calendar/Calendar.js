@@ -102,6 +102,7 @@ const Calendar = (props) => {
         .then((e) => {
           let data = e.result;
           data.forEach((task) => {});
+          data = data.filter(element =>element.completed !== 1);
           setState({ data: data });
           console.log(data);
         });
