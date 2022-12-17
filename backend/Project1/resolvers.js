@@ -88,9 +88,10 @@ const resolvers = {
         EndTime: args.EndTime,
         difficulty: args.difficulty,
         Description: args.Description,
+        completiondate: args.completiondate,
         color: args.color,
         points: args.points,
-        //completed: args.completed,
+        completed: args.completed,
       };
       let result = await dbRtns.updateOne(db, tasks, { _id: theId }, task);
       message = result.lastErrorObject.updatedExisting

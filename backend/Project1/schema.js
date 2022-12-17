@@ -61,6 +61,7 @@ type Task {
     EndTime: String
     difficulty: Int
     Description: String
+    completiondate: String
     color: String
     points: Float
     completed: Int
@@ -79,7 +80,7 @@ type Mutation{
     addadvisory(name: String, country: String, text:String, date:String): Advisory
     addtask(username: String, Subject: String, priority: Int, StartTime: String, EndTime: String, difficulty: Int, Description: String, color: String, points: Float) : Task
     adduser(username: String, password: String): UserDetail
-    updatetask(_id: String, username: String, Subject: String, priority: Int, StartTime: String, EndTime: String, difficulty: Int, Description: String, color: String, points: Float, completed: Int) : UpdateMessage
+    updatetask(_id: String, username: String, Subject: String, priority: Int, StartTime: String, EndTime: String, difficulty: Int, Description: String, completiondate: String, color: String, points: Float, completed: Int) : UpdateMessage
     deletetask(_id: String) : UpdateMessage
 }
 `);

@@ -54,7 +54,7 @@ const Calendar = (props) => {
     data: [],
     scheduleObj: {},
     difficulties: ["easy", "normal", "hard", "very hard", "NIGHTMARE"],
-    isTaskComplete: 0,
+    isTaskComplete: 0, // checkbox bool
     totalPoints: 0,
   };
 
@@ -89,7 +89,7 @@ const Calendar = (props) => {
     try {
       new DataManager({
         adaptor: new GraphQLAdaptor({
-          query: `query {tasksforuser(username: "${auth.user}") {_id, Subject, Description, StartTime, EndTime, priority, difficulty, color, completed, points}}`,
+          query: `query {tasksforuser(username: "${auth.user}") {_id, Subject, Description, StartTime, EndTime, priority, difficulty, completiondate, color, completed, points}}`,
           response: {
             result: "tasksforuser",
           },
@@ -148,7 +148,7 @@ const Calendar = (props) => {
     try {
       let query = JSON.stringify({
         query: `mutation {updatetask(_id: "${task.id}", Subject: "${task.Subject}", username: "${task.username}", priority: ${task.priority} , StartTime: "${task.StartTime}",
-                EndTime: "${task.EndTime}", difficulty: ${task.difficulty}, Description: "${task.Description}", points: ${task.points} , completed: ${state.isTaskComplete}) { msg }}`,
+                EndTime: "${task.EndTime}", difficulty: ${task.difficulty}, Description: "${task.Description}", completiondate: "${task.completiondate}", points: ${task.points}, completed: ${task.completed} ) { msg }}`,
       });
       let response = await fetch(GRAPHURL, {
         method: "POST",
@@ -249,6 +249,7 @@ const Calendar = (props) => {
       let endTime = new Date(args.data.StartTime);
       endTime.setHours(endTime.getHours() + 1);
       let startTime = new Date(args.data.StartTime);
+      let completiondate = "";
 
       let currentdate = new Date();
 
@@ -259,18 +260,38 @@ const Calendar = (props) => {
 
       console.log(pointStatus);
 
-      Data = {
-        id: args.data._id,
-        Subject: subject,
-        username: auth.user,
-        priority: priority,
-        StartTime: startTime.toISOString(),
-        EndTime: endTime.toISOString(),
-        difficulty: difficultyStr,
-        Description: description,
-        color: "",
-        points: pointStatus,
-      };
+      if (state.isTaskComplete === 1) {
+        Data = {
+          id: args.data._id,
+          Subject: subject,
+          username: auth.user,
+          priority: priority,
+          StartTime: startTime.toISOString(),
+          EndTime: endTime.toISOString(),
+          difficulty: difficultyStr,
+          Description: description,
+          completed: 1,
+          completiondate: currentdate.toISOString(),
+          color: "",
+          points: pointStatus,
+        };
+      }
+      if (state.isTaskComplete === 0) {
+        Data = {
+          id: args.data._id,
+          Subject: subject,
+          username: auth.user,
+          priority: priority,
+          StartTime: startTime.toISOString(),
+          EndTime: endTime.toISOString(),
+          difficulty: difficultyStr,
+          Description: description,
+          completed: 0,
+          completiondate: completiondate,
+          color: "",
+          points: pointStatus,
+        };
+      }
 
       console.log(Data);
       let counterPoints = 0;
