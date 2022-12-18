@@ -61,15 +61,16 @@ const Calendar = (props) => {
     checked: false, // checkbox bool v2
     totalPoints: 0,
     calendarCollections: [
-      { CalendarText: 'Red', CalendarId: 0, CalendarColor: '#e61f15' },
-      { CalendarText: 'Orange', CalendarId: 1, CalendarColor: '#e68415' },
-      { CalendarText: 'Lime Green', CalendarId: 2, CalendarColor: '#73e615' },
-      { CalendarText: 'Light Blue', CalendarId: 3, CalendarColor: '#1db9e0' },
-      { CalendarText: 'Purple', CalendarId: 4, CalendarColor: '#cd1de0' },
-      { CalendarText: 'Magenta', CalendarId: 5, CalendarColor: '#d61596' },
-      { CalendarText: 'Pink', CalendarId: 6, CalendarColor: '#ff75df' },
-      { CalendarText: 'Forest Green', CalendarId: 7, CalendarColor: '#0f6b28' }
-    ]
+      { CalendarText: 'Red', CalendarId: 1, CalendarColor: '#e61f15' },
+      { CalendarText: 'Orange', CalendarId: 2, CalendarColor: '#e68415' },
+      { CalendarText: 'Lime Green', CalendarId: 3, CalendarColor: '#73e615' },
+      { CalendarText: 'Light Blue', CalendarId: 4, CalendarColor: '#1db9e0' },
+      { CalendarText: 'Purple', CalendarId: 5, CalendarColor: '#cd1de0' },
+      { CalendarText: 'Magenta', CalendarId: 6, CalendarColor: '#d61596' },
+      { CalendarText: 'Pink', CalendarId: 7, CalendarColor: '#ff75df' },
+      { CalendarText: 'Forest Green', CalendarId: 8, CalendarColor: '#0f6b28' }
+    ],
+    priorities: Array.from({ length: 5 }, (x, i) => (i + 1).toString()),
   };
 
   const auth = useAuth();
@@ -207,7 +208,7 @@ const Calendar = (props) => {
       let startTime = new Date(dataObj.StartTime);
       startTime = startTime.toISOString();
       let color = dataObj.task_color;
-      let CalendarId = state.calendarCollections.findIndex((obj) => { return obj.CalendarText === dataObj.CalendarId});
+      let CalendarId = state.calendarCollections.findIndex((obj) => { return obj.CalendarText === dataObj.CalendarId}) + 1;
 
       console.log(color);
 
@@ -243,7 +244,7 @@ const Calendar = (props) => {
       endTime.setHours(endTime.getHours() + 1);
       let startTime = new Date(args.data.StartTime);
       let completiondate = "";
-      let CalendarId = state.calendarCollections.findIndex((obj) => { return obj.CalendarText === dataObj.CalendarId});
+      let CalendarId = state.calendarCollections.findIndex((obj) => { return obj.CalendarText === dataObj.CalendarId}) + 1;
       let currentdate = new Date();
 
       let pointStatus =
@@ -377,20 +378,17 @@ const Calendar = (props) => {
             </td>
           </tr>
           <tr>
-            <td className="e-textlabel">Priority</td>
+          <td className="e-textlabel">Priority</td>
             <td colSpan={4}>
-              <textarea
+              <DropDownListComponent
                 id="priority"
-                className="e-field e-input"
-                name="priority"
-                rows={2}
-                cols={50}
-                style={{
-                  width: "100%",
-                  height: "60px !important",
-                  resize: "vertical",
-                }}
-              ></textarea>
+                placeholder="Choose priority"
+                data-name="priority"
+                className="e-field"
+                style={{ width: "100%" }}
+                dataSource={state.priorities}
+                value={props1.priority}
+              ></DropDownListComponent>
             </td>
           </tr>
 
