@@ -7,12 +7,23 @@ import {
     CardHeader,
     CardContent,
     Typography,
-    Tooltip,
   } from "@mui/material";
-  import theme from "../../theme";
-  import "../../App.css";
-  import {useAuth} from "../Auth";
-  import { Line } from "react-chartjs-2";
+import theme from "../../theme";
+import "../../App.css";
+import {useAuth} from "../Auth";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  LineElement,
+  Title,
+  Tooltip,
+  PointElement,
+  LineController,
+} from 'chart.js';
+import { Line } from 'react-chartjs-2';
+ChartJS.register(LineController, LineElement, PointElement, LinearScale, Title);
+
 
   const GrowthStats = (props) => {
     const initialState = {
@@ -32,7 +43,8 @@ import {
       difficulties: ["easy", "normal", "hard", "very hard", "NIGHTMARE"],
       chartData: {}
     };
-  
+
+    //ChartJS.register(LineController, LineElement, PointElement, LinearScale, Title); 
     const auth = useAuth();
 
     const sendMessageToSnackbar = (msg) => {
@@ -46,65 +58,84 @@ import {
       //const GRAPHURL = "/graphql";
     
       useEffect(() => {
-        displayData
-        fetchTasksForUser(auth.user);
+        displayData();
+        //fetchTasksForUser(auth.user);
       }, []);
+
+      // <block:config:0>
+const config = {
+  type: 'line',
+  data: data,
+};
+// </block:config>
+
+module.exports = {
+  actions: [],
+  config: config,
+};
     
       const displayData = () => {
-        const Data = [
-          {
-            id: 1,
-            year: 2016,
-            userGain: 80000,
-            userLost: 823
-          },
-          {
-            id: 2,
-            year: 2017,
-            userGain: 45677,
-            userLost: 345
-          },
-          {
-            id: 3,
-            year: 2018,
-            userGain: 78888,
-            userLost: 555
-          },
-          {
-            id: 4,
-            year: 2019,
-            userGain: 90000,
-            userLost: 4555
-          },
-          {
-            id: 5,
-            year: 2020,
-            userGain: 4300,
-            userLost: 234
-          }
-        ];
+        // const Data = [
+        //   {
+        //     id: 1,
+        //     year: 2016,
+        //     userGain: 80000,
+        //     userLost: 823
+        //   },
+        //   {
+        //     id: 2,
+        //     year: 2017,
+        //     userGain: 45677,
+        //     userLost: 345
+        //   },
+        //   {
+        //     id: 3,
+        //     year: 2018,
+        //     userGain: 78888,
+        //     userLost: 555
+        //   },
+        //   {
+        //     id: 4,
+        //     year: 2019,
+        //     userGain: 90000,
+        //     userLost: 4555
+        //   },
+        //   {
+        //     id: 5,
+        //     year: 2020,
+        //     userGain: 4300,
+        //     userLost: 234
+        //   }
+        // ];
 
-        let chartData = {
-          labels: Data.map((data) => data.year), 
-          datasets: [
-            {
-              label: "Users Gained ",
-              data: Data.map((data) => data.userGain),
-              backgroundColor: [
-                "rgba(75,192,192,1)",
-                "#ecf0f1",
-                "#50AF95",
-                "#f3ba2f",
-                "#2a71d0"
-              ],
-              borderColor: "black",
-              borderWidth: 2
-            }
-          ]
-        }
+        // let chartData = {
+        //   labels: [1996, 2019, 3940, 5023],//Data?.map((item) => item.year), 
+        //   datasets: [
+        //     {
+        //       label: "Users Gained ",
+        //       data: [129023, 12332, 234343, 95958],//Data?.map((item) => item.userGain),
+        //     }
+        //   ]
+        // }
 
-        setState({chartData: chartData});
+        const labels = Utils.months({count: 7});
+        const data = {
+          labels: labels,
+          datasets: [{
+            label: 'My First Dataset',
+            data: [65, 59, 80, 81, 56, 55, 40],
+            fill: false,
+            borderColor: 'rgb(75, 192, 192)',
+            tension: 0.1
+          }]
+        };
+// </block:setup>
+
+
+
+        setState({chartData: data});
       }
+
       const fetchTasksForUser = async (user) => {
         try {
           setState({
@@ -151,6 +182,21 @@ import {
             .reduce(
               (accumulator, currentValue) => accumulator + currentValue.points, 0)});
 
+              let x = combinedData.map((data) => data.completiondate);
+              let y = combinedData.map((data) => data.points);
+
+              let numValues = [{ value: -1, points: 0}, {value: 0, points: 0}, {value: 1, points: 0}];
+              numValues.forEach((obj) => {
+                obj.points = dateData.filter((item) => obj.value === item.points)
+                .reduce((accumulator, currentValue) => accumulator + currentValue.points, 0)
+              });
+
+              let totalPoints = numValues.reduce((accumulator, currentValue) => accumulator + currentValue.points, 0);
+
+              let closeCalls = numValues[1].points;
+              let losses = numValues[0].points;
+              let wins = numValues[2].points;
+              
           let chartData = {
             labels: combinedData.map((data) => data.completiondate), 
             datasets: [
@@ -230,6 +276,8 @@ import {
         }
       };
 
+    
+    
       return (
         <ThemeProvider theme={theme}>
         <div className="chart-container">
