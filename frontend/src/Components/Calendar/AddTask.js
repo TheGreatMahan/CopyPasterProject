@@ -10,7 +10,7 @@ import {
   Button,
   Modal,
   FormControlLabel,
-  Checkbox
+  Checkbox,
 } from "@mui/material";
 import { DateTimePickerComponent } from "@syncfusion/ej2-react-calendars";
 import theme from "../../theme";
@@ -19,12 +19,11 @@ import { IntegrationInstructionsRounded } from "@mui/icons-material";
 import { useAuth } from "../Auth";
 
 const AddTask = (props) => {
-
   const initialState = {
     snackBarMsg: "",
     contactServer: false,
     users: [],
-    selectedUser: "testman3",
+    selectedUser: "",
     buttonDisabled: true,
     Subject: "",
     priority: "-1",
@@ -49,14 +48,14 @@ const AddTask = (props) => {
     ],
     priorities: Array.from({ length: 5 }, (x, i) => (i + 1).toString()),
     calendarCollections: [
-      { CalendarText: 'Red', CalendarId: 1, CalendarColor: '#e61f15' },
-      { CalendarText: 'Orange', CalendarId: 2, CalendarColor: '#e68415' },
-      { CalendarText: 'Lime Green', CalendarId: 3, CalendarColor: '#73e615' },
-      { CalendarText: 'Light Blue', CalendarId: 4, CalendarColor: '#1db9e0' },
-      { CalendarText: 'Purple', CalendarId: 5, CalendarColor: '#cd1de0' },
-      { CalendarText: 'Magenta', CalendarId: 6, CalendarColor: '#d61596' },
-      { CalendarText: 'Pink', CalendarId: 7, CalendarColor: '#ff75df' },
-      { CalendarText: 'Forest Green', CalendarId: 8, CalendarColor: '#0f6b28' }
+      { CalendarText: "Red", CalendarId: 1, CalendarColor: "#e61f15" },
+      { CalendarText: "Orange", CalendarId: 2, CalendarColor: "#e68415" },
+      { CalendarText: "Lime Green", CalendarId: 3, CalendarColor: "#73e615" },
+      { CalendarText: "Light Blue", CalendarId: 4, CalendarColor: "#1db9e0" },
+      { CalendarText: "Purple", CalendarId: 5, CalendarColor: "#cd1de0" },
+      { CalendarText: "Magenta", CalendarId: 6, CalendarColor: "#d61596" },
+      { CalendarText: "Pink", CalendarId: 7, CalendarColor: "#ff75df" },
+      { CalendarText: "Forest Green", CalendarId: 8, CalendarColor: "#0f6b28" },
     ],
   };
 
@@ -123,7 +122,8 @@ const AddTask = (props) => {
           color: payload.data.taskbyid.color,
           points: payload.data.taskbyid.points,
           completed: payload.data.taskbyid.completed,
-          CalendarId: state.calendarCollections[payload.data.taskbyid.CalendarId - 1]
+          CalendarId:
+            state.calendarCollections[payload.data.taskbyid.CalendarId - 1],
         });
         sendMessageToSnackbar(`${payload.data.taskbyid.name} task loaded`);
       } catch (error) {
@@ -132,7 +132,7 @@ const AddTask = (props) => {
       }
     }
   };
- 
+
   const onChangePriorities = (e, selectedOption) => {
     selectedOption
       ? setState({ priority: selectedOption })
@@ -209,8 +209,6 @@ const AddTask = (props) => {
     }
   };
 
-  
-
   const onChangeDescriptionField = (e, selectedOption) => {
     setState({
       Description: e.target.value,
@@ -230,10 +228,9 @@ const AddTask = (props) => {
   };
 
   const handleCheckbox = (event) => {
-    setState({checked: event.target.checked});
+    setState({ checked: event.target.checked });
 
-    if(event.target.checked)
-    {
+    if (event.target.checked) {
       setButtonDisabled(false);
     }
   };
@@ -273,7 +270,7 @@ const AddTask = (props) => {
       color: state.color,
       points: state.points,
       CalendarId: state.CalendarId.CalendarId,
-      completed: 0
+      completed: 0,
     };
 
     let myHeaders = new Headers();
@@ -313,9 +310,9 @@ const AddTask = (props) => {
         priority: "-1",
         duedate: "",
         difficulty: "-1",
-        description: ""
+        description: "",
       });
-      console.log('added task on list');
+      console.log("added task on list");
       sendMessageToSnackbar(`Added Task on ${json.data.addtask.StartTime}`);
       console.log(json);
       clearBoxes();
@@ -328,37 +325,37 @@ const AddTask = (props) => {
   };
 
   const clearBoxes = () => {
-    setState({Subject: "",
-    priority: "-1",
-    StartTime: "",
-    EndTime: "",
-    completiondate: "",
-    difficulty: "-1",
-    Description: ""});
+    setState({
+      Subject: "",
+      priority: "-1",
+      StartTime: "",
+      EndTime: "",
+      completiondate: "",
+      difficulty: "-1",
+      Description: "",
+    });
     props.onClose();
-  }
-  
-  const updateTask = async (task) => {
+  };
 
+  const updateTask = async (task) => {
     let currentdate = new Date();
     let startTime = new Date(task.StartTime);
 
-      let pointStatus =
-        Math.floor(currentdate.getTime()) < Math.floor(startTime.getTime())
-          ? 1
-          : -1;
+    let pointStatus =
+      Math.floor(currentdate.getTime()) < Math.floor(startTime.getTime())
+        ? 1
+        : -1;
 
-      if (state.checked) {
-          task.completed = 1;
-          task.completiondate = currentdate.toISOString();
-          task.points = pointStatus;
-        
-      }
-      if (!state.checked && task.completed === 0) {
-          task.completed = 0;
-          task.completiondate = "";
-          task.points = 0;
-      }
+    if (state.checked) {
+      task.completed = 1;
+      task.completiondate = currentdate.toISOString();
+      task.points = pointStatus;
+    }
+    if (!state.checked && task.completed === 0) {
+      task.completed = 0;
+      task.completiondate = "";
+      task.points = 0;
+    }
     sendMessageToSnackbar(`Updating task for ${task.Subject}`);
     try {
       let query = JSON.stringify({
@@ -565,7 +562,7 @@ const AddTask = (props) => {
               value={state.Description}
             />
 
-          <Autocomplete
+            <Autocomplete
               data-testid="autocomplete"
               options={state.calendarCollections.map((cal) => {
                 return cal;
@@ -584,17 +581,20 @@ const AddTask = (props) => {
                 />
               )}
             />
-            
-              { state.isUpdate && <FormControlLabel
-              label="Task Completed?"
-              control={<Checkbox
-              sx={{ '& .MuiSvgIcon-root': { fontSize: 28 } }}
-              onChange={handleCheckbox}
-              checked={state.checked}
-              disabled={state.completed === 1}
-            />
-            }
-            />}      
+
+            {state.isUpdate && (
+              <FormControlLabel
+                label="Task Completed?"
+                control={
+                  <Checkbox
+                    sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
+                    onChange={handleCheckbox}
+                    checked={state.checked}
+                    disabled={state.completed === 1}
+                  />
+                }
+              />
+            )}
           </Card>
 
           <Typography align="center">
