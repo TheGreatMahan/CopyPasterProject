@@ -41,13 +41,6 @@ import "../../App.css";
 import { findByTestId } from "@testing-library/react";
 import { useAuth } from "../Auth";
 
-// function eventTemplate(props) {
-//   return (<div>
-// <div className="name">{props.name}</div>
-// <div className="time">
-// Time: {this.getTimeString(props.StartTime)} - {this.getTimeString(props.EndTime)}</div>
-// </div>);
-// }
 
 const Calendar = (props) => {
   const initialState = {
@@ -85,9 +78,9 @@ const Calendar = (props) => {
 
   const GRAPHURL = "http://localhost:5000/graphql";
 
-  // const sendMessageToSnackbar = (msg) => {
-  //   props.dataFromChild(msg);
-  // };
+  const sendMessageToSnackbar = (msg) => {
+    props.dataFromChild(msg);
+  };
 
   const reducer = (state, newState) => ({ ...state, ...newState });
   const [state, setState] = useReducer(reducer, initialState);
@@ -123,7 +116,7 @@ const Calendar = (props) => {
   const fireAddTask = async (task) => {
     try {
       let query = JSON.stringify({
-        query: `mutation {addtask(Subject: "${task.Subject}", username: "${task.username}", priority: ${task.priority} , StartTime: "${task.StartTime}", EndTime: "${task.EndTime}" difficulty: ${task.difficulty}, Description: "${task.Description}", color: "${task.color}", points: ${task.points} ) {username}}`,
+        query: `mutation {addtask(Subject: "${task.Subject}", username: "${task.username}", priority: ${task.priority} , StartTime: "${task.StartTime}", EndTime: "${task.EndTime}" difficulty: ${task.difficulty}, Description: "${task.Description}", color: "${task.color}", points: ${task.points} ) {StartTime}}`,
       });
       let response = await fetch(GRAPHURL, {
         method: "POST",
@@ -132,31 +125,19 @@ const Calendar = (props) => {
         },
         body: query,
       });
-      //sendMessageToSnackbar(`Added Task due: ${json.data.addtask.duedate}`);
       console.log("added task on calendar");
       let json = await response.json();
+      sendMessageToSnackbar(`Added Task due: ${json.data.addtask.StartTime}`);
       console.log(json);
-      //0941166
-
-      /*setState({
-          contactServer: true,
-          nameOfTask: "",
-          priority: "-1",
-          duedate: "",
-          difficulty: "-1",
-          description: ""
-      });
-  
-       */
     } catch (error) {
-      //sendMessageToSnackbar(`Task not added: ${error}`);
+      sendMessageToSnackbar(`Task not added: ${error}`);
       console.log(error);
     }
     datamanager();
   };
 
   const updateTask = async (task) => {
-    //sendMessageToSnackbar(`Updating task for ${task.name}`);
+    sendMessageToSnackbar(`Updating task for ${task.Subject}`);
     try {
       let query = JSON.stringify({
         query: `mutation {updatetask(_id: "${task.id}", Subject: "${task.Subject}", username: "${task.username}", priority: ${task.priority} , StartTime: "${task.StartTime}",
@@ -171,23 +152,14 @@ const Calendar = (props) => {
       });
       let json = await response.json();
       console.log(json);
-      // setState({
-      //   contactServer: true,
-      // });
-      //sendMessageToSnackbar(`${json.data.updatetask.msg}`);
-      //clearBoxes();
     } catch (error) {
-      // setState({
-      //   contactServer: true,
-      // });
-      //sendMessageToSnackbar(`${error.message} - task not updated`);
-      console.log(error);
+      console.log('error: ' + error);
     }
     datamanager();
   };
 
   const deleteTask = async (_id) => {
-    // sendMessageToSnackbar(`Updating task for ${state.name}`);
+    sendMessageToSnackbar(`Deleted task for ${state.name}`);
     try {
       let query = JSON.stringify({
         query: `mutation {deletetask(_id: "${_id}" ) { msg }}`,
@@ -201,16 +173,9 @@ const Calendar = (props) => {
       });
       let json = await response.json();
       console.log(json);
-      // setState({
-      //   contactServer: true,
-      // });
-      // sendMessageToSnackbar(`${json.data.deletetask.msg}`);
-      // clearBoxes();
+      sendMessageToSnackbar(`${json.data.deletetask.msg}`);
     } catch (error) {
-      // setState({
-      //   contactServer: true,
-      // });
-      // sendMessageToSnackbar(`${error.message} - task not updated`);
+      sendMessageToSnackbar(`${error.message} - task not deleted`);
     }
     datamanager();
   };
@@ -254,7 +219,7 @@ const Calendar = (props) => {
         counterPoints += task.points;
       });
       setState({ totalPoints: counterPoints });
-      fireAddTask(Data); //TODO: Assign payload to some state
+      fireAddTask(Data); 
       //FIXME: here
     }
     if (args.requestType === "eventChange") {
@@ -316,7 +281,7 @@ const Calendar = (props) => {
       updateTask(Data);
     }
     if (args.requestType === "eventRemove") {
-      // This block is execute before an appointment remove
+      // This block is executed before an appointment remove
       let counterPoints = 0;
       state.data.forEach((task, index) => {
         counterPoints += task.points;
@@ -376,7 +341,6 @@ const Calendar = (props) => {
                   "very hard",
                   "NIGHTMARE",
                 ]}
-                //ref={(scope) => { this.dropDownListObject = scope; }}
                 index={props1.difficulty}
               ></DropDownListComponent>
             </td>
