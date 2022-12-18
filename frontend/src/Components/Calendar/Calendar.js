@@ -421,18 +421,6 @@ const Calendar = (props) => {
               <ColorPickerComponent id="color-picker" className="e-field e-input" name="task_color" />
             </td>
           </tr>
-          <div>
-            <label htmlFor="taskState">Task complete?</label>
-            <input
-              type="checkbox"
-              id="taskState"
-              name="taskState"
-              value="taskState"
-              checked={state.checked}
-              onChange={setTaskState}
-            ></input>
-          </div>
-
             <tr>
             <td className="e-textlabel">Task complete?</td>
             <td colSpan={1}>
