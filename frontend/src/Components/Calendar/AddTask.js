@@ -9,6 +9,8 @@ import {
   Typography,
   Button,
   Modal,
+  FormControlLabel,
+  Checkbox
 } from "@mui/material";
 import { DateTimePickerComponent } from "@syncfusion/ej2-react-calendars";
 import theme from "../../theme";
@@ -34,6 +36,8 @@ const AddTask = (props) => {
     _id: "",
     isUpdate: false,
     points: 0,
+    checked: false,
+    completed: 0,
     difficulties: [
       ["easy", 0],
       ["normal", 1],
@@ -80,7 +84,7 @@ const AddTask = (props) => {
           },
           body: JSON.stringify({
             query: `query {taskbyid(_id: "${props.id}") {_id, Subject, username, priority, StartTime, EndTime, 
-                completiondate, difficulty, Description, color, points}}`,
+                completiondate, difficulty, Description, color, points, completed}}`,
           }),
         });
         let payload = await response.json();
@@ -104,6 +108,7 @@ const AddTask = (props) => {
           Description: payload.data.taskbyid.Description,
           color: payload.data.taskbyid.color,
           points: payload.data.taskbyid.points,
+          completed: payload.data.taskbyid.completed
         });
         sendMessageToSnackbar(`${payload.data.taskbyid.name} task loaded`);
       } catch (error) {
@@ -170,6 +175,8 @@ const AddTask = (props) => {
     }
   };
 
+  
+
   const onChangeDescriptionField = (e, selectedOption) => {
     setState({
       Description: e.target.value,
@@ -188,6 +195,15 @@ const AddTask = (props) => {
     }
   };
 
+  const handleCheckbox = (event) => {
+    setState({checked: event.target.checked});
+
+    if(event.target.checked)
+    {
+      setButtonDisabled(false);
+    }
+  };
+
   const onChangeDateField = (e, selectedOption) => {
     setState({
       StartTime: e.value,
@@ -196,25 +212,6 @@ const AddTask = (props) => {
     if (
       state.Subject === "" ||
       state.selectedUser === null ||
-      state.difficulty === -1 ||
-      state.priority === -1 ||
-      state.Description === ""
-    ) {
-      setButtonDisabled(true);
-    } else {
-      setButtonDisabled(false);
-    }
-  };
-
-  const onChangeCompletionDateField = (e, selectedOption) => {
-    setState({
-      completiondate: e.value,
-    });
-
-    if (
-      state.Subject === "" ||
-      state.selectedUser === null ||
-      state.StartTime === "" ||
       state.difficulty === -1 ||
       state.priority === -1 ||
       state.Description === ""
@@ -305,11 +302,31 @@ const AddTask = (props) => {
   }
   
   const updateTask = async (task) => {
-    sendMessageToSnackbar(`Updating task for ${task.name}`);
+
+    let currentdate = new Date();
+    let startTime = new Date(task.StartTime);
+
+      let pointStatus =
+        Math.floor(currentdate.getTime()) < Math.floor(startTime.getTime())
+          ? 1
+          : -1;
+
+      if (state.checked) {
+          task.completed = 1;
+          task.completiondate = currentdate.toISOString();
+          task.points = pointStatus;
+        
+      }
+      if (!state.checked) {
+          task.completed = 0;
+          task.completiondate = "";
+          task.points = 0;
+      }
+    sendMessageToSnackbar(`Updating task for ${task.Subject}`);
     try {
       let query = JSON.stringify({
         query: `mutation {updatetask(_id: "${task.id}", Subject: "${task.Subject}", username: "${task.username}", priority: ${task.priority} , StartTime: "${task.StartTime}",
-                EndTime: "${task.EndTime}", completiondate: "${task.completiondate}", difficulty: ${task.difficulty}, Description: "${task.Description}", points: ${task.points} ) { msg }}`,
+                EndTime: "${task.EndTime}", completiondate: "${task.completiondate}", difficulty: ${task.difficulty}, Description: "${task.Description}", points: ${task.points}, completed: ${task.completed} ) { msg }}`,
       });
       let response = await fetch(GRAPHURL, {
         method: "POST",
@@ -334,7 +351,7 @@ const AddTask = (props) => {
   };
 
   const deleteTask = async () => {
-    sendMessageToSnackbar(`Updating task for ${state.name}`);
+    sendMessageToSnackbar(`Updating task for ${state.Subject}`);
     try {
       let query = JSON.stringify({
         query: `mutation {deletetask(_id: "${state._id}" ) { msg }}`,
@@ -369,13 +386,14 @@ const AddTask = (props) => {
         justifyContent: "center",
         width: "100%",
         height: "100%",
+        overflow: "hidden",
       }}
       aria-labelledby="Task Info"
       aria-describedby="simple-modal-description"
       open={props.open}
       onClose={props.onClose}
     >
-      <Card style={{ width: 500, height: 600 }}>
+      <Card style={{ width: 500, height: 600, overflow: "scroll" }}>
         <CardContent>
           <Typography
             style={{
@@ -469,27 +487,6 @@ const AddTask = (props) => {
               width: "100%",
             }}
           >
-            {state.isUpdate && (
-              <DateTimePickerComponent
-                placeholder="Please Choose the Completion Date"
-                format="dd-mm-yyyy hh:mm a"
-                id="completiondate"
-                value={state.completiondate}
-                className="e-field"
-                data-name="completiondate"
-                onChange={onChangeCompletionDateField}
-              />
-            )}
-          </Card>
-
-          <Card
-            style={{
-              marginBottom: 20,
-              border: "none",
-              boxShadow: "none",
-              width: "100%",
-            }}
-          >
             <Autocomplete
               data-testid="autocomplete"
               options={state.difficulties.map((diff) => {
@@ -530,6 +527,17 @@ const AddTask = (props) => {
               onChange={onChangeDescriptionField}
               value={state.Description}
             />
+            
+              { state.isUpdate && <FormControlLabel
+              label="Task Completed?"
+              control={<Checkbox
+              sx={{ '& .MuiSvgIcon-root': { fontSize: 28 } }}
+              onChange={handleCheckbox}
+              checked={state.checked}
+              disabled={state.completed === 1}
+            />
+            }
+            />}      
           </Card>
 
           <Typography align="center">

@@ -69,7 +69,8 @@ const resolvers = {
       Description: args.Description,
       color: args.color,
       points: args.points,
-      //completed: args.completed,
+      completed: args.completed,
+      CalendarId: args.CalendarId
     };
     let results = await dbRtns.addOne(db, tasks, task);
     return results.acknowledged ? task : null;
@@ -92,6 +93,7 @@ const resolvers = {
         color: args.color,
         points: args.points,
         completed: args.completed,
+        CalendarId: args.CalendarId
       };
       let result = await dbRtns.updateOne(db, tasks, { _id: theId }, task);
       message = result.lastErrorObject.updatedExisting

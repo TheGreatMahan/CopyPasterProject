@@ -60,6 +60,16 @@ const Calendar = (props) => {
     isTaskComplete: 0, // checkbox bool
     checked: false, // checkbox bool v2
     totalPoints: 0,
+    calendarCollections: [
+      { CalendarText: 'Red', CalendarId: 0, CalendarColor: '#e61f15' },
+      { CalendarText: 'Orange', CalendarId: 1, CalendarColor: '#e68415' },
+      { CalendarText: 'Lime Green', CalendarId: 2, CalendarColor: '#73e615' },
+      { CalendarText: 'Light Blue', CalendarId: 3, CalendarColor: '#1db9e0' },
+      { CalendarText: 'Purple', CalendarId: 4, CalendarColor: '#cd1de0' },
+      { CalendarText: 'Magenta', CalendarId: 5, CalendarColor: '#d61596' },
+      { CalendarText: 'Pink', CalendarId: 6, CalendarColor: '#ff75df' },
+      { CalendarText: 'Forest Green', CalendarId: 7, CalendarColor: '#0f6b28' }
+    ]
   };
 
   const auth = useAuth();
@@ -93,7 +103,7 @@ const Calendar = (props) => {
     try {
       new DataManager({
         adaptor: new GraphQLAdaptor({
-          query: `query {tasksforuser(username: "${auth.user}") {_id, Subject, Description, StartTime, EndTime, priority, difficulty, completiondate, color, completed, points}}`,
+          query: `query {tasksforuser(username: "${auth.user}") {_id, Subject, Description, StartTime, EndTime, priority, difficulty, completiondate, color, completed, points, CalendarId}}`,
           response: {
             result: "tasksforuser",
           },
@@ -116,7 +126,7 @@ const Calendar = (props) => {
   const fireAddTask = async (task) => {
     try {
       let query = JSON.stringify({
-        query: `mutation {addtask(Subject: "${task.Subject}", username: "${task.username}", priority: ${task.priority} , StartTime: "${task.StartTime}", EndTime: "${task.EndTime}" difficulty: ${task.difficulty}, Description: "${task.Description}", color: "${task.color}", points: ${task.points} ) {StartTime}}`,
+        query: `mutation {addtask(Subject: "${task.Subject}", username: "${task.username}", priority: ${task.priority} , StartTime: "${task.StartTime}", EndTime: "${task.EndTime}" difficulty: ${task.difficulty}, Description: "${task.Description}", color: "${task.color}", points: ${task.points}, CalendarId: ${task.CalendarId}) {StartTime}}`,
       });
       let response = await fetch(GRAPHURL, {
         method: "POST",
@@ -141,7 +151,7 @@ const Calendar = (props) => {
     try {
       let query = JSON.stringify({
         query: `mutation {updatetask(_id: "${task.id}", Subject: "${task.Subject}", username: "${task.username}", priority: ${task.priority} , StartTime: "${task.StartTime}",
-                EndTime: "${task.EndTime}", difficulty: ${task.difficulty}, Description: "${task.Description}", completiondate: "${task.completiondate}", points: ${task.points}, completed: ${task.completed} ) { msg }}`,
+                EndTime: "${task.EndTime}", difficulty: ${task.difficulty}, Description: "${task.Description}", completiondate: "${task.completiondate}", points: ${task.points}, completed: ${task.completed}, CalendarId: ${task.CalendarId} ) { msg }}`,
       });
       let response = await fetch(GRAPHURL, {
         method: "POST",
@@ -197,6 +207,7 @@ const Calendar = (props) => {
       let startTime = new Date(dataObj.StartTime);
       startTime = startTime.toISOString();
       let color = dataObj.task_color;
+      let CalendarId = state.calendarCollections.findIndex((obj) => { return obj.CalendarText === dataObj.CalendarId});
 
       console.log(color);
 
@@ -212,6 +223,7 @@ const Calendar = (props) => {
         Description: description,
         color: color,
         points: 0,
+        CalendarId: CalendarId
       };
       console.log(Data);
       let counterPoints = 0;
@@ -231,7 +243,7 @@ const Calendar = (props) => {
       endTime.setHours(endTime.getHours() + 1);
       let startTime = new Date(args.data.StartTime);
       let completiondate = "";
-
+      let CalendarId = state.calendarCollections.findIndex((obj) => { return obj.CalendarText === dataObj.CalendarId});
       let currentdate = new Date();
 
       let pointStatus =
@@ -253,6 +265,7 @@ const Calendar = (props) => {
           completiondate: currentdate.toISOString(),
           color: "",
           points: pointStatus,
+          CalendarId: CalendarId
         };
       }
       if (args.data.taskState === false) {
@@ -268,7 +281,8 @@ const Calendar = (props) => {
           completed: 0,
           completiondate: completiondate,
           color: "",
-          points: pointStatus,
+          points: 0,
+          CalendarId: CalendarId
         };
       }
 
@@ -379,13 +393,22 @@ const Calendar = (props) => {
               ></textarea>
             </td>
           </tr>
+
           <tr>
-            <td className="e-textlabel">Color</td>
+            <td className="e-textlabel">Colour</td>
             <td colSpan={4}>
-              <ColorPickerComponent id="color-picker" className="e-field e-input" name="task_color" />
+              <DropDownListComponent
+                id="CalendarId"
+                placeholder="Choose colour"
+                data-name="CalendarId"
+                className="e-field"
+                style={{ width: "100%" }}
+                dataSource={state.calendarCollections.map((item) => item.CalendarText)}
+                index={props1.CalendarId}
+              ></DropDownListComponent>
             </td>
           </tr>
-            <tr>
+            { props1._id !== null && <tr>
             <td className="e-textlabel">Task complete?</td>
             <td colSpan={1}>
               <CheckBoxComponent
@@ -394,7 +417,7 @@ const Calendar = (props) => {
                 className="e-field e-input"
               />
             </td>
-          </tr>
+          </tr>}
         </tbody>
       </table>
     ) : (
@@ -436,14 +459,18 @@ const Calendar = (props) => {
                 showQuickInfo={false}
                 actionBegin={onActionBegin.bind(this)}
               >
-                <ResourcesDirective>
+                 <ResourcesDirective>
+                        <ResourceDirective field='CalendarId' title='Calendars' name='Calendars' dataSource={state.calendarCollections} textField='CalendarText' idField='CalendarId' colorField='CalendarColor'>
+                        </ResourceDirective>
+                      </ResourcesDirective>
+                {/* <ResourcesDirective>
                   <ResourceDirective
                       allowMultiple={true}
                       dataSource={state.data}
                       idField="resid"
                       colorField="#FCBA03"
                   />
-                </ResourcesDirective>
+                </ResourcesDirective> */}
                 <Inject
                     services={[Day, Week, WorkWeek, Month, Agenda, Resize, DragAndDrop]}
                 />
