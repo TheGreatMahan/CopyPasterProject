@@ -16,6 +16,7 @@ import {
   DragAndDrop, ResourceDirective, ResourcesDirective,
 } from "@syncfusion/ej2-react-schedule";
 //import "./schedule-component.css";
+import { CheckBoxComponent } from "@syncfusion/ej2-react-buttons";
 import { extend, L10n } from "@syncfusion/ej2-base";
 import { DateTimePickerComponent } from "@syncfusion/ej2-react-calendars";
 import { ColorPickerComponent } from '@syncfusion/ej2-react-inputs';
@@ -64,7 +65,7 @@ const Calendar = (props) => {
     }),
     difficulties: ["easy", "normal", "hard", "very hard", "NIGHTMARE"],
     isTaskComplete: 0, // checkbox bool
-    checked: false, // checkbox bool v2 
+    checked: false, // checkbox bool v2
     totalPoints: 0,
   };
 
@@ -109,7 +110,8 @@ const Calendar = (props) => {
         .executeQuery(new Query().take(100))
         .then((e) => {
           let data = e.result;
-          data.forEach((task) => { });
+          data.forEach((task) => {});
+          data = data.filter(element =>element.completed !== 1);
           setState({ data: data });
           console.log(data);
         });
@@ -240,6 +242,7 @@ const Calendar = (props) => {
         priority: priority,
         StartTime: startTime,
         EndTime: endTime,
+        completed: 0,
         difficulty: difficultyStr,
         Description: description,
         color: color,
@@ -251,7 +254,6 @@ const Calendar = (props) => {
         counterPoints += task.points;
       });
       setState({ totalPoints: counterPoints });
-      console.log(state.totalPoints);
       fireAddTask(Data); //TODO: Assign payload to some state
       //FIXME: here
     }
@@ -272,9 +274,7 @@ const Calendar = (props) => {
           ? 1
           : -1;
 
-      console.log(pointStatus);
-
-      if (state.isTaskComplete === 1) {
+      if (args.data.taskState === true) {
         Data = {
           id: args.data._id,
           Subject: subject,
@@ -290,7 +290,7 @@ const Calendar = (props) => {
           points: pointStatus,
         };
       }
-      if (state.isTaskComplete === 0) {
+      if (args.data.taskState === false) {
         Data = {
           id: args.data._id,
           Subject: subject,
@@ -313,7 +313,6 @@ const Calendar = (props) => {
         counterPoints += task.points;
       });
       setState({ totalPoints: counterPoints });
-      console.log(counterPoints);
       updateTask(Data);
     }
     if (args.requestType === "eventRemove") {
@@ -327,22 +326,6 @@ const Calendar = (props) => {
       deleteTask(args.data[0]._id);
     }
   };
-
-  const setTaskState = () => {
-    let id = document.getElementById('taskState')
-
-    if (id.checked) {
-      setState({ isTaskComplete: 1 })
-      console.log('checked')
-      setState({ checked: true })
-    }
-    else {
-      setState({ isTaskComplete: 0 })
-      console.log('not checked')
-      setState({ checked: false })
-    }
-  };
-  console.log('checkbox state: ' + state.isTaskComplete)
 
   function editorTemplate(props1) {
     return props1 !== undefined ? (
@@ -450,14 +433,22 @@ const Calendar = (props) => {
             ></input>
           </div>
 
-
+            <tr>
+            <td className="e-textlabel">Task complete?</td>
+            <td colSpan={1}>
+              <CheckBoxComponent
+                id="taskState"
+                name="taskState"
+                className="e-field e-input"
+              />
+            </td>
+          </tr>
         </tbody>
       </table>
     ) : (
       <div></div>
     );
   }
-
   function onDragStart(args) {
     args.navigation.enable = true;
   }
