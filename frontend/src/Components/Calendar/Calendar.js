@@ -13,11 +13,12 @@ import {
   Agenda,
   Inject,
   Resize,
-  DragAndDrop,
+  DragAndDrop, ResourceDirective, ResourcesDirective,
 } from "@syncfusion/ej2-react-schedule";
 //import "./schedule-component.css";
 import { extend, L10n } from "@syncfusion/ej2-base";
 import { DateTimePickerComponent } from "@syncfusion/ej2-react-calendars";
+import { ColorPickerComponent } from '@syncfusion/ej2-react-inputs';
 import { updateSampleSection } from "./sample-base";
 import { DropDownListComponent } from "@syncfusion/ej2-react-dropdowns";
 import { PropertyPane } from "./property-pane";
@@ -52,7 +53,15 @@ const Calendar = (props) => {
     snackBarMsg: "",
     contactServer: false,
     data: [],
-    scheduleObj: {},
+    scheduleObj: new ScheduleComponent({
+      eventRendered: (args) => {
+        let categoryColor = args.data.categoryColor;
+        if (!args.element || !categoryColor) {
+          return;
+        }
+        args.element.style.backgroundColor = categoryColor;
+      }
+    }),
     difficulties: ["easy", "normal", "hard", "very hard", "NIGHTMARE"],
     isTaskComplete: 0, // checkbox bool
     checked: false, // checkbox bool v2 
@@ -112,7 +121,7 @@ const Calendar = (props) => {
   const fireAddTask = async (task) => {
     try {
       let query = JSON.stringify({
-        query: `mutation {addtask(Subject: "${task.Subject}", username: "${task.username}", priority: ${task.priority} , StartTime: "${task.StartTime}", EndTime: "${task.EndTime}" difficulty: ${task.difficulty}, Description: "${task.Description}", points: ${task.points} ) {username}}`,
+        query: `mutation {addtask(Subject: "${task.Subject}", username: "${task.username}", priority: ${task.priority} , StartTime: "${task.StartTime}", EndTime: "${task.EndTime}" difficulty: ${task.difficulty}, Description: "${task.Description}", color: "${task.color}", points: ${task.points} ) {username}}`,
       });
       let response = await fetch(GRAPHURL, {
         method: "POST",
@@ -204,6 +213,7 @@ const Calendar = (props) => {
     datamanager();
   };
 
+
   const onActionBegin = (args) => {
     console.log(args);
     let Data = {};
@@ -219,6 +229,9 @@ const Calendar = (props) => {
       endTime = endTime.toISOString();
       let startTime = new Date(dataObj.StartTime);
       startTime = startTime.toISOString();
+      let color = dataObj.task_color;
+
+      console.log(color);
 
       Data = {
         id: args.data._id,
@@ -229,7 +242,7 @@ const Calendar = (props) => {
         EndTime: endTime,
         difficulty: difficultyStr,
         Description: description,
-        color: "",
+        color: color,
         points: 0,
       };
       console.log(Data);
@@ -419,6 +432,12 @@ const Calendar = (props) => {
               ></textarea>
             </td>
           </tr>
+          <tr>
+            <td className="e-textlabel">Color</td>
+            <td colSpan={4}>
+              <ColorPickerComponent id="color-picker" className="e-field e-input" name="task_color" />
+            </td>
+          </tr>
           <div>
             <label htmlFor="taskState">Task complete?</label>
             <input
@@ -459,7 +478,7 @@ const Calendar = (props) => {
               <ScheduleComponent
                 height="550px"
                 ref={(schedule) => {
-                  state.scheduleObj = schedule;
+                  state.scheduleObj = schedule; //FIXME:
                 }}
                 selectedDate={new Date()
                   .toJSON()
@@ -474,6 +493,17 @@ const Calendar = (props) => {
                 showQuickInfo={false}
                 actionBegin={onActionBegin.bind(this)}
               >
+                <ResourcesDirective>
+                  <ResourceDirective
+                      allowMultiple={true}
+                      dataSource={state.data}
+                      idField="resid"
+                      colorField="#FCBA03"
+                  />
+                </ResourcesDirective>
+                <Inject
+                    services={[Day, Week, WorkWeek, Month, Agenda, Resize, DragAndDrop]}
+                />
                 <ViewsDirective>
                   <ViewDirective option="Month" />
                 </ViewsDirective>
