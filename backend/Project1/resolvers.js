@@ -70,7 +70,8 @@ const resolvers = {
       color: args.color,
       points: args.points,
       completed: args.completed,
-      CalendarId: args.CalendarId
+      CalendarId: args.CalendarId,
+      //completiondate: ''
     };
     let results = await dbRtns.addOne(db, tasks, task);
     return results.acknowledged ? task : null;

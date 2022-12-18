@@ -244,7 +244,7 @@ const Calendar = (props) => {
       endTime.setHours(endTime.getHours() + 1);
       let startTime = new Date(args.data.StartTime);
       let completiondate = "";
-      let CalendarId = state.calendarCollections.findIndex((obj) => { return obj.CalendarText === dataObj.CalendarId}) + 1;
+      let CalendarId = state.calendarCollections.findIndex((obj) => { return obj.CalendarText === args.data.CalendarId}) + 1;
       let currentdate = new Date();
 
       let pointStatus =
@@ -387,7 +387,7 @@ const Calendar = (props) => {
                 className="e-field"
                 style={{ width: "100%" }}
                 dataSource={state.priorities}
-                value={props1.priority}
+                index={props1.priority - 1}
               ></DropDownListComponent>
             </td>
           </tr>
@@ -406,7 +406,7 @@ const Calendar = (props) => {
               ></DropDownListComponent>
             </td>
           </tr>
-            { props1._id !== null && <tr>
+            { props1._id !== null && props1._id !== undefined && <tr>
             <td className="e-textlabel">Task complete?</td>
             <td colSpan={1}>
               <CheckBoxComponent

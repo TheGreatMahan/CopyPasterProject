@@ -16,6 +16,7 @@ import { DateTimePickerComponent } from "@syncfusion/ej2-react-calendars";
 import theme from "../../theme";
 import "../../App.css";
 import { IntegrationInstructionsRounded } from "@mui/icons-material";
+import { useAuth } from "../Auth";
 
 const AddTask = (props) => {
 
@@ -32,6 +33,7 @@ const AddTask = (props) => {
     completiondate: "",
     difficulty: "-1",
     Description: "",
+    CalendarId: {},
     color: "",
     _id: "",
     isUpdate: false,
@@ -46,7 +48,19 @@ const AddTask = (props) => {
       ["NIGHTMARE", 4],
     ],
     priorities: Array.from({ length: 5 }, (x, i) => (i + 1).toString()),
+    calendarCollections: [
+      { CalendarText: 'Red', CalendarId: 1, CalendarColor: '#e61f15' },
+      { CalendarText: 'Orange', CalendarId: 2, CalendarColor: '#e68415' },
+      { CalendarText: 'Lime Green', CalendarId: 3, CalendarColor: '#73e615' },
+      { CalendarText: 'Light Blue', CalendarId: 4, CalendarColor: '#1db9e0' },
+      { CalendarText: 'Purple', CalendarId: 5, CalendarColor: '#cd1de0' },
+      { CalendarText: 'Magenta', CalendarId: 6, CalendarColor: '#d61596' },
+      { CalendarText: 'Pink', CalendarId: 7, CalendarColor: '#ff75df' },
+      { CalendarText: 'Forest Green', CalendarId: 8, CalendarColor: '#0f6b28' }
+    ],
   };
+
+  const auth = useAuth();
 
   const GRAPHURL = "http://localhost:5000/graphql";
 
@@ -84,7 +98,7 @@ const AddTask = (props) => {
           },
           body: JSON.stringify({
             query: `query {taskbyid(_id: "${props.id}") {_id, Subject, username, priority, StartTime, EndTime, 
-                completiondate, difficulty, Description, color, points, completed}}`,
+                completiondate, difficulty, Description, color, points, completed, CalendarId}}`,
           }),
         });
         let payload = await response.json();
@@ -108,7 +122,8 @@ const AddTask = (props) => {
           Description: payload.data.taskbyid.Description,
           color: payload.data.taskbyid.color,
           points: payload.data.taskbyid.points,
-          completed: payload.data.taskbyid.completed
+          completed: payload.data.taskbyid.completed,
+          CalendarId: state.calendarCollections[payload.data.taskbyid.CalendarId - 1]
         });
         sendMessageToSnackbar(`${payload.data.taskbyid.name} task loaded`);
       } catch (error) {
@@ -141,6 +156,25 @@ const AddTask = (props) => {
     selectedOption
       ? setState({ difficulty: selectedOption })
       : setState({ difficulty: state.difficulties[0] });
+
+    if (
+      state.Subject === "" ||
+      state.selectedUser === null ||
+      state.StartTime === "" ||
+      state.Description === "" ||
+      state.difficulty === -1 ||
+      state.priority === -1
+    ) {
+      setButtonDisabled(true);
+    } else {
+      setButtonDisabled(false);
+    }
+  };
+
+  const onChangeCalendarId = (e, selectedOption) => {
+    selectedOption
+      ? setState({ CalendarId: selectedOption })
+      : setState({ CalendarId: {} });
 
     if (
       state.Subject === "" ||
@@ -229,7 +263,7 @@ const AddTask = (props) => {
     let task = {
       id: state._id,
       Subject: state.Subject,
-      username: state.selectedUser,
+      username: auth.user,
       priority: parseInt(state.priority),
       StartTime: state.StartTime.toISOString(),
       EndTime: enddate,
@@ -238,6 +272,8 @@ const AddTask = (props) => {
       Description: state.Description,
       color: state.color,
       points: state.points,
+      CalendarId: state.CalendarId.CalendarId,
+      completed: 0
     };
 
     let myHeaders = new Headers();
@@ -259,7 +295,7 @@ const AddTask = (props) => {
     try {
       let query = JSON.stringify({
         query: `mutation {addtask(Subject: "${task.Subject}", username: "${task.username}", priority: ${task.priority} , StartTime: "${task.StartTime}", EndTime: "${task.EndTime}"
-                , completiondate: "${task.completiondate}", difficulty: ${task.difficulty}, Description: "${task.Description}", points: ${task.points} ) { StartTime }}`,
+                , difficulty: ${task.difficulty}, Description: "${task.Description}", points: ${task.points}, CalendarId: ${task.CalendarId} ) { StartTime }}`,
       });
       let response = await fetch(GRAPHURL, {
         method: "POST",
@@ -270,6 +306,7 @@ const AddTask = (props) => {
       });
       let json = await response.json();
 
+      console.log(json);
       setState({
         contactServer: true,
         nameOfTask: "",
@@ -317,7 +354,7 @@ const AddTask = (props) => {
           task.points = pointStatus;
         
       }
-      if (!state.checked) {
+      if (!state.checked && task.completed === 0) {
           task.completed = 0;
           task.completiondate = "";
           task.points = 0;
@@ -326,7 +363,7 @@ const AddTask = (props) => {
     try {
       let query = JSON.stringify({
         query: `mutation {updatetask(_id: "${task.id}", Subject: "${task.Subject}", username: "${task.username}", priority: ${task.priority} , StartTime: "${task.StartTime}",
-                EndTime: "${task.EndTime}", completiondate: "${task.completiondate}", difficulty: ${task.difficulty}, Description: "${task.Description}", points: ${task.points}, completed: ${task.completed} ) { msg }}`,
+                EndTime: "${task.EndTime}", completiondate: "${task.completiondate}", difficulty: ${task.difficulty}, Description: "${task.Description}", points: ${task.points}, completed: ${task.completed}, CalendarId: ${task.CalendarId} ) { msg }}`,
       });
       let response = await fetch(GRAPHURL, {
         method: "POST",
@@ -526,6 +563,26 @@ const AddTask = (props) => {
               }}
               onChange={onChangeDescriptionField}
               value={state.Description}
+            />
+
+          <Autocomplete
+              data-testid="autocomplete"
+              options={state.calendarCollections.map((cal) => {
+                return cal;
+              })}
+              getOptionLabel={(option) => option.CalendarText}
+              style={{ width: "100%" }}
+              onChange={onChangeCalendarId}
+              value={state.CalendarId}
+              renderInput={(params) => (
+                <TextField
+                  style={{ marginTop: 5 }}
+                  {...params}
+                  label="Colour"
+                  variant="outlined"
+                  fullWidth
+                />
+              )}
             />
             
               { state.isUpdate && <FormControlLabel
