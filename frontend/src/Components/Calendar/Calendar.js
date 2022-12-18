@@ -13,11 +13,13 @@ import {
   Agenda,
   Inject,
   Resize,
-  DragAndDrop,
+  DragAndDrop, ResourceDirective, ResourcesDirective,
 } from "@syncfusion/ej2-react-schedule";
 //import "./schedule-component.css";
+import { CheckBoxComponent } from "@syncfusion/ej2-react-buttons";
 import { extend, L10n } from "@syncfusion/ej2-base";
 import { DateTimePickerComponent } from "@syncfusion/ej2-react-calendars";
+import { ColorPickerComponent } from '@syncfusion/ej2-react-inputs';
 import { updateSampleSection } from "./sample-base";
 import { DropDownListComponent } from "@syncfusion/ej2-react-dropdowns";
 import { PropertyPane } from "./property-pane";
@@ -39,22 +41,24 @@ import "../../App.css";
 import { findByTestId } from "@testing-library/react";
 import { useAuth } from "../Auth";
 
-// function eventTemplate(props) {
-//   return (<div>
-// <div className="name">{props.name}</div>
-// <div className="time">
-// Time: {this.getTimeString(props.StartTime)} - {this.getTimeString(props.EndTime)}</div>
-// </div>);
-// }
 
 const Calendar = (props) => {
   const initialState = {
     snackBarMsg: "",
     contactServer: false,
     data: [],
-    scheduleObj: {},
+    scheduleObj: new ScheduleComponent({
+      eventRendered: (args) => {
+        let categoryColor = args.data.categoryColor;
+        if (!args.element || !categoryColor) {
+          return;
+        }
+        args.element.style.backgroundColor = categoryColor;
+      }
+    }),
     difficulties: ["easy", "normal", "hard", "very hard", "NIGHTMARE"],
     isTaskComplete: 0, // checkbox bool
+    checked: false, // checkbox bool v2
     totalPoints: 0,
   };
 
@@ -74,9 +78,9 @@ const Calendar = (props) => {
 
   const GRAPHURL = "http://localhost:5000/graphql";
 
-  // const sendMessageToSnackbar = (msg) => {
-  //   props.dataFromChild(msg);
-  // };
+  const sendMessageToSnackbar = (msg) => {
+    props.dataFromChild(msg);
+  };
 
   const reducer = (state, newState) => ({ ...state, ...newState });
   const [state, setState] = useReducer(reducer, initialState);
@@ -100,6 +104,7 @@ const Calendar = (props) => {
         .then((e) => {
           let data = e.result;
           data.forEach((task) => {});
+          data = data.filter(element =>element.completed !== 1);
           setState({ data: data });
           console.log(data);
         });
@@ -111,7 +116,7 @@ const Calendar = (props) => {
   const fireAddTask = async (task) => {
     try {
       let query = JSON.stringify({
-        query: `mutation {addtask(Subject: "${task.Subject}", username: "${task.username}", priority: ${task.priority} , StartTime: "${task.StartTime}", EndTime: "${task.EndTime}" difficulty: ${task.difficulty}, Description: "${task.Description}", points: ${task.points} ) {username}}`,
+        query: `mutation {addtask(Subject: "${task.Subject}", username: "${task.username}", priority: ${task.priority} , StartTime: "${task.StartTime}", EndTime: "${task.EndTime}" difficulty: ${task.difficulty}, Description: "${task.Description}", color: "${task.color}", points: ${task.points} ) {StartTime}}`,
       });
       let response = await fetch(GRAPHURL, {
         method: "POST",
@@ -120,31 +125,19 @@ const Calendar = (props) => {
         },
         body: query,
       });
-      //sendMessageToSnackbar(`Added Task due: ${json.data.addtask.duedate}`);
       console.log("added task on calendar");
       let json = await response.json();
+      sendMessageToSnackbar(`Added Task due: ${json.data.addtask.StartTime}`);
       console.log(json);
-      //0941166
-
-      /*setState({
-          contactServer: true,
-          nameOfTask: "",
-          priority: "-1",
-          duedate: "",
-          difficulty: "-1",
-          description: ""
-      });
-  
-       */
     } catch (error) {
-      //sendMessageToSnackbar(`Task not added: ${error}`);
+      sendMessageToSnackbar(`Task not added: ${error}`);
       console.log(error);
     }
     datamanager();
   };
 
   const updateTask = async (task) => {
-    //sendMessageToSnackbar(`Updating task for ${task.name}`);
+    sendMessageToSnackbar(`Updating task for ${task.Subject}`);
     try {
       let query = JSON.stringify({
         query: `mutation {updatetask(_id: "${task.id}", Subject: "${task.Subject}", username: "${task.username}", priority: ${task.priority} , StartTime: "${task.StartTime}",
@@ -159,23 +152,14 @@ const Calendar = (props) => {
       });
       let json = await response.json();
       console.log(json);
-      // setState({
-      //   contactServer: true,
-      // });
-      //sendMessageToSnackbar(`${json.data.updatetask.msg}`);
-      //clearBoxes();
     } catch (error) {
-      // setState({
-      //   contactServer: true,
-      // });
-      //sendMessageToSnackbar(`${error.message} - task not updated`);
-      console.log(error);
+      console.log('error: ' + error);
     }
     datamanager();
   };
 
   const deleteTask = async (_id) => {
-    // sendMessageToSnackbar(`Updating task for ${state.name}`);
+    sendMessageToSnackbar(`Deleted task for ${state.name}`);
     try {
       let query = JSON.stringify({
         query: `mutation {deletetask(_id: "${_id}" ) { msg }}`,
@@ -189,19 +173,13 @@ const Calendar = (props) => {
       });
       let json = await response.json();
       console.log(json);
-      // setState({
-      //   contactServer: true,
-      // });
-      // sendMessageToSnackbar(`${json.data.deletetask.msg}`);
-      // clearBoxes();
+      sendMessageToSnackbar(`${json.data.deletetask.msg}`);
     } catch (error) {
-      // setState({
-      //   contactServer: true,
-      // });
-      // sendMessageToSnackbar(`${error.message} - task not updated`);
+      sendMessageToSnackbar(`${error.message} - task not deleted`);
     }
     datamanager();
   };
+
 
   const onActionBegin = (args) => {
     console.log(args);
@@ -218,6 +196,9 @@ const Calendar = (props) => {
       endTime = endTime.toISOString();
       let startTime = new Date(dataObj.StartTime);
       startTime = startTime.toISOString();
+      let color = dataObj.task_color;
+
+      console.log(color);
 
       Data = {
         id: args.data._id,
@@ -226,9 +207,10 @@ const Calendar = (props) => {
         priority: priority,
         StartTime: startTime,
         EndTime: endTime,
+        completed: 0,
         difficulty: difficultyStr,
         Description: description,
-        color: "",
+        color: color,
         points: 0,
       };
       console.log(Data);
@@ -237,8 +219,7 @@ const Calendar = (props) => {
         counterPoints += task.points;
       });
       setState({ totalPoints: counterPoints });
-      console.log(state.totalPoints);
-      fireAddTask(Data); //TODO: Assign payload to some state
+      fireAddTask(Data); 
       //FIXME: here
     }
     if (args.requestType === "eventChange") {
@@ -258,9 +239,7 @@ const Calendar = (props) => {
           ? 1
           : -1;
 
-      console.log(pointStatus);
-
-      if (state.isTaskComplete === 1) {
+      if (args.data.taskState === true) {
         Data = {
           id: args.data._id,
           Subject: subject,
@@ -276,7 +255,7 @@ const Calendar = (props) => {
           points: pointStatus,
         };
       }
-      if (state.isTaskComplete === 0) {
+      if (args.data.taskState === false) {
         Data = {
           id: args.data._id,
           Subject: subject,
@@ -299,11 +278,10 @@ const Calendar = (props) => {
         counterPoints += task.points;
       });
       setState({ totalPoints: counterPoints });
-      console.log(counterPoints);
       updateTask(Data);
     }
     if (args.requestType === "eventRemove") {
-      // This block is execute before an appointment remove
+      // This block is executed before an appointment remove
       let counterPoints = 0;
       state.data.forEach((task, index) => {
         counterPoints += task.points;
@@ -312,13 +290,6 @@ const Calendar = (props) => {
       console.log(state.totalPoints);
       deleteTask(args.data[0]._id);
     }
-  };
-
-  const setTaskState = () => {
-    let id = document.getElementById("taskState");
-    id.checked
-      ? setState({ isTaskComplete: 1 })
-      : setState({ isTaskComplete: 0 });
   };
 
   function editorTemplate(props1) {
@@ -370,7 +341,6 @@ const Calendar = (props) => {
                   "very hard",
                   "NIGHTMARE",
                 ]}
-                //ref={(scope) => { this.dropDownListObject = scope; }}
                 index={props1.difficulty}
               ></DropDownListComponent>
             </td>
@@ -410,14 +380,20 @@ const Calendar = (props) => {
             </td>
           </tr>
           <tr>
-            <label htmlFor="taskState">Task complete?</label>
-            <input
-              type="checkbox"
-              id="taskState"
-              name="taskState"
-              value="taskState"
-              onClick={setTaskState}
-            ></input>
+            <td className="e-textlabel">Color</td>
+            <td colSpan={4}>
+              <ColorPickerComponent id="color-picker" className="e-field e-input" name="task_color" />
+            </td>
+          </tr>
+            <tr>
+            <td className="e-textlabel">Task complete?</td>
+            <td colSpan={1}>
+              <CheckBoxComponent
+                id="taskState"
+                name="taskState"
+                className="e-field e-input"
+              />
+            </td>
           </tr>
         </tbody>
       </table>
@@ -425,7 +401,6 @@ const Calendar = (props) => {
       <div></div>
     );
   }
-
   function onDragStart(args) {
     args.navigation.enable = true;
   }
@@ -446,7 +421,7 @@ const Calendar = (props) => {
               <ScheduleComponent
                 height="550px"
                 ref={(schedule) => {
-                  state.scheduleObj = schedule;
+                  state.scheduleObj = schedule; //FIXME:
                 }}
                 selectedDate={new Date()
                   .toJSON()
@@ -461,6 +436,17 @@ const Calendar = (props) => {
                 showQuickInfo={false}
                 actionBegin={onActionBegin.bind(this)}
               >
+                <ResourcesDirective>
+                  <ResourceDirective
+                      allowMultiple={true}
+                      dataSource={state.data}
+                      idField="resid"
+                      colorField="#FCBA03"
+                  />
+                </ResourcesDirective>
+                <Inject
+                    services={[Day, Week, WorkWeek, Month, Agenda, Resize, DragAndDrop]}
+                />
                 <ViewsDirective>
                   <ViewDirective option="Month" />
                 </ViewsDirective>

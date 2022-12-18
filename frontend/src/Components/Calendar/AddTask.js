@@ -112,54 +112,7 @@ const AddTask = (props) => {
       }
     }
   };
-
-  // const fetchUsers = async () => {
-  //   try {
-  //     setState({
-  //       contactServer: true,
-  //     });
-  //     sendMessageToSnackbar("Loading countries");
-
-  //     let response = await fetch(GRAPHURL, {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json; charset=utf-8",
-  //       },
-  //       body: JSON.stringify({
-  //         query: "query {users {username}}",
-  //       }),
-  //     });
-  //     let payload = await response.json();
-
-  //     setState({
-  //       users: payload.data.users,
-  //     });
-  //     sendMessageToSnackbar(`${payload.data.users.length} users loaded`);
-  //   } catch (error) {
-  //     console.log(error);
-  //     sendMessageToSnackbar(`Problem loading server data - ${error.message}`);
-  //   }
-  // };
-
-  const onChange = (e, selectedOption) => {
-    selectedOption
-      ? setState({ selectedUser: selectedOption })
-      : setState({ selectedUser: "" });
-
-    if (
-      state.nameOfTask === "" ||
-      selectedOption === null ||
-      state.duedate === "" ||
-      state.description === "" ||
-      state.difficulty === -1 ||
-      state.priority === -1
-    ) {
-      setButtonDisabled(true);
-    } else {
-      setButtonDisabled(false);
-    }
-  };
-
+ 
   const onChangePriorities = (e, selectedOption) => {
     selectedOption
       ? setState({ priority: selectedOption })
@@ -444,25 +397,6 @@ const AddTask = (props) => {
           >
             Add Task
           </Typography>
-
-          {/* <Autocomplete
-              data-testid="autocomplete"
-              options={state.users.map((user) => {
-                return user["username"];
-              })}
-              getOptionLabel={(option) => option}
-              style={{ width: "100%" }}
-              onChange={onChange}
-              value={state.selectedUser}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="users"
-                  variant="outlined"
-                  fullWidth
-                />
-              )}
-            /> */}
 
           <Card
             style={{

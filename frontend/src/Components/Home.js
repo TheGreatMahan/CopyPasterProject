@@ -9,7 +9,7 @@ import ListItemText from "@mui/material/ListItemText";
 import Toolbar from "@mui/material/Toolbar";
 import Calendar from "./Calendar/Calendar";
 import ListTasks from "./Calendar/ListTasks";
-import GrowthStats from "./Calendar/GrowthStats";
+import CompletedTasks from "./Calendar/CompletedTasks";
 
 import { ThemeProvider } from "@mui/material/styles";
 import {
@@ -23,6 +23,7 @@ import {
 } from "@mui/material";
 import theme from "../theme";
 import "../App.css";
+import GrowthStats from "./Calendar/GrowthStats";
 
 const Home = (props) => {
   const initialState = {
@@ -72,7 +73,7 @@ const Home = (props) => {
             <Toolbar />
             <Box sx={{ overflow: "auto" }}>
               <List>
-                {["Calendar", "Tasks List", "Growth Stats"].map(
+                {["Calendar", "Tasks List", "Tasks Completed", "Growth Stats"].map(
                   (text, index) => (
                     <ListItem key={text} disablePadding>
                       <ListItemButton
@@ -96,8 +97,16 @@ const Home = (props) => {
             {state.currentView === "Tasks List" && (
               <ListTasks dataFromChild={sendMessageToSnackbar} />
             )}
-            {state.currentView === "Calendar" && <Calendar />}
-            {state.currentView === "Growth Stats" && (<GrowthStats dataFromChild={sendMessageToSnackbar}/>)}
+            {state.currentView === "Tasks Completed" && (
+              <CompletedTasks dataFromChild={sendMessageToSnackbar} />
+            )}
+            {state.currentView === "Calendar" && (
+              <Calendar dataFromChild={sendMessageToSnackbar} />
+            )}
+            {state.currentView === "Growth Stats" && (
+              <GrowthStats dataFromChild={sendMessageToSnackbar} />
+            )}
+            {/* {state.currentView === "Growth Stats" && <GrowthStats />} */}
           </Box>
         </Box>
       </Card>

@@ -9,7 +9,6 @@ import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
-import AddTask from "./AddTask";
 import ControlPointIcon from "@mui/icons-material/ControlPoint";
 import { DataGrid, GridValueGetterParams } from "@mui/x-data-grid";
 import {
@@ -25,7 +24,7 @@ import theme from "../../theme";
 import "../../App.css";
 import {useAuth} from "../Auth";
 
-const ListTasks = (props) => {
+const CompletedTasks = (props) => {
   const initialState = {
     //snackBarMsg: "",
     msg: "",
@@ -108,7 +107,7 @@ const ListTasks = (props) => {
       });
       let payload = await response.json();
       console.log(payload);
-      payload.data.tasksforuser = payload.data.tasksforuser.filter(element => element.completed !== 1);
+      payload.data.tasksforuser = payload.data.tasksforuser.filter(element => element.completed == 1);
       sendMessageToSnackbar(
         `found ${payload.data.tasksforuser.length} tasks for ${user}`
       );
@@ -151,23 +150,7 @@ const ListTasks = (props) => {
               onRowClick={handleClick}
             />
             </div>
-          
-
-          {state.isOpen && (
-            <AddTask
-              open={state.isOpen}
-              onClose={handleClose}
-              id={state.selectedId}
-              dataFromChild={sendMessageToSnackbar}
-            ></AddTask>
-          )}
-          <ControlPointIcon
-            fontSize="large"
-            style={{ position: "absolute", bottom: "50px", right: "50px" }}
-            onClick={(e) => handleClick(null)}
-            className="addicon"
-          ></ControlPointIcon>
     </ThemeProvider>
   );
 };
-export default ListTasks;
+export default CompletedTasks;
