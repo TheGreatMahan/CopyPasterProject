@@ -402,7 +402,7 @@ const Calendar = (props) => {
                 className="e-field"
                 style={{ width: "100%" }}
                 dataSource={state.calendarCollections.map((item) => item.CalendarText)}
-                index={props1.CalendarId}
+                index={props1.CalendarId - 1}
               ></DropDownListComponent>
             </td>
           </tr>
